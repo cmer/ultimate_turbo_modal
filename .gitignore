@@ -8,3 +8,5 @@
 /tmp/
 node_modules
 javascript/dist
+*.local.*
+
