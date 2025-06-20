@@ -85,7 +85,7 @@ export default class extends Controller {
   // hide modal when clicking outside of modal
   // action: "click@window->modal#outsideModalClicked"
   outsideModalClicked(e) {
-    let clickedInsideModal = this.contentTarget.contains(e.target) || this.contentTarget == e.target;
+    let clickedInsideModal = !document.contains(e.target) || this.contentTarget.contains(e.target) || this.contentTarget == e.target;
     let clickedAllowedSelector = this.allowedClickOutsideSelectorValue && this.allowedClickOutsideSelectorValue !== '' && e.target.closest(this.allowedClickOutsideSelectorValue) != null;
 
     if (!clickedInsideModal && !clickedAllowedSelector)
