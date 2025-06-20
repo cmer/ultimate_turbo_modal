@@ -1,3 +1,7 @@
+## [2.0.4] - 2025-06-19
+
+- Fix modal closing when clicked element is removed from DOM (#24)
+
 ## [2.0.3] - 2025-04-11
 
 - Warn if the NPM package and Ruby Gem versions don't match.
