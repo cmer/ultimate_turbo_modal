@@ -1,3 +1,7 @@
+## [Unreleased]
+
+- Reduce Rails dependency to only required components (actionpack, activesupport, railties) (#22)
+
 ## [2.0.4] - 2025-06-19
 
 - Fix modal closing when clicked element is removed from DOM (#24)
