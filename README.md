@@ -135,16 +135,9 @@ You can set a custom title and footer by passing a block. For example
 &nbsp;
 &nbsp;
 
-## Upgrading from version 1.x
+## Upgrading from 1.x
 
-- Remove the two `setupUltimateTurboModal`-related lines from `app/javascript/controllers/index.js`:
-
-- Remove anything UTMR-specific in `tailwind.config.js`.
-
-- Remove the optional Idiomorph tweaks:
-  - `<script src="https://unpkg.com/idiomorph"></script>` from your HTML
-  - `addEventListener("turbo:before-frame-render", (event) => {...` from `application.js`
-- Update the gem to the newest version and follow the installation instructions above.
+Please see the [Upgrading Guide](UPGRADING.md) for detailed instructions on how to upgrade from version 1.x.
 
 ## Thanks
 
