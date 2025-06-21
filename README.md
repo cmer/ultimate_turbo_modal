@@ -8,10 +8,6 @@ Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https
 
 It currently ships in a three flavors: Tailwind v3, Tailwind v4 and regular, vanilla CSS. It is easy to create your own variant to suit your needs.
 
-&nbsp;
-&nbsp;
-
-
 ## Installation
 
 ```
@@ -19,8 +15,91 @@ $ bundle add ultimate_turbo_modal
 $ bundle exec rails g ultimate_turbo_modal:install
 ```
 
+## Usage
+
+1. Wrap your view inside a `modal` block as follow:
+
+```erb
+<%= modal do %>
+  Hello World!
+<% end %>
+```
+
+2. Link to your view by specifying `modal` as the target Turbo Frame:
+
+```erb
+<%= link_to "Open Modal", "/hello_world", data: { turbo_frame: "modal" } %>
+```
+
+Clicking on the link will automatically open the content of the view inside a modal. If you open the link in a new tab, it will render normally outside of the modal. Nothing to do!
+
+This is really all you should need to do for most use cases.
+
+### Setting Title and Footer
+
+You can set a custom title and footer by passing a block. For example:
+
+```erb
+<%= modal do |m| %>
+  <% m.title do %>
+    <div>My Title</div>
+  <% end %>
+
+  <p>Your modal body</p>
+  <%= form_with url: "#", html: { id: "myform" } do |f| %>
+    <p>..</p>
+  <% end %>
+
+  <% m.footer do %>
+    <input type="submit" form="myform">Submit</input>
+  <% end %>
+<% end %>
+```
+
+You can also set a title with options (see below).
+
+### Detecting modal at render time
+
+If you need to do something a little bit more advanced when the view is shown outside of a modal, you can use the `#inside_modal?` method as such:
+
+```erb
+<% if inside_modal? %>
+  <h1 class="text-2xl mb-8">Hello from modal</h1>
+<% else %>
+  <h1 class="text-2xl mb-8">Hello from a normal page render</h1>
+<% end %>
+```
+
+
+
 &nbsp;
 &nbsp;
+## Options
+
+Do not get overwhelmed with all the options. The defaults are sensible.
+
+| name | default value | description |
+|------|---------------|-------------|
+| `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
+| `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
+| `header` | `true` | Whether to display a modal header. |
+| `header_divider` | `true` | Whether to display a divider below the header. |
+| `padding` | `true` | Adds padding inside the modal. |
+| `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
+
+### Example usage with options
+
+```erb
+<%= modal(padding: true, close_button: false, advance: false) do %>
+  Hello World!
+<% end %>
+```
+
+```erb
+<%= modal(padding: true, close_button: false, advance: "/foo/bar") do %>
+  Hello World!
+<% end %>
+```
 
 ## Features and capabilities
 
@@ -42,98 +121,9 @@ $ bundle exec rails g ultimate_turbo_modal:install
 - Automatic (or not) close button
 
 
-&nbsp;
-&nbsp;
 ## Demo
 
 A demo application can be found at https://github.com/cmer/ultimate_turbo_modal-demo. A video demo can be seen here: [https://youtu.be/BVRDXLN1I78](https://youtu.be/BVRDXLN1I78).
-
-
-&nbsp;
-&nbsp;
-## Usage
-
-1. Wrap your view inside a `modal` block as follow:
-
-```erb
-<%= modal do %>
-  Hello World!
-<% end %>
-```
-
-2. Link to your view by specifying `modal` as the target Turbo Frame:
-
-```erb
-<%= link_to "Open Modal", "/hello_world", data: { turbo_frame: "modal" } %>
-```
-
-Clicking on the link will automatically open the content of the view inside a modal. If you open the link in a new tab, it will render normally outside of the modal. Nothing to do!
-
-This is really all you should need to do for most use cases.
-
-### Detecting modal at render time
-
-If you need to do something a little bit more advanced when the view is shown outside of a modal, you can use the `#inside_modal?` method as such:
-
-```erb
-<% if inside_modal? %>
-  <h1 class="text-2xl mb-8">Hello from modal</h1>
-<% else %>
-  <h1 class="text-2xl mb-8">Hello from a normal page render</h1>
-<% end %>
-```
-
-&nbsp;
-&nbsp;
-## Options
-
-Do not get overwhelmed with all the options. The defaults are sensible.
-
-| name | default value | description |
-|------|---------------|-------------|
-| `padding` | `true` | Adds padding inside the modal. |
-| `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
-| `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
-| `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
-| `header` | `true` | Whether to display a modal header. |
-| `header_divider` | `true` | Whether to display a divider below the header. |
-| `footer_divider` | `true` | Whether to display a divider above the footer. The divider will not appear if no footer was specified. |
-| `allowed_click_outside_selector` | `nil` | A string of CSS selectors that can be clicked outside of the modal without dismissing the modal. Rarely needed, but can be useful for elements such as datepickers. |
-
-### Example usage with options
-
-```erb
-<%= modal(padding: true, close_button: false, advance: false) do %>
-  Hello World!
-<% end %>
-```
-
-```erb
-<%= modal(padding: true, close_button: false, advance: "/foo/bar") do %>
-  Hello World!
-<% end %>
-```
-
-### Title and Footer
-
-You can set a custom title and footer by passing a block. For example
-
-```erb
-<%= modal do |m| %>
-  <% m.title do %>
-    <div>My Title</div>
-  <% end %>
-
-  Modal body
-
-  <% m.footer do %>
-    <input type="submit" form="myform">Submit</input>
-  <% end %>
-<% end %>
-```
-
-&nbsp;
-&nbsp;
 
 ## Upgrading from 1.x
 
@@ -143,14 +133,12 @@ Please see the [Upgrading Guide](UPGRADING.md) for detailed instructions on how 
 
 Thanks to [@joeldrapper](https://github.com/joeldrapper) and [@konnorrogers](https://github.com/KonnorRogers) for all the help!
 
-&nbsp;
-&nbsp;
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/cmer/ultimate_turbo_modal.
 
-&nbsp;
-&nbsp;
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
