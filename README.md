@@ -69,6 +69,10 @@ A demo application can be found at https://github.com/cmer/ultimate_turbo_modal-
 
 Clicking on the link will automatically open the content of the view inside a modal. If you open the link in a new tab, it will render normally outside of the modal. Nothing to do!
 
+This is really all you should need to do for most use cases.
+
+### Detecting modal at render time
+
 If you need to do something a little bit more advanced when the view is shown outside of a modal, you can use the `#inside_modal?` method as such:
 
 ```erb
@@ -83,40 +87,18 @@ If you need to do something a little bit more advanced when the view is shown ou
 &nbsp;
 ## Options
 
-### `padding`, default: `true`
+Do not get overwhelmed with all the options. The defaults are sensible.
 
-Adds padding inside the modal.
-
-### `close_button`, default: `true`
-
-Shows or hide a close button (X) at the top right of the modal.
-
-### `advance`, default: `true`
-
-When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back.
-
-If a URL is specified as a String, the browser history will advance, and the URL shown in the URL bad will be replaced by the URL specified.
-
-### `title`, default: `nil`
-
-Title to display in the modal header. Alternatively, you can set the title with a block.
-
-### `header`, default: `true`
-
-Whether to display a modal header.
-
-### `header_divider`, default: `true`
-
-Whether to display a divider below the header.
-
-### `footer_divider`, default: `true`
-
-Whether to display a divider above the footer. The divider will not appear if no footer was specified.
-
-### `allowed_click_outside_selector`, default: `nil`
-
-A string of CSS selectors that can be clicked outside of the modal without dismissing the modal. Useful for elements
-such as datepickers.
+| name | default value | description |
+|------|---------------|-------------|
+| `padding` | `true` | Adds padding inside the modal. |
+| `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
+| `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
+| `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
+| `header` | `true` | Whether to display a modal header. |
+| `header_divider` | `true` | Whether to display a divider below the header. |
+| `footer_divider` | `true` | Whether to display a divider above the footer. The divider will not appear if no footer was specified. |
+| `allowed_click_outside_selector` | `nil` | A string of CSS selectors that can be clicked outside of the modal without dismissing the modal. Rarely needed, but can be useful for elements such as datepickers. |
 
 ### Example usage with options
 
