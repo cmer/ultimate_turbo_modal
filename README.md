@@ -85,6 +85,7 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 | `header` | `true` | Whether to display a modal header. |
 | `header_divider` | `true` | Whether to display a divider below the header. |
 | `padding` | `true` | Adds padding inside the modal. |
+| `redirect_behavior` | `"smooth"` | Controls how form submission redirects are handled. Set to `"smooth"` to enable enhanced redirect behavior where same-page redirects morph content behind the modal, and different-page redirects close the modal smoothly before navigating. Set to `"immediate"` for the original, more abrupt redirect behavior that did not close the modal before redirecting. |
 | `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
 
 ### Example usage with options
@@ -99,6 +100,36 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 <%= modal(padding: true, close_button: false, advance: "/foo/bar") do %>
   Hello World!
 <% end %>
+```
+
+### Redirect Behavior
+
+This is a slightly more advanced topic. You likely will not need to worry about this, or change the default settings.
+
+When `redirect_behavior: "smooth"` is enabled (which is the default), the modal provides enhanced handling of form submission redirects and frame-breaking links:
+
+- **Same-page redirects**: The page content behind the modal is updated via morphing, then the modal closes smoothly
+- **Different-page redirects**: The modal closes with animation, then navigates to the destination page
+- **Frame-breaking links**: Links without `data: { turbo_frame: "modal" }` close the modal smoothly before navigating
+
+```erb
+<%= modal(redirect_behavior: "smooth") do %>
+  <%= form_with model: @post do |f| %>
+    <!-- Form fields -->
+    <%= f.submit "Save" %>
+  <% end %>
+<% end %>
+```
+
+#### Forcing Full Navigation
+
+For pages that require full navigation (different CSS frameworks, external apps, etc.), add `data-modal-force-visit` to the body tag:
+
+```erb
+<!-- In a layout file -->
+<body data-modal-force-visit>
+  <!-- This page will trigger full navigation instead of smooth morphing -->
+</body>
 ```
 
 ## Features and capabilities

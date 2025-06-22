@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+- Added smooth redirect behavior for modal form submissions
+- Same-page redirects now morph page content behind the modal before closing
+- Different-page redirects close modal smoothly then navigate to destination  
+- Links from within modals that break out of the frame now close modal smoothly before navigating
+- Added `redirect_behavior: "smooth"` option to enable enhanced redirect handling (default)
+- Added `data-modal-force-visit` attribute to force full navigation for specific pages 
 - Reduce Rails dependency to only required components (actionpack, activesupport, railties) (#22)
 
 ## [2.0.4] - 2025-06-19
