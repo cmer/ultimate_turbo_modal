@@ -321,21 +321,22 @@ export default class extends Controller {
    */
   #handleFrameMissing(event) {
     event.preventDefault();
-    this.#handleRedirect(event.detail.response.url);
+    this.#handleRedirect(event.detail.response.url, event.detail.response);
   }
 
   /**
    * Determine redirect type and handle accordingly
    * @private
    * @param {string} url - Target URL
+   * @param {Response} response - Optional response object to avoid re-fetching
    */
-  #handleRedirect(url) {
+  #handleRedirect(url, response = null) {
     // Compare redirect URL against original page URL, not current modal URL
     const originalPath = new URL(this.originalUrl).pathname;
     const newPath = new URL(url).pathname;
     
     if (originalPath === newPath) {
-      this.#handleSamePageRedirect(url);
+      this.#handleSamePageRedirect(url, response);
     } else {
       this.#handleDifferentPageRedirect(url);
     }
@@ -345,13 +346,16 @@ export default class extends Controller {
    * Handle same-page redirects by morphing content
    * @private
    * @param {string} url - Target URL
+   * @param {Response} response - Optional response object to avoid re-fetching
    */
-  async #handleSamePageRedirect(url) {
+  async #handleSamePageRedirect(url, response = null) {
     try {
-      // Fetch new page content
-      const response = await fetch(url, {
-        headers: { 'Accept': 'text/html' }
-      });
+      // Use existing response or fetch new page content
+      if (!response) {
+        response = await fetch(url, {
+          headers: { 'Accept': 'text/html' }
+        });
+      }
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -379,10 +383,8 @@ export default class extends Controller {
       // Update browser URL
       window.history.replaceState({}, '', url);
       
-      // Close modal after a short delay to ensure animation completes
-      setTimeout(() => {
-        this.hideModal();
-      }, TIMING.MODAL_CLOSE_DELAY);
+      // Close modal immediately while morphing happens
+      this.hideModal();
       
     } catch (error) {
       console.error('[UltimateTurboModal] Failed to morph page:', error);
