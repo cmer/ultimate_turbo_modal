@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+@import 'ultimate_turbo_modal/dist/vanilla.css' layer(components);
+@import 'flatpickr/dist/flatpickr.css' layer(base);
+
+@plugin '@tailwindcss/aspect-ratio';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans:
+    Inter var, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@layer base {
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+#ts-notice:not(:empty) {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: auto;
+  border: 1px solid;
+  padding: 1rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  color: black;
+  border-color: rgba(0, 148, 0, 0.8);
+  background-color: rgba(176, 255, 176, 0.6);
+  max-width: 32rem;
+}

@@ -1,0 +1,9 @@
+<div id="<%= dom_id post %>">
+  <% if !inside_modal? %>
+    <h3 class="mb-5 text-lg font-semibold"><%= @post.title %></h3>
+  <% end %>
+
+  <p class="my-5">
+    <%= post.body %>
+  </p>
+</div>
