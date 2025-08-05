@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 - Reduce Rails dependency to only required components (actionpack, activesupport, railties) (#22)
+- Added focus trap (#27)
 
 ## [2.0.4] - 2025-06-19
 
