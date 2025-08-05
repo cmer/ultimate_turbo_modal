@@ -1,0 +1,10 @@
+<% if local_assigns[:message] %>
+  <div id="ts-notice">
+    <%= local_assigns[:message] %>
+    <div class="mt-3 font-medium">
+      <a href="#" onclick="document.getElementById('ts-notice').innerHTML=''; return false;">Close</a>
+    </div>
+  </div>
+<% else %>
+  <div id="ts-notice"></div>
+<% end %>

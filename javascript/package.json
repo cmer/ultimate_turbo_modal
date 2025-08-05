@@ -1,6 +1,6 @@
 {
   "name": "ultimate_turbo_modal",
-  "version": "2.0.4",
+  "version": "2.1.1",
   "description": "The ultimate Turbo / Stimulus / Hotwire modal window for Rails",
   "main": "dist/ultimate_turbo_modal.min.js",
   "module": "dist/ultimate_turbo_modal.min.js",
@@ -35,6 +35,7 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.0",
     "el-transition": "^0.0.7",
+    "focus-trap": "^7.6.5",
     "idiomorph": "^0.7.3"
   },
   "devDependencies": {
@@ -44,5 +45,6 @@
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-css-only": "^4.3.0",
     "rollup-plugin-terser": "^7.0.2"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

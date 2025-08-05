@@ -150,11 +150,43 @@ For pages that require full navigation (different CSS frameworks, external apps,
 - Option to whitelist CSS selectors that won't dismiss the modal when clicked outside the modal (ie: datepicker)
 - Keyboard control; ESC to dismiss
 - Automatic (or not) close button
+- Focus trap for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
 
 
-## Demo
+## Demo Video
 
-A demo application can be found at https://github.com/cmer/ultimate_turbo_modal-demo. A video demo can be seen here: [https://youtu.be/BVRDXLN1I78](https://youtu.be/BVRDXLN1I78).
+A video demo can be seen here: [https://youtu.be/BVRDXLN1I78](https://youtu.be/BVRDXLN1I78).
+
+### Running the Demo Application
+
+The repository includes a demo application in the `demo-app` directory that showcases all the features of Ultimate Turbo Modal. To run it locally:
+
+```bash
+# Navigate to the demo app directory
+cd demo-app
+
+# Install Ruby dependencies
+bundle install
+
+# Create and setup the database
+bin/rails db:create db:migrate db:seed
+
+# Install JavaScript dependencies
+yarn install
+
+# Start the development server
+bin/dev
+
+# Open your browser
+open http://localhost:3000
+```
+
+The demo app provides examples of:
+- Basic modal usage
+- Different modal configurations
+- Custom styling options
+- Various trigger methods
+- Advanced features like scrollable content and custom footers
 
 ## Upgrading from 1.x
 

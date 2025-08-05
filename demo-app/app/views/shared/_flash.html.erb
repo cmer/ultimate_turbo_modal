@@ -1,0 +1,13 @@
+<% if flash.any? %>
+  <div class="px-5 py-2 absolute top-3 right-3" data-controller="flash">
+    <% flash.each do |key, value| %>
+      <% if key == "alert" %>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm relative" role="alert">
+      <% else %>
+        <div class="bg-indigo-100 border border-indigo-400 text-indigo-700 px-4 py-3 rounded-sm relative" role="notice">
+      <% end %>
+        <span class="block sm:inline"><%= value %></span>
+      </div>
+    <% end %>
+  </div>
+<% end %>

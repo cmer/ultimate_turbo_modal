@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import { enter, leave } from 'el-transition';
 import { Idiomorph } from 'idiomorph';
+import { createFocusTrap } from 'focus-trap';
 
 // This placeholder will be replaced by rollup
 
@@ -57,6 +58,10 @@ export default class extends Controller {
     this.#initialize();
     this.#setupEventListeners();
     this.#checkVersions();
+
+    // Initialize focus trap instance variable
+    this.focusTrapInstance = null;
+
     this.showModal();
     
     // Make modal accessible globally for debugging
@@ -68,6 +73,10 @@ export default class extends Controller {
    */
   disconnect() {
     this.#removeEventListeners();
+    // Clean up focus trap if it exists
+    if (this.focusTrapInstance) {
+      this.#deactivateFocusTrap();
+    }
     window.modal = undefined;
   }
 
@@ -75,8 +84,11 @@ export default class extends Controller {
    * Show the modal with animation
    */
   showModal() {
-    enter(this.containerTarget);
-    
+    enter(this.containerTarget).then(() => {
+      // Activate focus trap after the modal transition is complete
+      this.#activateFocusTrap();
+    });
+
     if (this.advanceUrlValue && !this.#hasHistoryAdvanced()) {
       this.#advanceHistory();
     }
@@ -95,6 +107,16 @@ export default class extends Controller {
     if (!this.#dispatchModalEvent(EVENTS.MODAL_CLOSING, true)) {
       this.hidingModal = false;
       return;
+    let event = new Event('modal:closing', { cancelable: true });
+    this.turboFrame.dispatchEvent(event);
+    if (event.defaultPrevented) {
+      this.hidingModal = false;
+      return
+    }
+
+    // Deactivate focus trap only after confirming modal will close
+    if (this.focusTrapInstance) {
+      this.#deactivateFocusTrap();
     }
 
     this.#resetModalElement();
@@ -409,5 +431,47 @@ export default class extends Controller {
         this.pendingNavigationUrl = null;
       }
     }, TIMING.MODAL_CLOSE_DELAY);
+  }
+}
+  #activateFocusTrap() {
+    try {
+      // Create focus trap if it doesn't exist
+      if (!this.focusTrapInstance) {
+        this.focusTrapInstance = createFocusTrap(this.contentTarget, {
+          allowOutsideClick: true,
+          escapeDeactivates: false, // Let our ESC handler manage this
+          fallbackFocus: this.contentTarget,
+          returnFocusOnDeactivate: true,
+          clickOutsideDeactivates: false, // Let our click outside handler manage this
+          preventScroll: false,
+          initialFocus: () => {
+            // Try to focus the first focusable element, or the modal itself
+            const firstFocusable = this.contentTarget.querySelector(
+              'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            return firstFocusable || this.contentTarget;
+          }
+        });
+      }
+
+      // Activate the trap
+      this.focusTrapInstance.activate();
+    } catch (error) {
+      console.error('[UltimateTurboModal] Failed to activate focus trap:', error);
+      // Don't break the modal if focus trap fails
+      this.focusTrapInstance = null;
+    }
+  }
+
+  #deactivateFocusTrap() {
+    try {
+      if (this.focusTrapInstance && this.focusTrapInstance.active) {
+        this.focusTrapInstance.deactivate();
+      }
+    } catch (error) {
+      console.error('[UltimateTurboModal] Failed to deactivate focus trap:', error);
+    } finally {
+      this.focusTrapInstance = null;
+    }
   }
 }

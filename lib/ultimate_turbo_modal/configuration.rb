@@ -66,6 +66,7 @@ module UltimateTurboModal
       raise ArgumentError.new("Value must be a boolean.") unless [true, false].include?(footer_divider)
       @footer_divider = footer_divider
     end
+
   end
 end
 
