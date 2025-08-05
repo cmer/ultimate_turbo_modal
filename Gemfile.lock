@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ultimate_turbo_modal (2.1.0)
+    ultimate_turbo_modal (2.1.1)
       actionpack
       activesupport
       phlex-rails
