@@ -1,0 +1,39 @@
+<%= modal(padding: @padding, advance: @override_url || @advance, header: @header, close_button: @close_button) do %>
+  <% unless inside_modal? %>
+    <h1 class="text-2xl mb-8">This is not inside a modal</h1>
+  <% end %>
+
+  <% if params[:id] == "long" %>
+    <div class="space-y-2 max-w-3xl">
+      <% 30.times do %>
+        <p><%= Faker::Lorem.paragraph(sentence_count: 50) %></p>
+      <% end %>
+    </div>
+  <% elsif params[:id] == "photo" %>
+    <div class="w-full">
+      <img src="/img/unicat.jpg">
+    </div>
+  <% elsif params[:id] == "photo_no_advance" %>
+    <div class="w-full">
+      <img src="/img/unicat.jpg">
+    </div>
+  <% elsif params[:id] == "form" %>
+    <div class="w-full p-4">
+      <form>
+        <div class="mb-4">
+          <label class="block mb-2" for="fname">First Name:</label>
+          <input class="rounded border-gray-300 border" type="text" id="fname" name="fname" autofocus>
+        </div>
+        <div class="mb-4">
+          <label class="block mb-2" for="lname">Last Name:</label>
+          <input class="rounded border-gray-300 border" type="text" id="lname" name="lname">
+        </div>
+        <button class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" type="submit">Submit</button>
+      </form>
+    </div>
+  <% else %>
+    <div class="w-full">
+      Not sure what you're looking for!
+    </div>
+  <% end %>
+<% end %>
