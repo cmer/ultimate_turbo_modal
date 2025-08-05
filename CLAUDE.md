@@ -53,7 +53,7 @@ Options can be set at three levels:
 2. **Instance options** passed to the `modal` helper
 3. **Runtime values** via blocks (for title/footer)
 
-Current options: `advance`, `close_button`, `header`, `header_divider`, `padding`, `title`, `focus_trap` (to be added)
+Current options: `advance`, `close_button`, `header`, `header_divider`, `padding`, `title`
 
 ### Stimulus Controller Values
 The modal controller uses Stimulus values to receive configuration:
@@ -67,7 +67,8 @@ The modal controller uses Stimulus values to receive configuration:
 4. Modal can be dismissed via: ESC key, close button, clicking outside, or programmatically
 
 ### Adding New Configuration Options
-When adding a new option (like `focus_trap`):
+When adding a new option:
+
 1. Add to `Configuration` class with getter/setter methods
 2. Add to `UltimateTurboModal` delegators
 3. Add to `Base#initialize` parameters with default from configuration

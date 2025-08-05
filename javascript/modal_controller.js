@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { enter, leave } from 'el-transition';
+import { createFocusTrap } from 'focus-trap';
 
 // This placeholder will be replaced by rollup
 const PACKAGE_VERSION = '__PACKAGE_VERSION__';
@@ -16,6 +17,9 @@ export default class extends Controller {
 
     this.#checkVersions();
 
+    // Initialize focus trap instance variable
+    this.focusTrapInstance = null;
+
     this.showModal();
 
     this.turboFrame = this.element.closest('turbo-frame');
@@ -29,11 +33,18 @@ export default class extends Controller {
   }
 
   disconnect() {
+    // Clean up focus trap if it exists
+    if (this.focusTrapInstance) {
+      this.#deactivateFocusTrap();
+    }
     window.modal = undefined;
   }
 
   showModal() {
-    enter(this.containerTarget);
+    enter(this.containerTarget).then(() => {
+      // Activate focus trap after the modal transition is complete
+      this.#activateFocusTrap();
+    });
 
     if (this.advanceUrlValue && !this.#hasHistoryAdvanced()) {
       this.#setHistoryAdvanced();
@@ -51,7 +62,15 @@ export default class extends Controller {
 
     let event = new Event('modal:closing', { cancelable: true });
     this.turboFrame.dispatchEvent(event);
-    if (event.defaultPrevented) return
+    if (event.defaultPrevented) {
+      this.hidingModal = false;
+      return
+    }
+
+    // Deactivate focus trap only after confirming modal will close
+    if (this.focusTrapInstance) {
+      this.#deactivateFocusTrap();
+    }
 
     this.#resetModalElement();
 
@@ -124,6 +143,48 @@ export default class extends Controller {
       console.warn(
         `[UltimateTurboModal] Version Mismatch!\n\nGem Version: ${gemVersion}\nJS Version:  ${PACKAGE_VERSION}\n\nPlease ensure both the 'ultimate_turbo_modal' gem and the 'ultimate-turbo-modal' npm package are updated to the same version.\nElement:`, this.element
       );
+    }
+  }
+
+  #activateFocusTrap() {
+    try {
+      // Create focus trap if it doesn't exist
+      if (!this.focusTrapInstance) {
+        this.focusTrapInstance = createFocusTrap(this.contentTarget, {
+          allowOutsideClick: true,
+          escapeDeactivates: false, // Let our ESC handler manage this
+          fallbackFocus: this.contentTarget,
+          returnFocusOnDeactivate: true,
+          clickOutsideDeactivates: false, // Let our click outside handler manage this
+          preventScroll: false,
+          initialFocus: () => {
+            // Try to focus the first focusable element, or the modal itself
+            const firstFocusable = this.contentTarget.querySelector(
+              'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            return firstFocusable || this.contentTarget;
+          }
+        });
+      }
+
+      // Activate the trap
+      this.focusTrapInstance.activate();
+    } catch (error) {
+      console.error('[UltimateTurboModal] Failed to activate focus trap:', error);
+      // Don't break the modal if focus trap fails
+      this.focusTrapInstance = null;
+    }
+  }
+
+  #deactivateFocusTrap() {
+    try {
+      if (this.focusTrapInstance && this.focusTrapInstance.active) {
+        this.focusTrapInstance.deactivate();
+      }
+    } catch (error) {
+      console.error('[UltimateTurboModal] Failed to deactivate focus trap:', error);
+    } finally {
+      this.focusTrapInstance = null;
     }
   }
 }

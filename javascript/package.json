@@ -35,6 +35,7 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.0",
     "el-transition": "^0.0.7",
+    "focus-trap": "^7.6.5",
     "idiomorph": "^0.7.3"
   },
   "devDependencies": {

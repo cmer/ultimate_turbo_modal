@@ -119,6 +119,7 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 - Option to whitelist CSS selectors that won't dismiss the modal when clicked outside the modal (ie: datepicker)
 - Keyboard control; ESC to dismiss
 - Automatic (or not) close button
+- Focus trap for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
 
 
 ## Demo
