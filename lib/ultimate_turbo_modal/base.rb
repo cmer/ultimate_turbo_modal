@@ -7,7 +7,6 @@ class UltimateTurboModal::Base < Phlex::HTML
   # @param close_button [Boolean] Whether to show a close button
   # @param close_button_data_action [String] `data-action` attribute for the close button
   # @param close_button_sr_label [String] Close button label for screen readers
-  # @param focus_trap [Boolean] Whether to trap focus within the modal
   # @param footer_divider [Boolean] Whether to show a divider between the main content and the footer
   # @param header_divider [Boolean] Whether to show a divider between the header and the main content
   # @param padding [Boolean] Whether to add padding around the modal content
@@ -20,7 +19,6 @@ class UltimateTurboModal::Base < Phlex::HTML
     close_button: UltimateTurboModal.configuration.close_button,
     close_button_data_action: "modal#hideModal",
     close_button_sr_label: "Close modal",
-    focus_trap: UltimateTurboModal.configuration.focus_trap,
     footer_divider: UltimateTurboModal.configuration.footer_divider,
     header: UltimateTurboModal.configuration.header,
     header_divider: UltimateTurboModal.configuration.header_divider,
@@ -34,7 +32,6 @@ class UltimateTurboModal::Base < Phlex::HTML
     @close_button = close_button
     @close_button_data_action = close_button_data_action
     @close_button_sr_label = close_button_sr_label
-    @focus_trap = focus_trap
     @footer_divider = footer_divider
     @header = header
     @header_divider = header_divider
@@ -146,7 +143,6 @@ class UltimateTurboModal::Base < Phlex::HTML
       modal_target: "container",
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
-      modal_focus_trap_value: @focus_trap,
       action: "turbo:submit-end->modal#submitEnd keyup@window->modal#closeWithKeyboard click@window->modal#outsideModalClicked click->modal#outsideModalClicked",
       transition_enter: "ease-out duration-100",
       transition_enter_start: "opacity-0",

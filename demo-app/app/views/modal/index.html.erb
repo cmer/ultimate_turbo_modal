@@ -21,7 +21,7 @@
         <li class="py-2">Photo: <%= link_to "without header or padding", modal_path(:photo, padding: 0, advance: 1, close_button: 1), data: {turbo_frame: "modal"} %> | <%= link_to "without close button", modal_path(:photo, padding: 0, advance: 1, close_button: 0), data: {turbo_frame: "modal"} %>
         <li class="py-2"><%= link_to "Long scrolling content", modal_path(:long, advance: 1, close_button: 1), data: {turbo_frame: "modal"} %>
         <li class="py-2"><%= link_to "Form closing from backend on success", new_hide_from_backend_path(close_button: 1), data: {turbo_frame: "modal"} %>
-        <li class="py-2">Focus trap: <%= link_to "enabled", modal_path(:form, close_button: 1, focus_trap: 1), data: {turbo_frame: "modal"} %> | <%= link_to "disabled", modal_path(:form, close_button: 1, focus_trap: 0), data: {turbo_frame: "modal"} %>
+
       </ul>
     </div>
   </div>

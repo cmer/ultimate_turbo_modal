@@ -9,8 +9,7 @@ export default class extends Controller {
   static targets = ["container", "content"]
   static values = {
     advanceUrl: String,
-    allowedClickOutsideSelector: String,
-    focusTrap: { type: Boolean, default: true }
+    allowedClickOutsideSelector: String
   }
 
   connect() {
@@ -44,9 +43,7 @@ export default class extends Controller {
   showModal() {
     enter(this.containerTarget).then(() => {
       // Activate focus trap after the modal transition is complete
-      if (this.focusTrapValue) {
-        this.#activateFocusTrap();
-      }
+      this.#activateFocusTrap();
     });
 
     if (this.advanceUrlValue && !this.#hasHistoryAdvanced()) {

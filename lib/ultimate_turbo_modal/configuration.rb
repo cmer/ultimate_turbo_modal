@@ -12,11 +12,10 @@ module UltimateTurboModal
 
   delegate :flavor, :flavor=, :close_button, :close_button=,
     :advance, :advance=, :padding, :padding=,
-    :allowed_click_outside_selector, :allowed_click_outside_selector=,
-    :focus_trap, :focus_trap=, to: :configuration
+    :allowed_click_outside_selector, :allowed_click_outside_selector=, to: :configuration
 
   class Configuration
-    attr_reader :flavor, :close_button, :advance, :padding, :header, :header_divider, :footer_divider, :focus_trap
+    attr_reader :flavor, :close_button, :advance, :padding, :header, :header_divider, :footer_divider
     attr_accessor :allowed_click_outside_selector
 
     def initialize
@@ -27,7 +26,6 @@ module UltimateTurboModal
       @header = true
       @header_divider = true
       @footer_divider = true
-      @focus_trap = true
       @allowed_click_outside_selector = []
     end
 
@@ -69,10 +67,6 @@ module UltimateTurboModal
       @footer_divider = footer_divider
     end
 
-    def focus_trap=(focus_trap)
-      raise ArgumentError.new("Value must be a boolean.") unless [true, false].include?(focus_trap)
-      @focus_trap = focus_trap
-    end
   end
 end
 
