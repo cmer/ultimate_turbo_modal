@@ -68,11 +68,12 @@ The modal controller uses Stimulus values to receive configuration:
 
 ### Adding New Configuration Options
 When adding a new option:
+
 1. Add to `Configuration` class with getter/setter methods
 2. Add to `UltimateTurboModal` delegators
 3. Add to `Base#initialize` parameters with default from configuration
 4. Pass to JavaScript via data attributes in `Base#div_dialog`
-5. Add as Stimulus value in `modal_controller.js` (if needed by JS)
+5. Add as Stimulus value in `modal_controller.js`
 6. Update README.md options table
 
 ## Testing Approach
