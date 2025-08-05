@@ -53,7 +53,7 @@ Options can be set at three levels:
 2. **Instance options** passed to the `modal` helper
 3. **Runtime values** via blocks (for title/footer)
 
-Current options: `advance`, `close_button`, `header`, `header_divider`, `padding`, `title`, `focus_trap` (to be added)
+Current options: `advance`, `close_button`, `header`, `header_divider`, `padding`, `title`, `focus_trap`
 
 ### Stimulus Controller Values
 The modal controller uses Stimulus values to receive configuration:

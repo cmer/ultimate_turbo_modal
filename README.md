@@ -82,6 +82,7 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 |------|---------------|-------------|
 | `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
+| `focus_trap` | `true` | Traps keyboard focus within the modal for improved accessibility. When enabled, Tab and Shift+Tab will cycle through focusable elements within the modal only. |
 | `header` | `true` | Whether to display a modal header. |
 | `header_divider` | `true` | Whether to display a divider below the header. |
 | `padding` | `true` | Adds padding inside the modal. |
