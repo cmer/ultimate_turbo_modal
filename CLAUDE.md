@@ -13,7 +13,7 @@ Ultimate Turbo Modal (UTMR) is a full-featured modal implementation for Rails ap
   - `configuration.rb`: Global configuration management
   - `helpers/`: Rails helpers for views and controllers
   - Generators in `/lib/generators/` for installation
-  
+
 - **JavaScript Package**: Located in `/javascript/`
   - `modal_controller.js`: Stimulus controller for modal behavior
   - `index.js`: Main entry point
@@ -79,4 +79,4 @@ When adding a new option:
 ## Testing Approach
 - JavaScript: No test framework currently set up
 - Ruby: Use standard Rails testing practices
-- Manual testing via the demo app: https://github.com/cmer/ultimate_turbo_modal-demo
+- Manual testing via the demo app (located in `./demo-app`)
