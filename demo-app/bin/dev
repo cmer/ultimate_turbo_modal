@@ -10,6 +10,8 @@ DEMO_APP_DIR="$SCRIPT_DIR/.."
 echo "Installing latest ultimate_turbo_modal in demo app..."
 yarn install --force
 
+(cd "$DEMO_APP_DIR" && bundle install)
+
 # Start the development servers
 if command -v overmind &> /dev/null; then
   overmind start -f $DEMO_APP_DIR/Procfile.dev "$@"
