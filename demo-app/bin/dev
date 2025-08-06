@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# Build the ultimate_turbo_modal JavaScript package
+echo "Building ultimate_turbo_modal JavaScript package..."
+(cd ../javascript && yarn build)
+
+# Reinstall to pick up the latest changes
+echo "Installing latest ultimate_turbo_modal in demo app..."
+yarn install --force
+
+# Start the development servers
 if command -v overmind &> /dev/null; then
   overmind start -f Procfile.dev "$@"
 else
