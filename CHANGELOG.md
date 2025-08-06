@@ -1,3 +1,7 @@
+## [2.1.2] - 2025-08-06
+
+- Fixed scroll lock
+
 ## [2.1.1] - 2025-08-05
 
 - Reduce Rails dependency to only required components (actionpack, activesupport, railties) (#22)
