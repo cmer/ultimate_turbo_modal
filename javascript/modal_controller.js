@@ -20,6 +20,10 @@ export default class extends Controller {
     // Initialize focus trap instance variable
     this.focusTrapInstance = null;
 
+    // Store original body styles for scroll lock
+    this.originalBodyOverflow = null;
+    this.scrollPosition = 0;
+
     this.showModal();
 
     this.turboFrame = this.element.closest('turbo-frame');
@@ -41,6 +45,9 @@ export default class extends Controller {
   }
 
   showModal() {
+    // Lock body scroll
+    this.#lockBodyScroll();
+
     enter(this.containerTarget).then(() => {
       // Activate focus trap after the modal transition is complete
       this.#activateFocusTrap();
@@ -112,6 +119,9 @@ export default class extends Controller {
   }
 
   #resetModalElement() {
+    // Unlock body scroll
+    this.#unlockBodyScroll();
+    
     leave(this.containerTarget).then(() => {
       this.turboFrame.removeAttribute("src");
       this.containerTarget.remove();
@@ -186,5 +196,36 @@ export default class extends Controller {
     } finally {
       this.focusTrapInstance = null;
     }
+  }
+
+  #lockBodyScroll() {
+    // Store the current scroll position
+    this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Store the original overflow style
+    this.originalBodyOverflow = document.body.style.overflow;
+    
+    // Prevent scrolling on the body
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${this.scrollPosition}px`;
+    document.body.style.width = '100%';
+  }
+
+  #unlockBodyScroll() {
+    // Restore the original overflow style
+    if (this.originalBodyOverflow !== null) {
+      document.body.style.overflow = this.originalBodyOverflow;
+    } else {
+      document.body.style.removeProperty('overflow');
+    }
+    
+    // Remove position styles
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('width');
+    
+    // Restore the scroll position
+    window.scrollTo(0, this.scrollPosition);
   }
 }
