@@ -123,7 +123,7 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def styles
     style do
-      str = "html:has(dialog[open]) {overflow: hidden;} html {scrollbar-gutter: stable;}".html_safe
+      str = "html:has(dialog[open]),html:has(#modal-container) {overflow: hidden;} html {scrollbar-gutter: stable;}".html_safe
       respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
     end
   end
