@@ -19,6 +19,10 @@ Ultimate Turbo Modal (UTMR) is a full-featured modal implementation for Rails ap
   - `index.js`: Main entry point
   - Distributed files built to `/javascript/dist/`
 
+- **Demo Application**: Located in `/demo-app/`
+  - `Procfile.dev`: Development process file for overmind/foreman
+  - `bin/dev`: Development script for starting the demo app
+
 ## Common Development Commands
 
 ### JavaScript Development (run from `/javascript/` directory)
