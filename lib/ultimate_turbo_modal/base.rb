@@ -10,6 +10,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   # @param footer_divider [Boolean] Whether to show a divider between the main content and the footer
   # @param header_divider [Boolean] Whether to show a divider between the header and the main content
   # @param padding [Boolean] Whether to add padding around the modal content
+  # @param redirect_behavior [String] How to handle redirects from within the modal ("smooth" or "immediate")
   # @param request [ActionDispatch::Request] The current Rails request object
   # @param content_div_data [Hash] `data` attribute for the div where the modal content will be rendered
   # @param title [String] The title of the modal
@@ -23,6 +24,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     header: UltimateTurboModal.configuration.header,
     header_divider: UltimateTurboModal.configuration.header_divider,
     padding: UltimateTurboModal.configuration.padding,
+    redirect_behavior: "smooth",
     content_div_data: nil,
     request: nil, title: nil
   )
@@ -36,6 +38,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     @header = header
     @header_divider = header_divider
     @padding = padding
+    @redirect_behavior = redirect_behavior
     @content_div_data = content_div_data
     @request = request
     @title = title
@@ -143,6 +146,7 @@ class UltimateTurboModal::Base < Phlex::HTML
       modal_target: "container",
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
+      modal_redirect_behavior_value: @redirect_behavior,
       action: "turbo:submit-end->modal#submitEnd keyup@window->modal#closeWithKeyboard click@window->modal#outsideModalClicked click->modal#outsideModalClicked",
       transition_enter: "ease-out duration-100",
       transition_enter_start: "opacity-0",
