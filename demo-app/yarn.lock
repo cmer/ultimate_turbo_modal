@@ -971,7 +971,7 @@ to-regex-range@^5.0.1:
     is-number "^7.0.0"
 
 "ultimate_turbo_modal@file:../javascript":
-  version "2.1.1"
+  version "2.1.2"
   dependencies:
     "@hotwired/stimulus" "^3.2.2"
     "@hotwired/turbo-rails" "^8.0.0"

@@ -144,12 +144,6 @@ class UltimateTurboModal::Base < Phlex::HTML
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
       action: "turbo:submit-end->modal#submitEnd keyup@window->modal#closeWithKeyboard click@window->modal#outsideModalClicked click->modal#outsideModalClicked",
-      transition_enter: "ease-out duration-100",
-      transition_enter_start: "opacity-0",
-      transition_enter_end: "opacity-100",
-      transition_leave: "ease-in duration-50",
-      transition_leave_start: "opacity-100",
-      transition_leave_end: "opacity-0",
       padding: padding?.to_s,
       title: title?.to_s,
       header: header?.to_s,
@@ -163,7 +157,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     end
 
     div(id: "modal-container",
-      class: self.class::DIV_DIALOG_CLASSES,
+      class: self.class::DIV_MODAL_CONTAINER_CLASSES,
       role: "dialog",
       aria: {
         modal: true,
@@ -173,11 +167,27 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def div_overlay
-    div(id: "modal-overlay", class: self.class::DIV_OVERLAY_CLASSES)
+    div(id: "modal-overlay", class: self.class::DIV_OVERLAY_CLASSES, data: {
+      modal_target: "overlay",
+      transition_enter: self.class::TRANSITIONS[:overlay][:enter][:animation],
+      transition_enter_start: self.class::TRANSITIONS[:overlay][:enter][:start],
+      transition_enter_end: self.class::TRANSITIONS[:overlay][:enter][:end],
+      transition_leave: self.class::TRANSITIONS[:overlay][:leave][:animation],
+      transition_leave_start: self.class::TRANSITIONS[:overlay][:leave][:start],
+      transition_leave_end: self.class::TRANSITIONS[:overlay][:leave][:end]
+    })
   end
 
   def div_outer(&block)
-    div(id: "modal-outer", class: self.class::DIV_OUTER_CLASSES, &block)
+    div(id: "modal-outer", class: self.class::DIV_DIALOG_CLASSES, data: {
+      modal_target: "outer",
+      transition_enter: self.class::TRANSITIONS[:dialog][:enter][:animation],
+      transition_enter_start: self.class::TRANSITIONS[:dialog][:enter][:start],
+      transition_enter_end: self.class::TRANSITIONS[:dialog][:enter][:end],
+      transition_leave: self.class::TRANSITIONS[:dialog][:leave][:animation],
+      transition_leave_start: self.class::TRANSITIONS[:dialog][:leave][:start],
+      transition_leave_end: self.class::TRANSITIONS[:dialog][:leave][:end]
+    }, &block)
   end
 
   def div_inner(&block)
