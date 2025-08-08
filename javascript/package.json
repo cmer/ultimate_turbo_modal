@@ -10,6 +10,7 @@
   "scripts": {
     "update-version": "node scripts/update-version.js",
     "build": "yarn install && rollup -c",
+    "build:watch": "rollup -c -w",
     "release": "bash scripts/release-npm.sh"
   },
   "repository": {

@@ -4,24 +4,17 @@
 echo "Building ultimate_turbo_modal JavaScript package..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEMO_APP_DIR="$SCRIPT_DIR/.."
-(cd "$DEMO_APP_DIR/../javascript" && yarn build)
 
-# Copy flavor files from gem to demo app
-echo "Copying flavor files to demo app..."
+# Symlink flavor files from gem to demo app
+echo "Symlinking flavor files to demo app..."
 FLAVOR_SOURCE_DIR="$DEMO_APP_DIR/../lib/generators/ultimate_turbo_modal/templates/flavors"
 FLAVOR_DEST_DIR="$DEMO_APP_DIR/config/initializers"
 
-# Copy each flavor file with the appropriate naming
-cp "$FLAVOR_SOURCE_DIR/tailwind.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind.rb"
-cp "$FLAVOR_SOURCE_DIR/tailwind3.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind3.rb"
-cp "$FLAVOR_SOURCE_DIR/vanilla.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_vanilla.rb"
-cp "$FLAVOR_SOURCE_DIR/custom.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_custom.rb"
-
-echo "Flavor files copied successfully!"
-
-# Reinstall to pick up the latest changes
-echo "Installing latest ultimate_turbo_modal in demo app..."
-yarn install --force
+# Symlink each flavor file with the appropriate naming (force overwrite)
+ln -sf "$FLAVOR_SOURCE_DIR/tailwind.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind.rb"
+ln -sf "$FLAVOR_SOURCE_DIR/tailwind3.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind3.rb"
+ln -sf "$FLAVOR_SOURCE_DIR/vanilla.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_vanilla.rb"
+ln -sf "$FLAVOR_SOURCE_DIR/custom.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_custom.rb"
 
 (cd "$DEMO_APP_DIR" && bundle install)
 

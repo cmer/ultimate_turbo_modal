@@ -4,8 +4,9 @@
 module UltimateTurboModal::Flavors
   class Vanilla < UltimateTurboModal::Base
     DIV_MODAL_CONTAINER_CLASSES = "modal-container"
-    DIV_OVERLAY_CLASSES = "modal-overlay"
-    DIV_DIALOG_CLASSES = "modal-outer"
+    # Include enter-start classes so initial paint is hidden and transitions can animate smoothly
+    DIV_OVERLAY_CLASSES = "modal-overlay modal-transition-overlay-enter-start"
+    DIV_DIALOG_CLASSES = "modal-outer modal-transition-dialog-enter-start"
     DIV_INNER_CLASSES = "modal-inner"
     DIV_CONTENT_CLASSES = "modal-content"
     DIV_MAIN_CLASSES = "modal-main"
@@ -17,30 +18,30 @@ module UltimateTurboModal::Flavors
     BUTTON_CLOSE_SR_ONLY_CLASSES = "sr-only"
     CLOSE_BUTTON_TAG_CLASSES = "modal-close-button"
     ICON_CLOSE_CLASSES = "modal-close-icon"
-
+    
     TRANSITIONS = {
       overlay: {
         enter: {
-          animation: "fade-in 300ms ease-out",
-          start: "fade-in-start",
-          end: "fade-in-end"
+          animation: "modal-transition-overlay-enter-animation",
+          start: "modal-transition-overlay-enter-start",
+          end: "modal-transition-overlay-enter-end"
         },
         leave: {
-          animation: "fade-out 200ms ease-in",
-          start: "fade-out-start",
-          end: "fade-out-end"
+          animation: "modal-transition-overlay-leave-animation",
+          start: "modal-transition-overlay-leave-start",
+          end: "modal-transition-overlay-leave-end"
         }
       },
       dialog: {
         enter: {
-          animation: "slide-in 300ms ease-out",
-          start: "slide-in-start",
-          end: "slide-in-end"
+          animation: "modal-transition-dialog-enter-animation",
+          start: "modal-transition-dialog-enter-start",
+          end: "modal-transition-dialog-enter-end"
         },
         leave: {
-          animation: "slide-out 200ms ease-in",
-          start: "slide-out-start",
-          end: "slide-out-end"
+          animation: "modal-transition-dialog-leave-animation",
+          start: "modal-transition-dialog-leave-start",
+          end: "modal-transition-dialog-leave-end"
         }
       }
     }

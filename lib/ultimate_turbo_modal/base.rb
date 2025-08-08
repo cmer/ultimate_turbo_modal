@@ -104,6 +104,15 @@ class UltimateTurboModal::Base < Phlex::HTML
     @advance_url || request&.original_url
   end
 
+  # Wraps yielded content in a Turbo Frame if the current request originated from a Turbo Frame
+  def maybe_turbo_frame(frame_id, &block)
+    if turbo_frame?
+      turbo_frame_tag(frame_id, &block)
+    else
+      yield
+    end
+  end
+
   def respond_to_missing?(method, include_private = false)
     self.class.included_modules.any? { |mod| mod.instance_methods.include?(method) } || super
   end
@@ -131,7 +140,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   def outer_divs(&block)
     div_dialog do
       div_overlay
-      div_outer do
+      div_outer_dialog do
         div_inner(&block)
       end
     end
@@ -178,7 +187,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     })
   end
 
-  def div_outer(&block)
+  def div_outer_dialog(&block)
     div(id: "modal-outer", class: self.class::DIV_DIALOG_CLASSES, data: {
       modal_target: "outer",
       transition_enter: self.class::TRANSITIONS[:dialog][:enter][:animation],
@@ -191,12 +200,14 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def div_inner(&block)
-    div(id: "modal-inner", class: self.class::DIV_INNER_CLASSES, data: content_div_data, &block)
+    maybe_turbo_frame("modal-inner") do
+      div(id: "modal-inner", class: self.class::DIV_INNER_CLASSES, data: content_div_data, &block)
+    end
   end
 
   def div_content(&block)
     data = (content_div_data || {}).merge({modal_target: "content"})
-    div(id: "modal-content", class: self.class::DIV_CONTENT_CLASSES, data:, &block)
+    div(id: "modal-content", class: self.class::DIV_CONTENT_CLASSES, data: data, &block)
   end
 
   def div_main(&block)

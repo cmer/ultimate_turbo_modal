@@ -970,14 +970,9 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-"ultimate_turbo_modal@file:../javascript":
-  version "2.1.2"
-  dependencies:
-    "@hotwired/stimulus" "^3.2.2"
-    "@hotwired/turbo-rails" "^8.0.0"
-    el-transition "^0.0.7"
-    focus-trap "^7.6.5"
-    idiomorph "^0.7.3"
+"ultimate_turbo_modal@link:../javascript":
+  version "0.0.0"
+  uid ""
 
 universalify@^2.0.0:
   version "2.0.1"
