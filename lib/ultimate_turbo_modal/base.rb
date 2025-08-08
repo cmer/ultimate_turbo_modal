@@ -104,6 +104,15 @@ class UltimateTurboModal::Base < Phlex::HTML
     @advance_url || request&.original_url
   end
 
+  # Wraps yielded content in a Turbo Frame if the current request originated from a Turbo Frame
+  def maybe_turbo_frame(frame_id, &block)
+    if turbo_frame?
+      turbo_frame_tag(frame_id, &block)
+    else
+      yield
+    end
+  end
+
   def respond_to_missing?(method, include_private = false)
     self.class.included_modules.any? { |mod| mod.instance_methods.include?(method) } || super
   end
@@ -131,7 +140,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   def outer_divs(&block)
     div_dialog do
       div_overlay
-      div_outer do
+      div_outer_dialog do
         div_inner(&block)
       end
     end
@@ -144,12 +153,6 @@ class UltimateTurboModal::Base < Phlex::HTML
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
       action: "turbo:submit-end->modal#submitEnd keyup@window->modal#closeWithKeyboard click@window->modal#outsideModalClicked click->modal#outsideModalClicked",
-      transition_enter: "ease-out duration-100",
-      transition_enter_start: "opacity-0",
-      transition_enter_end: "opacity-100",
-      transition_leave: "ease-in duration-50",
-      transition_leave_start: "opacity-100",
-      transition_leave_end: "opacity-0",
       padding: padding?.to_s,
       title: title?.to_s,
       header: header?.to_s,
@@ -163,7 +166,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     end
 
     div(id: "modal-container",
-      class: self.class::DIV_DIALOG_CLASSES,
+      class: self.class::DIV_MODAL_CONTAINER_CLASSES,
       role: "dialog",
       aria: {
         modal: true,
@@ -173,20 +176,38 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def div_overlay
-    div(id: "modal-overlay", class: self.class::DIV_OVERLAY_CLASSES)
+    div(id: "modal-overlay", class: self.class::DIV_OVERLAY_CLASSES, data: {
+      modal_target: "overlay",
+      transition_enter: self.class::TRANSITIONS[:overlay][:enter][:animation],
+      transition_enter_start: self.class::TRANSITIONS[:overlay][:enter][:start],
+      transition_enter_end: self.class::TRANSITIONS[:overlay][:enter][:end],
+      transition_leave: self.class::TRANSITIONS[:overlay][:leave][:animation],
+      transition_leave_start: self.class::TRANSITIONS[:overlay][:leave][:start],
+      transition_leave_end: self.class::TRANSITIONS[:overlay][:leave][:end]
+    })
   end
 
-  def div_outer(&block)
-    div(id: "modal-outer", class: self.class::DIV_OUTER_CLASSES, &block)
+  def div_outer_dialog(&block)
+    div(id: "modal-outer", class: self.class::DIV_DIALOG_CLASSES, data: {
+      modal_target: "outer",
+      transition_enter: self.class::TRANSITIONS[:dialog][:enter][:animation],
+      transition_enter_start: self.class::TRANSITIONS[:dialog][:enter][:start],
+      transition_enter_end: self.class::TRANSITIONS[:dialog][:enter][:end],
+      transition_leave: self.class::TRANSITIONS[:dialog][:leave][:animation],
+      transition_leave_start: self.class::TRANSITIONS[:dialog][:leave][:start],
+      transition_leave_end: self.class::TRANSITIONS[:dialog][:leave][:end]
+    }, &block)
   end
 
   def div_inner(&block)
-    div(id: "modal-inner", class: self.class::DIV_INNER_CLASSES, data: content_div_data, &block)
+    maybe_turbo_frame("modal-inner") do
+      div(id: "modal-inner", class: self.class::DIV_INNER_CLASSES, data: content_div_data, &block)
+    end
   end
 
   def div_content(&block)
     data = (content_div_data || {}).merge({modal_target: "content"})
-    div(id: "modal-content", class: self.class::DIV_CONTENT_CLASSES, data:, &block)
+    div(id: "modal-content", class: self.class::DIV_CONTENT_CLASSES, data: data, &block)
   end
 
   def div_main(&block)

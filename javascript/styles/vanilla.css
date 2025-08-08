@@ -1,3 +1,7 @@
+.hidden {
+  display: none
+}
+
 .dark {
   .modal-overlay {
     background-color: rgba(17, 24, 39, 0.8)
@@ -176,4 +180,86 @@
 .modal-close-icon {
   width: 1.25rem;
   height: 1.25rem;
+}
+
+/*
+  Transition utilities for Vanilla flavor
+  These replicate the Tailwind transitions defined in tailwind.rb
+  using plain CSS classes referenced in vanilla.rb
+*/
+
+/* Overlay: Enter */
+.modal-transition-overlay-enter-animation {
+  transition-property: opacity;
+  transition-duration: 300ms; /* duration-300 */
+  transition-timing-function: ease-out; /* ease-out */
+}
+
+.modal-transition-overlay-enter-start {
+  opacity: 0; /* opacity-0 */
+}
+
+.modal-transition-overlay-enter-end {
+  opacity: 1; /* opacity-100 */
+}
+
+/* Overlay: Leave */
+.modal-transition-overlay-leave-animation {
+  transition-property: opacity;
+  transition-duration: 200ms; /* duration-200 */
+  transition-timing-function: ease-in; /* ease-in */
+}
+
+.modal-transition-overlay-leave-start {
+  opacity: 1; /* opacity-100 */
+}
+
+.modal-transition-overlay-leave-end {
+  opacity: 0; /* opacity-0 */
+}
+
+/* Dialog: Enter */
+.modal-transition-dialog-enter-animation {
+  transition-property: opacity, transform;
+  transition-duration: 300ms; /* duration-300 */
+  transition-timing-function: ease-out; /* ease-out */
+}
+
+.modal-transition-dialog-enter-start {
+  opacity: 0; /* opacity-0 */
+  transform: translateY(1rem) scale(1); /* translate-y-4 */
+}
+
+@media (min-width: 640px) {
+  .modal-transition-dialog-enter-start {
+    transform: translateY(0) scale(0.95); /* sm:translate-y-0 sm:scale-95 */
+  }
+}
+
+.modal-transition-dialog-enter-end {
+  opacity: 1; /* opacity-100 */
+  transform: translateY(0) scale(1); /* translate-y-0 scale-100 */
+}
+
+/* Dialog: Leave */
+.modal-transition-dialog-leave-animation {
+  transition-property: opacity, transform;
+  transition-duration: 200ms; /* duration-200 */
+  transition-timing-function: ease-in; /* ease-in */
+}
+
+.modal-transition-dialog-leave-start {
+  opacity: 1; /* opacity-100 */
+  transform: translateY(0) scale(1); /* translate-y-0 scale-100 */
+}
+
+.modal-transition-dialog-leave-end {
+  opacity: 0; /* opacity-0 */
+  transform: translateY(1rem) scale(1); /* translate-y-4 */
+}
+
+@media (min-width: 640px) {
+  .modal-transition-dialog-leave-end {
+    transform: translateY(0) scale(0.95); /* sm:translate-y-0 sm:scale-95 */
+  }
 }

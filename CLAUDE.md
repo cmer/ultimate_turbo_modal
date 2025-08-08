@@ -48,7 +48,7 @@ The system follows a separation of concerns between server-side rendering (Ruby/
 
 #### `Base` Class (`lib/ultimate_turbo_modal/base.rb`)
 - **Inheritance**: `Phlex::HTML` for HTML generation with Ruby DSL
-- **Mixins**: 
+- **Mixins**:
   - `Phlex::DeferredRenderWithMainContent` for content block handling
   - Dynamic inclusion of Turbo helpers (FramesHelper, StreamsHelper)
 - **Key Methods**:
@@ -101,7 +101,7 @@ The system follows a separation of concerns between server-side rendering (Ruby/
 - **Actions**: Responds to keyboard, click, and Turbo events
 
 ##### Lifecycle Methods
-- **`connect()`**: 
+- **`connect()`**:
   - Initializes focus trap and scroll lock variables
   - Shows modal immediately
   - Sets up popstate listener for browser back button
@@ -111,12 +111,12 @@ The system follows a separation of concerns between server-side rendering (Ruby/
 ##### Core Functionality
 
 ###### Modal Display
-- **`showModal()`**: 
+- **`showModal()`**:
   - Locks body scroll
   - Triggers enter transition
   - Activates focus trap after transition
   - Pushes history state if `advance` is enabled
-- **`hideModal()`**: 
+- **`hideModal()`**:
   - Prevents double-hiding with `hidingModal` flag
   - Dispatches cancelable `modal:closing` event
   - Deactivates focus trap
@@ -166,7 +166,7 @@ The system follows a separation of concerns between server-side rendering (Ruby/
 
 1. **Trigger**: Link/form targets `data-turbo-frame="modal"`
 2. **Request**: Rails controller renders modal content
-3. **Response**: 
+3. **Response**:
    - If Turbo Frame request: Wrapped in `<turbo-frame id="modal">`
    - If Turbo Stream: Wrapped in stream action targeting modal
 4. **Client Processing**:

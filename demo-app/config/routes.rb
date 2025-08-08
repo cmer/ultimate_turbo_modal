@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resource :hide_from_backend, only: [:new, :create]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
+  get "/custom-advance-history-url", to: redirect("/")
+
   # Defines the root path route ("/")
   root to: "welcome#index"
 end
