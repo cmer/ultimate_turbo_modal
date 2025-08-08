@@ -5,6 +5,7 @@ require "phlex/deferred_render_with_main_content"
 require "ultimate_turbo_modal/configuration"
 require "ultimate_turbo_modal/railtie"
 require "ultimate_turbo_modal/base"
+require "generators/ultimate_turbo_modal/base"
 require "generators/ultimate_turbo_modal/install_generator"
 require "generators/ultimate_turbo_modal/update_generator"
 

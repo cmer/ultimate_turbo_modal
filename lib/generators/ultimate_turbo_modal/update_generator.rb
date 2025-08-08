@@ -3,10 +3,11 @@
 require "rails/generators"
 require "json"
 require "pathname"
+require_relative "base"
 
 module UltimateTurboModal
   module Generators
-    class UpdateGenerator < Rails::Generators::Base
+    class UpdateGenerator < UltimateTurboModal::Generators::Base
       source_root File.expand_path("templates", __dir__)
 
       desc "Updates UltimateTurboModal: aligns npm package version to gem version and refreshes the configured flavor initializer."
@@ -29,6 +30,13 @@ module UltimateTurboModal
         package_name = "ultimate_turbo_modal"
         new_version = UltimateTurboModal::VERSION.to_s
 
+        # Special case: demo app links to local JS package; never update its version
+        if json.dig("dependencies", package_name) == "link:../javascript" ||
+           json.dig("devDependencies", package_name) == "link:../javascript"
+          say "Detected local link for '#{package_name}' (link:../javascript). Skipping version update.", :blue
+          return
+        end
+
         updated = false
 
         %w[dependencies devDependencies].each do |section|
@@ -47,6 +55,10 @@ module UltimateTurboModal
         else
           say "Did not find #{package_name} in package.json dependencies. Nothing to update.", :blue
         end
+      end
+
+      def install_js_dependencies
+        install_all_js_dependencies
       end
 
       def copy_flavor_file

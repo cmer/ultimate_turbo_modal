@@ -2,10 +2,11 @@
 
 require "rails/generators"
 require "pathname" # Needed for Pathname helper
+require_relative "base"
 
 module UltimateTurboModal
   module Generators
-    class InstallGenerator < Rails::Generators::Base
+    class InstallGenerator < UltimateTurboModal::Generators::Base
       source_root File.expand_path("templates", __dir__)
 
       desc "Installs UltimateTurboModal: copies initializer/flavor, sets up JS, registers Stimulus controller, adds Turbo Frame."
@@ -17,48 +18,7 @@ module UltimateTurboModal
 
       # Step 2: Setup Javascript Dependencies (Yarn/npm/Bun or Importmap)
       def setup_javascript_dependencies
-        package_name = "ultimate_turbo_modal" # Or the actual npm package name if different
-
-        say "\nAttempting to set up JavaScript dependencies...", :yellow
-
-        if uses_importmaps?
-          say "Detected Importmaps. Pinning #{package_name}...", :green
-          run "bin/importmap pin #{package_name}"
-
-          say "\n✅ Pinned '#{package_name}' via importmap.", :green
-
-        elsif uses_javascript_bundler?
-          say "Detected jsbundling-rails (Yarn/npm/Bun). Adding #{package_name} package...", :green
-          if uses_yarn?
-             run "yarn add #{package_name}"
-             say "\n✅ Added '#{package_name}' using Yarn.", :green
-          elsif uses_npm?
-             run "npm install --save #{package_name}"
-             say "\n✅ Added '#{package_name}' using npm.", :green
-          elsif uses_bun?
-             run "bun add #{package_name}"
-             say "\n✅ Added '#{package_name}' using Bun.", :green
-          else
-             # Default or fallback: Try yarn, but provide instructions for others
-             say "Attempting to add with Yarn. If you use npm or Bun, please add manually.", :yellow
-             run "yarn add #{package_name}"
-             say "\n✅ Attempted to add '#{package_name}' using Yarn.", :green
-             say "   If this failed or you use npm/bun, please run:", :yellow
-             say "   npm install --save #{package_name}", :cyan
-             say "   # or", :cyan
-             say "   bun add #{package_name}\n", :cyan
-          end
-        else
-          # Fallback instructions if neither is clearly detected
-          say "\nCould not automatically detect Importmaps or jsbundling-rails.", :yellow
-          say "Please manually add the '#{package_name}' JavaScript package.", :yellow
-          say "If using Importmaps: bin/importmap pin #{package_name}", :cyan
-          say "If using Yarn: yarn add #{package_name}", :cyan
-          say "If using npm: npm install --save #{package_name}", :cyan
-          say "If using Bun: bun add #{package_name}", :cyan
-          say "Then, import it in your app/javascript/application.js:", :yellow
-          say "import '#{package_name}'\n", :cyan
-        end
+        add_js_dependency
       end
 
       # Step 3: Register Stimulus Controller
