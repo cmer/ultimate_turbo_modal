@@ -1,3 +1,7 @@
+## [2.2.1] - 2025-08-08
+
+- Exclude demo-app directory from gem package
+
 ## [2.2.0] - 2025-08-07
 
 - BREAKING: Make sure to re-run the generator `rails generate ultimate_turbo_modal:install` after install.
