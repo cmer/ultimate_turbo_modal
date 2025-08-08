@@ -157,6 +157,28 @@ The demo app provides examples of:
 - Various trigger methods
 - Advanced features like scrollable content and custom footers
 
+## Updating between minor versions
+
+To upgrade within the same major version (for example 2.1 → 2.2):
+
+1. Change the UTMR gem version in your `Gemfile`:
+
+   ```ruby
+   gem "ultimate_turbo_modal", "~> 2.2"
+   ```
+
+2. Install updated dependencies:
+
+   ```sh
+   bundle install
+   ```
+
+3. Run the update generator:
+
+   ```sh
+   bundle exec rails g ultimate_turbo_modal:update
+   ```
+
 ## Upgrading from 1.x
 
 Please see the [Upgrading Guide](UPGRADING.md) for detailed instructions on how to upgrade from version 1.x.
