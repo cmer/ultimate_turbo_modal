@@ -23,14 +23,28 @@ if [ "$1" != "--skip-gem" ]; then
   echo "Building and releasing gem..."
   bundle exec rake build
 
-  # Check if Gemfile.lock is git dirty
-  if ! git diff --quiet Gemfile.lock; then
-    echo "Gemfile.lock is dirty. Adding, committing, and pushing."
-    git add Gemfile.lock
-    git commit -m "Update Gemfile.lock"
-    bundle exec rake build
+  # Update demo app with latest gem and JavaScript
+  echo "Updating demo app with latest code..."
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  DEMO_APP_DIR="$SCRIPT_DIR/../demo-app"
+
+  # Build JavaScript package first
+  echo "Building ultimate_turbo_modal JavaScript package..."
+  (cd "$SCRIPT_DIR/../javascript" && yarn build)
+
+  # Update demo app dependencies
+  echo "Installing latest ultimate_turbo_modal in demo app..."
+  (cd "$DEMO_APP_DIR" && bundle install)
+  (cd "$DEMO_APP_DIR" && yarn install --force)
+
+  # Check if Gemfile.lock or demo-app files are git dirty
+  if ! git diff --quiet Gemfile.lock demo-app/Gemfile.lock demo-app/yarn.lock; then
+    echo "Lock files are dirty. Adding, committing, and pushing."
+    git add Gemfile.lock demo-app/Gemfile.lock demo-app/yarn.lock
+    git commit -m "Update lock files for demo app"
   fi
 
+  bundle exec rake build
   bundle exec rake release
 else
   echo "Skipping gem build and release..."
@@ -45,4 +59,3 @@ else
 fi
 
 echo "Done!"
-

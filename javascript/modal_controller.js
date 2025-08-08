@@ -6,7 +6,7 @@ import { createFocusTrap } from 'focus-trap';
 const PACKAGE_VERSION = '__PACKAGE_VERSION__';
 
 export default class extends Controller {
-  static targets = ["container", "content"]
+  static targets = ["container", "content", "overlay", "outer"]
   static values = {
     advanceUrl: String,
     allowedClickOutsideSelector: String
@@ -48,7 +48,11 @@ export default class extends Controller {
     // Lock body scroll
     this.#lockBodyScroll();
 
-    enter(this.containerTarget).then(() => {
+    // Apply transitions to both overlay and outer elements
+    Promise.all([
+      enter(this.overlayTarget),
+      enter(this.outerTarget)
+    ]).then(() => {
       // Activate focus trap after the modal transition is complete
       this.#activateFocusTrap();
     });
@@ -122,7 +126,11 @@ export default class extends Controller {
     // Unlock body scroll
     this.#unlockBodyScroll();
     
-    leave(this.containerTarget).then(() => {
+    // Apply leave transitions to both overlay and outer elements
+    Promise.all([
+      leave(this.overlayTarget),
+      leave(this.outerTarget)
+    ]).then(() => {
       this.turboFrame.removeAttribute("src");
       this.containerTarget.remove();
       this.#resetHistoryAdvanced();

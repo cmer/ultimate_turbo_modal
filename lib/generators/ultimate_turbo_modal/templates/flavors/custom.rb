@@ -4,9 +4,9 @@
 # TODO: define the classes for each HTML element.
 module UltimateTurboModal::Flavors
   class Custom < UltimateTurboModal::Base
-    DIV_DIALOG_CLASSES = ""
+    DIV_MODAL_CONTAINER_CLASSES = ""
     DIV_OVERLAY_CLASSES = ""
-    DIV_OUTER_CLASSES = ""
+    DIV_DIALOG_CLASSES = ""
     DIV_INNER_CLASSES = ""
     DIV_CONTENT_CLASSES = ""
     DIV_MAIN_CLASSES = ""
@@ -18,5 +18,32 @@ module UltimateTurboModal::Flavors
     BUTTON_CLOSE_SR_ONLY_CLASSES = ""
     CLOSE_BUTTON_TAG_CLASSES = ""
     ICON_CLOSE_CLASSES = ""
+
+    TRANSITIONS = {
+      overlay: {
+        enter: {
+          animation: "",
+          start: "",
+          end: ""
+        },
+        leave: {
+          animation: "",
+          start: "",
+          end: ""
+        }
+      },
+      dialog: {
+        enter: {
+          animation: "",
+          start: "",
+          end: ""
+        },
+        leave: {
+          animation: "",
+          start: "",
+          end: ""
+        }
+      }
+    }
   end
 end
