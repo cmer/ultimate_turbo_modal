@@ -17,7 +17,13 @@ $ bundle exec rails g ultimate_turbo_modal:install
 
 ## Usage
 
-1. Wrap your view inside a `modal` block as follow:
+1. Add a turbo frame tag to your layout
+
+```erb
+<%= turbo_frame_tag "modal" %>
+```
+
+2. Wrap the view you want to show in a modal inside a `modal` block as follow:
 
 ```erb
 <%= modal do %>
@@ -25,7 +31,7 @@ $ bundle exec rails g ultimate_turbo_modal:install
 <% end %>
 ```
 
-2. Link to your view by specifying `modal` as the target Turbo Frame:
+3. Link to your view by specifying `modal` as the target Turbo Frame:
 
 ```erb
 <%= link_to "Open Modal", "/hello_world", data: { turbo_frame: "modal" } %>
