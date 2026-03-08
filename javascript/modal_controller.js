@@ -96,6 +96,10 @@ export default class extends Controller {
     this.hideModal();
   }
 
+  close() {
+    this.hideModal();
+  }
+
   refreshPage() {
     window.Turbo.visit(window.location.href, { action: "replace" });
   }
