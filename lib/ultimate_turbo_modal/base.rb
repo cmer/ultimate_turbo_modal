@@ -40,13 +40,18 @@ class UltimateTurboModal::Base < Phlex::HTML
     @request = request
     @title = title
 
-    unless self.class.include?(Turbo::FramesHelper)
-      self.class.include Turbo::FramesHelper
-      self.class.include Turbo::StreamsHelper
-      self.class.include Phlex::Rails::Helpers::ContentTag
-      self.class.include Phlex::Rails::Helpers::Routes
-      self.class.include Phlex::Rails::Helpers::Tag
-    end
+    self.class.include_turbo_helpers
+  end
+
+  def self.include_turbo_helpers
+    return if @turbo_helpers_included
+
+    include Turbo::FramesHelper
+    include Turbo::StreamsHelper
+    include Phlex::Rails::Helpers::ContentTag
+    include Phlex::Rails::Helpers::Routes
+    include Phlex::Rails::Helpers::Tag
+    @turbo_helpers_included = true
   end
 
   def view_template(&block)
@@ -117,6 +122,15 @@ class UltimateTurboModal::Base < Phlex::HTML
     self.class.included_modules.any? { |mod| mod.instance_methods.include?(method) } || super
   end
 
+  def method_missing(method, *, &block)
+    mod = self.class.included_modules.find { |m| m.instance_methods.include?(method) }
+    if mod
+      mod.instance_method(method).bind_call(self, *, &block)
+    else
+      super
+    end
+  end
+
   ## HTML components
 
   def modal(&block)
@@ -132,9 +146,12 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def styles
     style do
-      str = "html:has(dialog[open]),html:has(#modal-container) {overflow: hidden;} html {scrollbar-gutter: stable;}".html_safe
-      respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
+      raw_html "html:has(dialog[open]),html:has(#modal-container) {overflow: hidden;} html {scrollbar-gutter: stable;}"
     end
+  end
+
+  def raw_html(str)
+    respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
   end
 
   def outer_divs(&block)
@@ -152,7 +169,7 @@ class UltimateTurboModal::Base < Phlex::HTML
       modal_target: "container",
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
-      action: "turbo:submit-end->modal#submitEnd keyup@window->modal#closeWithKeyboard click@window->modal#outsideModalClicked click->modal#outsideModalClicked",
+      action: "turbo:submit-end->modal#submitEnd keyup@window->modal#closeWithKeyboard click@window->modal#outsideModalClicked",
       padding: padding?.to_s,
       title: title?.to_s,
       header: header?.to_s,
@@ -176,32 +193,30 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def div_overlay
-    div(id: "modal-overlay", class: self.class::DIV_OVERLAY_CLASSES, data: {
-      modal_target: "overlay",
-      transition_enter: self.class::TRANSITIONS[:overlay][:enter][:animation],
-      transition_enter_start: self.class::TRANSITIONS[:overlay][:enter][:start],
-      transition_enter_end: self.class::TRANSITIONS[:overlay][:enter][:end],
-      transition_leave: self.class::TRANSITIONS[:overlay][:leave][:animation],
-      transition_leave_start: self.class::TRANSITIONS[:overlay][:leave][:start],
-      transition_leave_end: self.class::TRANSITIONS[:overlay][:leave][:end]
-    })
+    div(id: "modal-overlay", class: self.class::DIV_OVERLAY_CLASSES,
+      data: { modal_target: "overlay" }.merge(transition_data(:overlay)))
   end
 
   def div_outer_dialog(&block)
-    div(id: "modal-outer", class: self.class::DIV_DIALOG_CLASSES, data: {
-      modal_target: "outer",
-      transition_enter: self.class::TRANSITIONS[:dialog][:enter][:animation],
-      transition_enter_start: self.class::TRANSITIONS[:dialog][:enter][:start],
-      transition_enter_end: self.class::TRANSITIONS[:dialog][:enter][:end],
-      transition_leave: self.class::TRANSITIONS[:dialog][:leave][:animation],
-      transition_leave_start: self.class::TRANSITIONS[:dialog][:leave][:start],
-      transition_leave_end: self.class::TRANSITIONS[:dialog][:leave][:end]
-    }, &block)
+    div(id: "modal-outer", class: self.class::DIV_DIALOG_CLASSES,
+      data: { modal_target: "outer" }.merge(transition_data(:dialog)), &block)
+  end
+
+  def transition_data(element)
+    t = self.class::TRANSITIONS[element]
+    {
+      transition_enter: t[:enter][:animation],
+      transition_enter_start: t[:enter][:start],
+      transition_enter_end: t[:enter][:end],
+      transition_leave: t[:leave][:animation],
+      transition_leave_start: t[:leave][:start],
+      transition_leave_end: t[:leave][:end]
+    }
   end
 
   def div_inner(&block)
     maybe_turbo_frame("modal-inner") do
-      div(id: "modal-inner", class: self.class::DIV_INNER_CLASSES, data: content_div_data, &block)
+      div(id: "modal-inner", class: self.class::DIV_INNER_CLASSES, &block)
     end
   end
 

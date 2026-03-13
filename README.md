@@ -6,7 +6,7 @@ UTMR aims to be the be-all and end-all of Turbo Modals. I believe it is the best
 
 Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https://turbo.hotwired.dev/), [el-transition](https://github.com/mmccall10/el-transition), and [Idiomorph](https://github.com/bigskysoftware/idiomorph).
 
-It currently ships in a three flavors: Tailwind v3, Tailwind v4 and regular, vanilla CSS. It is easy to create your own variant to suit your needs.
+It currently ships in two flavors: Tailwind and regular, vanilla CSS. It is easy to create your own variant to suit your needs.
 
 ## Installation
 
