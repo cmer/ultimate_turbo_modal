@@ -11,6 +11,8 @@ module UltimateTurboModal
 
       desc "Updates UltimateTurboModal: aligns npm package version to gem version and refreshes the configured flavor initializer."
 
+      class_option :flavor, type: :string, desc: "CSS framework flavor (e.g. tailwind, vanilla, custom). Skips auto-detection when provided."
+
       def update_npm_package_version
         package_json_path = rails_root_join("package.json")
 
@@ -83,6 +85,8 @@ module UltimateTurboModal
       private
 
       def detect_flavor
+        return options[:flavor] if options[:flavor]
+
         rails_bin = rails_root_join("bin", "rails")
         command = File.exist?(rails_bin) ? rails_bin.to_s : "bundle exec rails"
         output = `#{command} runner "puts UltimateTurboModal.configuration.flavor"`.to_s.strip
