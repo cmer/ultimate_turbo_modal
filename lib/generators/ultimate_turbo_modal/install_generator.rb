@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "rails/generators"
-require "pathname" # Needed for Pathname helper
 require_relative "base"
 
 module UltimateTurboModal
@@ -23,53 +22,56 @@ module UltimateTurboModal
 
       # Step 3: Register Stimulus Controller
       def setup_stimulus_controller
-        stimulus_controller_path = rails_root_join("app", "javascript", "controllers", "index.js")
-        controller_package = "ultimate_turbo_modal" # Package name where the controller is defined
-        controller_name = "UltimateTurboModalController" # The exported controller class name
-        stimulus_identifier = "modal" # The identifier for application.register
+        index_path = rails_root_join("app", "javascript", "controllers", "index.js")
+        application_path = rails_root_join("app", "javascript", "controllers", "application.js")
+        controller_name = "UltimateTurboModalController"
+        stimulus_identifier = "modal"
 
-        import_line = "import { #{controller_name} } from \"#{controller_package}\"\n"
+        import_line = "import { #{controller_name} } from \"#{package_name}\"\n"
         register_line = "application.register(\"#{stimulus_identifier}\", #{controller_name})\n"
 
-        say "\nAttempting to register Stimulus controller in #{stimulus_controller_path}...", :yellow
+        # Determine which file contains Application.start() — it may be index.js or application.js
+        target_path, file_content = find_stimulus_target(index_path, application_path)
 
-        unless File.exist?(stimulus_controller_path)
-          say "❌ Stimulus controllers index file not found at #{stimulus_controller_path}.", :red
+        say "\nAttempting to register Stimulus controller...", :yellow
+
+        unless target_path
+          say "❌ Stimulus controllers file not found.", :red
           say "   Please manually add the following lines to your Stimulus setup:", :yellow
           say "   #{import_line.strip}", :cyan
           say "   #{register_line.strip}\n", :cyan
-          return # Exit this method if the file doesn't exist
+          return
         end
 
-        # Read the file content to check if lines already exist
-        file_content = File.read(stimulus_controller_path)
+        say "  Target file: #{target_path}", :yellow
 
-        # Insert the import statement after the last existing import or a common marker
-        # Using a regex to find the Stimulus import is often reliable
-        import_anchor = /import .* from "@hotwired\/stimulus"\n/
-        if file_content.match?(import_anchor) && !file_content.include?(import_line)
-          insert_into_file stimulus_controller_path, import_line, after: import_anchor
+        # Insert the import statement after an existing import from @hotwired/stimulus or ./application
+        import_anchor = /import .* from ["'](?:@hotwired\/stimulus|\.\/application)["']\n/
+        if file_content.include?(import_line)
+          say "⏩ Import statement already exists.", :blue
+        elsif file_content.match?(import_anchor)
+          insert_into_file target_path, import_line, after: import_anchor
           say "✅ Added import statement.", :green
-        elsif !file_content.include?(import_line)
-          # Fallback: insert at the beginning if Stimulus import wasn't found (less ideal)
-          insert_into_file stimulus_controller_path, import_line, before: /import/
+        elsif file_content.match?(/import/)
+          insert_into_file target_path, import_line, before: /import/
           say "✅ Added import statement (fallback position).", :green
         else
-           say "⏩ Import statement already exists.", :blue
+          prepend_to_file target_path, import_line
+          say "✅ Added import statement (prepended to file).", :green
         end
 
-
         # Insert the register statement after Application.start()
-        register_anchor = /Application\.start$$$$\n/
-        if file_content.match?(register_anchor) && !file_content.include?(register_line)
-           insert_into_file stimulus_controller_path, register_line, after: register_anchor
-           say "✅ Added controller registration.", :green
-        elsif !file_content.include?(register_line)
-          say "❌ Could not find `Application.start()` line to insert registration after.", :red
-          say "   Please manually add this line after your Stimulus application starts:", :yellow
-          say "   #{register_line.strip}\n", :cyan
+        register_anchor = /Application\.start\(\)\n/
+        if file_content.include?(register_line)
+          say "⏩ Controller registration already exists.", :blue
+        elsif file_content.match?(register_anchor)
+          insert_into_file target_path, register_line, after: register_anchor
+          say "✅ Added controller registration.", :green
         else
-           say "⏩ Controller registration already exists.", :blue
+          say "❌ Could not find `Application.start()` line in #{target_path}.", :red
+          say "   Please manually add these lines to your Stimulus setup:", :yellow
+          say "   #{import_line.strip}", :cyan
+          say "   #{register_line.strip}\n", :cyan
         end
       end
 
@@ -156,28 +158,17 @@ module UltimateTurboModal
         end
       end
 
-      def uses_importmaps?
-        File.exist?(rails_root_join("config", "importmap.rb"))
-      end
+      def find_stimulus_target(index_path, application_path)
+        [index_path, application_path].each do |path|
+          next unless File.exist?(path)
+          content = File.read(path)
+          return [path, content] if content.match?(/Application\.start\(\)/)
+        end
 
-      def uses_javascript_bundler?
-        File.exist?(rails_root_join("package.json"))
-      end
-
-      def uses_yarn?
-        File.exist?(rails_root_join("yarn.lock"))
-      end
-
-      def uses_npm?
-        File.exist?(rails_root_join("package-lock.json")) && !uses_yarn? && !uses_bun?
-      end
-
-       def uses_bun?
-        File.exist?(rails_root_join("bun.lockb"))
-      end
-
-      def rails_root_join(*args)
-         Pathname.new(destination_root).join(*args)
+        # Fall back to index.js even without Application.start()
+        if File.exist?(index_path)
+          [index_path, File.read(index_path)]
+        end
       end
     end
   end
