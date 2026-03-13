@@ -1,1 +1,1 @@
-/Users/carl/conductor/workspaces/ultimate_turbo_modal/daegu/demo-app/bin/../../lib/generators/ultimate_turbo_modal/templates/flavors/vanilla.rb
+../../../lib/generators/ultimate_turbo_modal/templates/flavors/vanilla.rb

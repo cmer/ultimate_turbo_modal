@@ -95,6 +95,14 @@
         <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Drawer with Form</h3>
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Form with footer action buttons in a drawer.</p>
       <% end %>
+
+      <%# Colored Header Drawer %>
+      <%= link_to showcase_path(:colored_header_drawer), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">🎨</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Colored Header</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Edge-to-edge colored header with custom styling.</p>
+      <% end %>
     </div>
   </div>
 </section>
