@@ -162,3 +162,167 @@ dialog.modal-container::backdrop {
   width: 1.25rem;
   height: 1.25rem;
 }
+
+/* Drawer styles */
+
+.dark {
+  dialog.drawer-container[data-overlay="true"]::backdrop {
+    background-color: rgba(17, 24, 39, 0.8);
+  }
+
+  .drawer-header,
+  .drawer-footer {
+    border-color: #4B5563;
+  }
+
+  .drawer-content {
+    background-color: #1F2937;
+    color: #ffffff;
+  }
+
+  .drawer-close-button:hover,
+  .drawer-close-icon:hover {
+    background-color: #6B7280;
+    color: #ffffff;
+  }
+}
+
+:not(.dark) {
+  .drawer-close-button,
+  .drawer-close-icon {
+    color: #9CA3AF;
+
+    &:hover {
+      color: #111827;
+      background-color: #E5E7EB;
+    }
+  }
+}
+
+dialog.drawer-container[data-overlay="true"]::backdrop {
+  background-color: rgba(17, 24, 39, 0.7);
+}
+
+.drawer-container {
+  position: relative;
+
+  &[data-header="false"] .drawer-header {
+    display: none;
+  }
+
+  &[data-header-divider="true"] .drawer-header {
+    border-bottom-width: 1px;
+  }
+
+  &[data-footer-divider="true"] .drawer-footer {
+    border-top-width: 1px;
+  }
+
+  &[data-padding="true"] .drawer-main {
+    padding: 1rem;
+    padding-top: 0.5rem;
+  }
+
+  &[data-title="false"] .drawer-title-h {
+    display: none;
+  }
+
+  &[data-close-button="false"] .drawer-close {
+    display: none;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+.drawer-wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.drawer-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+}
+
+.drawer-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  background-color: #ffffff;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.drawer-header {
+  display: flex;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .drawer-header { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+.drawer-title {
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.drawer-main {
+  position: relative;
+  margin-top: 1.5rem;
+  flex: 1;
+}
+
+.drawer-footer {
+  display: flex;
+  flex-shrink: 0;
+  padding-top: 1.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .drawer-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+.drawer-close {
+  margin-left: 0.75rem;
+  display: flex;
+  height: 1.75rem;
+  align-items: center;
+}
+
+.drawer-close-button {
+  position: relative;
+  display: inline-flex;
+  padding: 0.375rem;
+  background-color: transparent;
+  border-radius: 0.375rem;
+  align-items: center;
+}
+
+.drawer-close-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}

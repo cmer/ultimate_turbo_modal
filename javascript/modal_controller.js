@@ -32,6 +32,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.#cancelDrawerEnter();
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
     window.modal = undefined;
@@ -40,8 +41,14 @@ export default class extends Controller {
   showModal() {
     // Clean up stale state that may persist from Turbo's page cache
     this.containerTarget.removeAttribute('data-closing');
+    this.containerTarget.removeAttribute('data-enter-ready');
+    this.containerTarget.removeAttribute('data-entered');
     if (this.containerTarget.open) this.containerTarget.close();
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
     this.containerTarget.showModal();
+    window.scrollTo(scrollX, scrollY);
+    if (this.#isDrawer()) this.#queueDrawerEnter();
 
     if (this.advanceUrlValue && !this.#hasHistoryAdvanced()) {
       this.#setHistoryAdvanced();
@@ -117,6 +124,13 @@ export default class extends Controller {
   #resetModalElement() {
     const dialog = this.containerTarget;
     dialog.setAttribute('data-closing', '');
+    dialog.setAttribute('data-enter-ready', '');
+    dialog.removeAttribute('data-entered');
+    this.#cancelDrawerEnter();
+
+    const closeEventName = this.#isDrawer() ? 'transitionend' : 'animationend';
+    const closeEventTarget = this.#isDrawer() ? this.contentTarget : dialog;
+    const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
 
     const cleanup = () => {
       clearTimeout(this.closeTimeout);
@@ -128,9 +142,34 @@ export default class extends Controller {
       frame.dispatchEvent(new Event('modal:closed', { cancelable: false }));
     };
 
-    dialog.addEventListener('animationend', cleanup, { once: true });
+    closeEventTarget.addEventListener(closeEventName, cleanup, { once: true });
     // Fallback if no animation defined (custom flavor with empty classes)
-    this.closeTimeout = setTimeout(cleanup, 300);
+    this.closeTimeout = setTimeout(cleanup, closeTimeoutMs);
+  }
+
+  #isDrawer() {
+    return this.containerTarget.dataset.drawer !== undefined
+  }
+
+  #queueDrawerEnter() {
+    this.#cancelDrawerEnter();
+
+    this.drawerEnterFrame = requestAnimationFrame(() => {
+      if (!this.containerTarget.isConnected || this.containerTarget.hasAttribute('data-closing')) return;
+      this.containerTarget.setAttribute('data-enter-ready', '');
+
+      this.drawerEnterFrame = requestAnimationFrame(() => {
+        if (!this.containerTarget.isConnected || this.containerTarget.hasAttribute('data-closing')) return;
+        this.containerTarget.setAttribute('data-entered', '');
+        this.drawerEnterFrame = null;
+      });
+    });
+  }
+
+  #cancelDrawerEnter() {
+    if (!this.drawerEnterFrame) return;
+    cancelAnimationFrame(this.drawerEnterFrame);
+    this.drawerEnterFrame = null;
   }
 
   #hasHistoryAdvanced() {
