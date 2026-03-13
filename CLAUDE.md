@@ -15,6 +15,8 @@ The `cmer/v3-next` branch is preparing the v3.0 release. The npm package version
 - Review the current implementation and find ways to improve the API, usability and developer experience.
 - Get rid of Yarn for packaging the npm package. Just use vanilla npm.
 
+Follow the changes we've implemented in v3 in @CHANGELOG.md
+
 ## Project Structure
 
 ```
@@ -199,7 +201,7 @@ The modal controller instance is available as `window.modal` while a modal is op
 
 ### Prerequisites
 - Ruby >= 3.0 (project uses 3.2.0 via `.ruby-version`)
-- Node.js + Yarn 1.x
+- Node.js + npm
 - Bundler
 
 ### Common Commands
@@ -213,9 +215,9 @@ gem build ultimate_turbo_modal.gemspec
 
 # JavaScript (from /javascript/)
 cd javascript
-yarn install
-yarn build                        # Rollup build → dist/
-yarn build:watch                  # Watch mode
+npm install
+npm run build                     # Rollup build → dist/
+npm run build:watch               # Watch mode
 
 # Demo app (from /demo-app/)
 cd demo-app

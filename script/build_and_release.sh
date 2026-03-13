@@ -30,17 +30,17 @@ if [ "$1" != "--skip-gem" ]; then
 
   # Build JavaScript package first
   echo "Building ultimate_turbo_modal JavaScript package..."
-  (cd "$SCRIPT_DIR/../javascript" && yarn build)
+  (cd "$SCRIPT_DIR/../javascript" && npm run build)
 
   # Update demo app dependencies
   echo "Installing latest ultimate_turbo_modal in demo app..."
   (cd "$DEMO_APP_DIR" && bundle install)
-  (cd "$DEMO_APP_DIR" && yarn install --force)
+  (cd "$DEMO_APP_DIR" && npm install)
 
   # Check if Gemfile.lock or demo-app files are git dirty
-  if ! git diff --quiet Gemfile.lock demo-app/Gemfile.lock demo-app/yarn.lock; then
+  if ! git diff --quiet Gemfile.lock demo-app/Gemfile.lock demo-app/package-lock.json; then
     echo "Lock files are dirty. Adding, committing, and pushing."
-    git add Gemfile.lock demo-app/Gemfile.lock demo-app/yarn.lock
+    git add Gemfile.lock demo-app/Gemfile.lock demo-app/package-lock.json
     git commit -m "Update lock files for demo app"
   fi
 

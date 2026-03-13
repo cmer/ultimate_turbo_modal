@@ -30,9 +30,9 @@ module UltimateTurboModal
         new_version = UltimateTurboModal::VERSION.to_s
 
         # Special case: demo app links to local JS package; never update its version
-        if json.dig("dependencies", package_name) == "link:../javascript" ||
-           json.dig("devDependencies", package_name) == "link:../javascript"
-          say "Detected local link for '#{package_name}' (link:../javascript). Skipping version update.", :blue
+        local_link = json.dig("dependencies", package_name) || json.dig("devDependencies", package_name)
+        if local_link&.match?(/\A(file|link):/)
+          say "Detected local link for '#{package_name}' (#{local_link}). Skipping version update.", :blue
           return
         end
 

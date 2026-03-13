@@ -141,7 +141,7 @@ bundle install
 bin/rails db:create db:migrate db:seed
 
 # Install JavaScript dependencies
-yarn install
+npm install
 
 # Start the development server
 bin/dev

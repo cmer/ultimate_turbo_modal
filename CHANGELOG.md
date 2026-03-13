@@ -12,6 +12,7 @@
 - Moved Turbo helper module inclusion to class-level for thread safety and performance
 - Removed redundant `rails_root_join` override in update generator
 - Simplified `detect_flavor` and stream action handler
+- Switched from Yarn to npm for building and publishing the npm package
 
 ## [2.2.2] - 2026-03-12
 
