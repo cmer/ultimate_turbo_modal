@@ -1,3 +1,9 @@
+## [2.2.2] - 2026-03-12
+
+- Added `close` function on Stimulus Controller. Thanks @bendangelo
+- Focus bug fix. Thanks @pasl
+- Refactor generator and fix [bug #33](https://github.com/cmer/ultimate_turbo_modal/issues/33).
+
 ## [2.2.1] - 2025-08-08
 
 - Added `rails generate ultimate_turbo_modal:update` for easy updates
