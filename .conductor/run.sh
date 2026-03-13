@@ -1,7 +1,5 @@
 #!/bin/bash
 cd demo-app
-rails generate ultimate_turbo_modal:update --flavor=tailwind --force
-rails generate ultimate_turbo_modal:update --flavor=vanilla --force
 
 cleanup() {
   if [ -S .overmind.sock ]; then
