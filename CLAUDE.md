@@ -66,14 +66,6 @@ Ultimate Turbo Modal (UTMR) v3 is a full-featured modal and drawer implementatio
 
 3. **Communication**: Turbo Frames (`<turbo-frame id="modal">`) carry modal content. Turbo Streams can send `modal` stream actions to close modals from the server. Idiomorph is used for intelligent DOM morphing to prevent flicker when modal content updates.
 
-### Native `<dialog>` Foundation (v3)
-
-v3 replaced the div-based modal with the native HTML `<dialog>` element. This provides:
-- Built-in focus trapping (no `focus-trap` dependency)
-- Native `::backdrop` pseudo-element (no separate overlay div)
-- `showModal()` / `close()` API
-- CSS `@keyframes` animations defined inline (no `el-transition` dependency)
-
 ### Flavor System
 
 Flavors are Ruby classes that inherit from `UltimateTurboModal::Base` and define constants for CSS classes. They live in `config/initializers/` in the consuming Rails app (copied there by the install generator). Available flavors:
@@ -284,7 +276,7 @@ Output: ESM format. `@hotwired/stimulus` is marked as external (not bundled).
 
 ### Linting
 
-- **Ruby**: [Standard Ruby](https://github.com/standardrb/standard) with `standard-rails` plugin (targeting Rails 7.0). Run `bundle exec rake` (default task). Config in `.standard.yml`. Standard enforces no semicolons, double quotes, and other opinionated rules — do not add RuboCop-style configurations that conflict.
+- **Ruby**: [Standard Ruby](https://github.com/standardrb/standard) with `standard-rails` plugin. Run `bundle exec rake` (default task). Config in `.standard.yml`. Standard enforces no semicolons, double quotes, and other opinionated rules — do not add RuboCop-style configurations that conflict.
 - **JavaScript**: No linter currently configured.
 
 ## Key Dependencies
@@ -300,7 +292,6 @@ Output: ESM format. `@hotwired/stimulus` is marked as external (not bundled).
 - `@hotwired/turbo-rails` (^8.0.0) — Turbo integration
 - `idiomorph` (^0.7.3) — Intelligent DOM morphing
 
-Note: v3 removed `el-transition` and `focus-trap` dependencies in favor of native `<dialog>` capabilities and CSS `@keyframes`/transitions.
 
 ## Important Implementation Details
 
