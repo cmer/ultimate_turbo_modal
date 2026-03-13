@@ -13,8 +13,6 @@ export default class extends Controller {
   }
 
   connect() {
-    let _this = this;
-
     this.#checkVersions();
 
     // Initialize focus trap instance variable
@@ -29,18 +27,17 @@ export default class extends Controller {
     this.turboFrame = this.element.closest('turbo-frame');
 
     // hide modal when back button is pressed
-    window.addEventListener('popstate', function (event) {
-      if (_this.#hasHistoryAdvanced()) _this.#resetModalElement();
-    });
+    this.popstateHandler = () => {
+      if (this.#hasHistoryAdvanced()) this.#resetModalElement();
+    };
+    window.addEventListener('popstate', this.popstateHandler);
 
     window.modal = this;
   }
 
   disconnect() {
-    // Clean up focus trap if it exists
-    if (this.focusTrapInstance) {
-      this.#deactivateFocusTrap();
-    }
+    this.#deactivateFocusTrap();
+    window.removeEventListener('popstate', this.popstateHandler);
     window.modal = undefined;
   }
 
@@ -79,17 +76,12 @@ export default class extends Controller {
     }
 
     // Deactivate focus trap only after confirming modal will close
-    if (this.focusTrapInstance) {
-      this.#deactivateFocusTrap();
-    }
-
-    this.#resetModalElement();
-
-    event = new Event('modal:closed', { cancelable: false });
-    this.turboFrame.dispatchEvent(event);
+    this.#deactivateFocusTrap();
 
     if (this.#hasHistoryAdvanced())
       history.back();
+
+    this.#resetModalElement();
   }
 
   hide() {
@@ -129,15 +121,18 @@ export default class extends Controller {
   #resetModalElement() {
     // Unlock body scroll
     this.#unlockBodyScroll();
-    
+
     // Apply leave transitions to both overlay and outer elements
     Promise.all([
       leave(this.overlayTarget),
       leave(this.outerTarget)
     ]).then(() => {
-      this.turboFrame.removeAttribute("src");
+      const frame = this.turboFrame;
+      frame.removeAttribute("src");
       this.containerTarget.remove();
       this.#resetHistoryAdvanced();
+
+      frame.dispatchEvent(new Event('modal:closed', { cancelable: false }));
     });
   }
 

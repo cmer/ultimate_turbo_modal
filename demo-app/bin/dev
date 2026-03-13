@@ -12,7 +12,6 @@ FLAVOR_DEST_DIR="$DEMO_APP_DIR/config/initializers"
 
 # Symlink each flavor file with the appropriate naming (force overwrite)
 ln -sf "$FLAVOR_SOURCE_DIR/tailwind.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind.rb"
-ln -sf "$FLAVOR_SOURCE_DIR/tailwind3.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind3.rb"
 ln -sf "$FLAVOR_SOURCE_DIR/vanilla.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_vanilla.rb"
 ln -sf "$FLAVOR_SOURCE_DIR/custom.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_custom.rb"
 
