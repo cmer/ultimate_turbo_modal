@@ -61,6 +61,11 @@ dialog.modal-container::backdrop {
     padding-top: 0.5rem;
   }
 
+  .modal-main {
+    overflow-y: auto;
+    max-height: 75vh;
+  }
+
   &[data-title="false"] .modal-title-h {
     display: none;
   }
@@ -85,12 +90,14 @@ dialog.modal-container::backdrop {
 .modal-inner {
   display: flex;
   padding: 0.25rem;
+  padding-top: 5vh;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100%;
 
   @media (min-width: 640px) {
     padding: 1rem;
+    padding-top: 5vh;
   }
 }
 
@@ -102,6 +109,7 @@ dialog.modal-container::backdrop {
   text-align: left;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  max-height: 100vh;
 
   @media (min-width: 640px) {
     margin-top: 2rem;
