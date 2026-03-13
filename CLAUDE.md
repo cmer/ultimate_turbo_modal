@@ -11,7 +11,7 @@ Ultimate Turbo Modal (UTMR) is a full-featured modal implementation for Rails ap
 The `cmer/v3-next` branch is preparing the v3.0 release. The npm package version is `3.0.0-alpha.0` and the gem version is `3.0.0.alpha` (stored in the `VERSION` file at the repo root). v3.0 removes Tailwind v3 flavor support and includes several bug fixes and internal refactoring (see CHANGELOG.md for details). v3 is in heavy development. Some of the objectives to be worked on are:
 
 [x] Transition to native HTML `dialog` element without changing look and feel, or losing functionalities from v3.
-[ ] Implement drawers
+[x] Implement drawers
 [ ] Review the current implementation and find ways to improve the API, usability and developer experience.
 [x] Get rid of Yarn for packaging the npm package. Just use vanilla npm.
 
