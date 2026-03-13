@@ -6,7 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Ultimate Turbo Modal (UTMR) is a full-featured modal implementation for Rails applications using Turbo, Stimulus, and Hotwire. It consists of a **Ruby gem** (server-side HTML generation via Phlex) and an **npm package** (client-side behavior via Stimulus), working together to provide seamless modal functionality with focus trapping, scroll locking, browser history manipulation, and customizable styling.
 
-**Author:** Carl Mercier (foss@carlmercier.com)
+## Current State
+
+The `cmer/v3-next` branch is preparing the v3.0 release. The npm package version is `3.0.0-alpha.0` and the gem version is `3.0.0.alpha` (stored in the `VERSION` file at the repo root). v3.0 removes Tailwind v3 flavor support and includes several bug fixes and internal refactoring (see CHANGELOG.md for details). v3 is in heavy development. Some of the objectives to be worked on are:
+
+- Transition to native HTML `dialog` element without changing look and feel, or losing functionalities from v3.
+- Implement drawers
+- Review the current implementation and find ways to improve the API, usability and developer experience.
+- Get rid of Yarn for packaging the npm package. Just use vanilla npm.
 
 ## Project Structure
 
