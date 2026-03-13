@@ -2,6 +2,19 @@
   display: none
 }
 
+.modal-container .sr-only,
+.drawer-container .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .dark {
   dialog.modal-container::backdrop {
     background-color: rgba(17, 24, 39, 0.8);
@@ -72,18 +85,6 @@ dialog.modal-container::backdrop {
 
   &[data-close-button="false"] .modal-close {
     display: none;
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
   }
 }
 
@@ -230,18 +231,6 @@ dialog.drawer-container[data-overlay="true"]::backdrop {
   &[data-close-button="false"] .drawer-close {
     display: none;
   }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
 }
 
 .drawer-wrapper {
@@ -320,6 +309,11 @@ dialog.drawer-container[data-overlay="true"]::backdrop {
   background-color: transparent;
   border-radius: 0.375rem;
   align-items: center;
+}
+
+.drawer-close-hit-area {
+  position: absolute;
+  inset: -0.625rem;
 }
 
 .drawer-close-icon {
