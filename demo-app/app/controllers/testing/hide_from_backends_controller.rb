@@ -4,7 +4,7 @@
 #   <%= turbo_stream.modal(:hide) %>
 #
 # This controller is an example of how to do that.
-class HideFromBackendsController < ApplicationController
+class Testing::HideFromBackendsController < ApplicationController
   def new
     # Show form
   end
@@ -22,12 +22,12 @@ class HideFromBackendsController < ApplicationController
       # will trigger a modal close via turbo stream.
     else
       # if not inside a modal, simply redirect
-      redirect_to("/")
+      redirect_to(testing_root_path)
     end
   end
 
   def form_is_valid?
-    return true if request.params[:action] == 'new'
+    return true if request.params[:action] == "new"
     params[:email].present?
   end
   helper_method :form_is_valid?

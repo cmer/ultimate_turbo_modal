@@ -1,0 +1,108 @@
+<%# Hero %>
+<section class="pt-24 pb-16 px-6 text-center">
+  <div class="max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm font-medium mb-6">
+      <span>v<%= UltimateTurboModal::VERSION %></span>
+      <span class="text-indigo-300 dark:text-indigo-600">&middot;</span>
+      <span><%= UltimateTurboModal.flavor.to_s.capitalize %></span>
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+      Ultimate Turbo Modal
+    </h1>
+
+    <p class="mt-6 text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+      Full-featured modals and drawers for Rails, powered by Turbo, Stimulus, and the native <code class="text-sm bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">&lt;dialog&gt;</code> element.
+    </p>
+  </div>
+</section>
+
+<%# Modals section %>
+<section class="px-6 pb-16">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-6">Modals</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <%# Basic Modal %>
+      <%= link_to showcase_path(:basic_modal), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">💬</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Basic Modal</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Simple content with a title and close button.</p>
+      <% end %>
+
+      <%# Modal with Form %>
+      <%= link_to showcase_path(:form_modal), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">📝</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Modal with Form</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Contact form with input fields inside a modal.</p>
+      <% end %>
+
+      <%# Long Content %>
+      <%= link_to showcase_path(:long_modal), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">📜</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Long Content</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Scrollable modal with lots of text content.</p>
+      <% end %>
+
+      <%# Photo / Media %>
+      <%= link_to showcase_path(:photo_modal), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">🖼️</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Photo / Media</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Full-bleed image with no header or padding.</p>
+      <% end %>
+
+      <%# Server-side Close %>
+      <%= link_to showcase_path(:server_close), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">⚡</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Server-side Close</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Form that closes the modal via Turbo Stream from the backend.</p>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# Drawers section %>
+<section class="px-6 pb-16">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-6">Drawers</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <%# Left Drawer %>
+      <%= link_to showcase_path(:left_drawer), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">▶️</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Left Drawer</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Navigation-style drawer from the left side.</p>
+      <% end %>
+
+      <%# Right Drawer %>
+      <%= link_to showcase_path(:right_drawer), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">◀️</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Right Drawer</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Slides in from the right with overlay backdrop.</p>
+      <% end %>
+
+      <%# Drawer with Form %>
+      <%= link_to showcase_path(:drawer_form), data: { turbo_frame: "modal" },
+          class: "group relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-500/10 transition-all" do %>
+        <div class="text-2xl mb-3">📋</div>
+        <h3 class="font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Drawer with Form</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Form with footer action buttons in a drawer.</p>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# Footer %>
+<footer class="px-6 pb-12 pt-8 border-t border-slate-200 dark:border-slate-700">
+  <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
+    <p>Built with Turbo, Stimulus &amp; native <code class="bg-slate-100 dark:bg-slate-700 px-1 py-0.5 rounded">&lt;dialog&gt;</code></p>
+    <%= link_to "Developer Testing →", testing_root_path, class: "text-indigo-600 dark:text-indigo-400 hover:underline font-medium" %>
+  </div>
+</footer>
