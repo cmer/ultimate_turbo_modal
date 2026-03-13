@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Set PORT to $CONDUCTOR_PORT if set, otherwise fallback to $PORT, default to 3000
-PORT="${CONDUCTOR_PORT:-${PORT:-3000}}"
+export PORT="${CONDUCTOR_PORT:-${PORT:-3000}}"
 
 # Build the ultimate_turbo_modal JavaScript package
 echo "Building ultimate_turbo_modal JavaScript package..."
@@ -18,9 +18,7 @@ ln -sf "$FLAVOR_SOURCE_DIR/tailwind.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_t
 ln -sf "$FLAVOR_SOURCE_DIR/vanilla.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_vanilla.rb"
 ln -sf "$FLAVOR_SOURCE_DIR/custom.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_custom.rb"
 
-(cd "$DEMO_APP_DIR" && bundle install)
-
-(cd "$DEMO_APP_DIR" && bundle install)
+(cd "$DEMO_APP_DIR" && bundle install && yarn install)
 
 # Start the development servers
 if command -v overmind &> /dev/null; then
