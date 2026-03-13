@@ -104,9 +104,14 @@ export default class extends Controller {
     // The dialog is full-screen, so clicks on the area outside the modal card
     // land on the dialog or its inner wrapper (#modal-inner), not on ::backdrop.
     // Dismiss if the click is outside the content (modal card).
-    if (!this.contentTarget.contains(e.target)) {
-      this.hideModal();
-    }
+    if (this.contentTarget.contains(e.target)) return;
+    if (this.#isAllowedOutsideClick(e.target)) return;
+    this.hideModal();
+  }
+
+  #isAllowedOutsideClick(target) {
+    if (!this.allowedClickOutsideSelectorValue) return false;
+    return target.closest(this.allowedClickOutsideSelectorValue) !== null;
   }
 
   #resetModalElement() {
