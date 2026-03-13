@@ -386,7 +386,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   def drawer_button_close
     div(id: "modal-close", class: self.class::DRAWER_CLOSE_CLASSES) do
       close_button_tag(self.class::DRAWER_CLOSE_BUTTON_CLASSES) do
-        span(class: "absolute -inset-2.5")
+        span(class: self.class::DRAWER_CLOSE_HIT_AREA_CLASSES) if self.class.const_defined?(:DRAWER_CLOSE_HIT_AREA_CLASSES)
         close_icon_svg(self.class::DRAWER_CLOSE_ICON_CLASSES)
         span(class: self.class::DRAWER_CLOSE_SR_CLASSES) { @close_button_sr_label }
       end

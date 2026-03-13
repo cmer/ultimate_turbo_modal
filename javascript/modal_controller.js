@@ -33,6 +33,7 @@ export default class extends Controller {
 
   disconnect() {
     this.#cancelDrawerEnter();
+    clearTimeout(this.closeTimeout);
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
     window.modal = undefined;
@@ -132,7 +133,10 @@ export default class extends Controller {
     const closeEventTarget = this.#isDrawer() ? this.contentTarget : dialog;
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
 
+    let cleaned = false;
     const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
       clearTimeout(this.closeTimeout);
       const frame = this.turboFrame;
       dialog.close();
