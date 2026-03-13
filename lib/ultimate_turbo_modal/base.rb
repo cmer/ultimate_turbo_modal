@@ -55,7 +55,7 @@ class UltimateTurboModal::Base < Phlex::HTML
         modal(&block)
       end
     elsif turbo_stream?
-      Turbo::StreamsHelper.turbo_stream_action_tag("update", target: "modal") do
+      turbo_stream_action_tag("update", target: "modal") do
         modal(&block)
       end
     else
