@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Set PORT to $CONDUCTOR_PORT if set, otherwise fallback to $PORT, default to 3000
+PORT="${CONDUCTOR_PORT:-${PORT:-3000}}"
+
 # Build the ultimate_turbo_modal JavaScript package
 echo "Building ultimate_turbo_modal JavaScript package..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
