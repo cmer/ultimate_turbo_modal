@@ -1,3 +1,7 @@
+## [3.0.0] - Unreleased
+
+*Development branch for v3.0*
+
 ## [2.2.2] - 2026-03-12
 
 - Added `close` function on Stimulus Controller. Thanks @bendangelo
