@@ -4,8 +4,7 @@ import './styles/vanilla.css';
 
 Turbo.StreamActions.modal = function () {
   const message = this.getAttribute("message");
-  if (message == "hide") window.modal?.hide();
-  if (message == "close") window.modal?.hide();
+  if (message == "hide" || message == "close") window.modal?.hide();
 };
 
 // Check if the event target is one of our modal Turbo Frames

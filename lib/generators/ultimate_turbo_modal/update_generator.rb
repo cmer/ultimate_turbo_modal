@@ -2,7 +2,6 @@
 
 require "rails/generators"
 require "json"
-require "pathname"
 require_relative "base"
 
 module UltimateTurboModal
@@ -84,24 +83,15 @@ module UltimateTurboModal
       private
 
       def detect_flavor
-        command = nil
-        if File.exist?(rails_root_join("bin", "rails"))
-          command = "#{rails_root_join("bin", "rails")} runner \"puts UltimateTurboModal.configuration.flavor\""
-        else
-          command = "bundle exec rails runner \"puts UltimateTurboModal.configuration.flavor\""
-        end
-
-        output = `#{command}`
-        flavor = output.to_s.strip
-        flavor.empty? ? nil : flavor
+        rails_bin = rails_root_join("bin", "rails")
+        command = File.exist?(rails_bin) ? rails_bin.to_s : "bundle exec rails"
+        output = `#{command} runner "puts UltimateTurboModal.configuration.flavor"`.to_s.strip
+        output.empty? ? nil : output
       rescue StandardError => e
         say "Error determining flavor via rails runner: #{e.message}", :red
         nil
       end
 
-      def rails_root_join(*args)
-        Pathname.new(destination_root).join(*args)
-      end
     end
   end
 end

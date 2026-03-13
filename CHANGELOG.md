@@ -1,6 +1,17 @@
 ## [3.0.0] - Unreleased
 
-*Development branch for v3.0*
+- **BREAKING**: Removed Tailwind v3 flavor. Use the `tailwind` flavor (Tailwind v4+) or `custom` to define your own classes.
+- Fixed popstate event listener leak when modal connects/disconnects multiple times
+- Fixed `modal:closed` event now fires after leave transition completes (was firing before)
+- Fixed duplicate click handler on outside modal clicks
+- Fixed `content_div_data` no longer duplicated on both `#modal-inner` and `#modal-content`
+- Added `method_missing` to complement existing `respond_to_missing?`
+- Refactored boolean config setters into a declarative `boolean_option` macro
+- Extracted `transition_data` helper to DRY up overlay/dialog transition attributes
+- Centralized Phlex `unsafe_raw`/`raw` compat into `raw_html` helper
+- Moved Turbo helper module inclusion to class-level for thread safety and performance
+- Removed redundant `rails_root_join` override in update generator
+- Simplified `detect_flavor` and stream action handler
 
 ## [2.2.2] - 2026-03-12
 
