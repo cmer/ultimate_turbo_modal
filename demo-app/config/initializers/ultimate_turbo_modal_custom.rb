@@ -1,1 +1,1 @@
-../../../lib/generators/ultimate_turbo_modal/templates/flavors/custom.rb
+/Users/carl/conductor/workspaces/ultimate_turbo_modal/worcester/demo-app/bin/../../lib/generators/ultimate_turbo_modal/templates/flavors/custom.rb

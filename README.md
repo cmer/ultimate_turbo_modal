@@ -4,9 +4,9 @@ There are MANY Turbo/Hotwire/Stimulus modal dialog implementations out there, an
 
 UTMR aims to be the be-all and end-all of Turbo Modals. I believe it is the best (only?) full-featured implementation and checks all the boxes. It is feature-rich, yet extremely easy to use.
 
-Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https://turbo.hotwired.dev/), [el-transition](https://github.com/mmccall10/el-transition), and [Idiomorph](https://github.com/bigskysoftware/idiomorph).
+Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https://turbo.hotwired.dev/), the native HTML [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) element, and [Idiomorph](https://github.com/bigskysoftware/idiomorph).
 
-It currently ships in two flavors: Tailwind and regular, vanilla CSS. It is easy to create your own variant to suit your needs.
+It currently ships in two flavors: Tailwind (v4+) and regular, vanilla CSS. It is easy to create your own variant to suit your needs.
 
 ## Installation
 
@@ -119,7 +119,7 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 - Option to whitelist CSS selectors that won't dismiss the modal when clicked outside the modal (ie: datepicker)
 - Keyboard control; ESC to dismiss
 - Automatic (or not) close button
-- Focus trap for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
+- Native focus trapping via the `<dialog>` element for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
 
 
 ## Demo Video
@@ -159,12 +159,12 @@ The demo app provides examples of:
 
 ## Updating between minor versions
 
-To upgrade within the same major version (for example 2.1 → 2.2):
+To upgrade within the same major version (for example 3.0 → 3.1):
 
 1. Change the UTMR gem version in your `Gemfile`:
 
    ```ruby
-   gem "ultimate_turbo_modal", "~> 2.2"
+   gem "ultimate_turbo_modal", "~> 3.0"
    ```
 
 2. Install updated dependencies:
@@ -178,6 +178,37 @@ To upgrade within the same major version (for example 2.1 → 2.2):
    ```sh
    bundle exec rails g ultimate_turbo_modal:update
    ```
+
+## Upgrading from 2.x
+
+v3.0 includes several breaking changes:
+
+- **Native `<dialog>` element**: The modal now uses the native HTML `<dialog>` element instead of custom `<div>`-based markup. This provides native focus trapping and improved accessibility, removing the need for the `el-transition` and `focus-trap` JavaScript dependencies.
+- **Simplified HTML structure**: The modal markup has been reduced from 6 nested containers to 3 (`dialog` + `inner` + `content`).
+- **Tailwind v3 flavor removed**: Only Tailwind v4+ is supported via the `tailwind` flavor. Use `custom` if you need to define your own classes.
+- **Custom flavor update required**: The flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` have been replaced by `DIALOG_CLASSES`. If you have a custom flavor, you must update it to use the new constants.
+
+To upgrade:
+
+1. Update your `Gemfile`:
+
+   ```ruby
+   gem "ultimate_turbo_modal", "~> 3.0"
+   ```
+
+2. Install updated dependencies:
+
+   ```sh
+   bundle install
+   ```
+
+3. Re-run the install generator to get the updated flavor file and JavaScript package:
+
+   ```sh
+   bundle exec rails g ultimate_turbo_modal:install
+   ```
+
+4. If you have a custom flavor, update it to use the new `DIALOG_CLASSES` constant instead of the removed constants.
 
 ## Upgrading from 1.x
 
