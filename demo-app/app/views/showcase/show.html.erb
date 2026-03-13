@@ -1,0 +1,126 @@
+<% case params[:id] %>
+<% when "basic_modal" %>
+  <%= modal(title: "Welcome") do %>
+    <div class="space-y-4">
+      <p class="text-slate-600 dark:text-slate-300">This is a basic modal with a title and close button. It demonstrates the simplest use case for Ultimate Turbo Modal.</p>
+      <p class="text-slate-600 dark:text-slate-300"><%= Faker::Lorem.paragraph(sentence_count: 4) %></p>
+      <p class="text-slate-600 dark:text-slate-300"><%= Faker::Lorem.paragraph(sentence_count: 3) %></p>
+    </div>
+  <% end %>
+
+<% when "form_modal" %>
+  <%= modal(title: "Contact Us") do %>
+    <form class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="name">Name</label>
+        <input type="text" id="name" name="name" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Jane Doe">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="email">Email</label>
+        <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="jane@example.com">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="message">Message</label>
+        <textarea id="message" name="message" rows="3" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Your message..."></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-white dark:ring-slate-600 dark:hover:bg-slate-600">Cancel</button>
+        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Send</button>
+      </div>
+    </form>
+  <% end %>
+
+<% when "long_modal" %>
+  <%= modal(title: "Terms of Service") do %>
+    <div class="space-y-4 text-slate-600 dark:text-slate-300">
+      <% 15.times do |i| %>
+        <p><%= Faker::Lorem.paragraph(sentence_count: 8) %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+<% when "photo_modal" %>
+  <%= modal(header: false, padding: false) do %>
+    <div class="w-full">
+      <img src="/img/unicat.jpg" class="w-full" alt="Unicat">
+    </div>
+  <% end %>
+
+<% when "server_close" %>
+  <%= modal(title: "Newsletter") do %>
+    <div class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+      <p>Enter your email and submit. The modal will be closed from the server via Turbo Stream.</p>
+      <p class="mt-1">If no email is entered, the form will be redisplayed with an error.</p>
+    </div>
+
+    <% unless form_is_valid? %>
+      <div class="my-3 text-red-600 dark:text-red-400 font-semibold">
+        Email is required!
+      </div>
+    <% end %>
+
+    <%= form_with url: showcase_submit_path, method: :post, class: "flex items-center gap-3" do %>
+      <div class="flex-1">
+        <label for="newsletter_email" class="sr-only">Email</label>
+        <input name="email" id="newsletter_email" class="block w-full rounded-md border-0 py-1.5 text-slate-900 ring-1 ring-inset ring-slate-300 shadow-sm placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:bg-slate-700 dark:text-white dark:ring-slate-600 sm:text-sm sm:leading-6" placeholder="you@example.com">
+      </div>
+      <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Subscribe</button>
+    <% end %>
+  <% end %>
+
+<% when "right_drawer" %>
+  <%= drawer(title: "Notifications", overlay: true) do %>
+    <div class="space-y-4">
+      <% 5.times do |i| %>
+        <div class="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-sm font-medium"><%= (65 + i).chr %></div>
+          <div>
+            <p class="text-sm font-medium text-slate-900 dark:text-white"><%= Faker::Name.name %></p>
+            <p class="text-sm text-slate-500 dark:text-slate-400"><%= Faker::Lorem.sentence(word_count: 8) %></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-1"><%= (i + 1) * 5 %> minutes ago</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+<% when "left_drawer" %>
+  <%= drawer(position: :left, title: "Menu", overlay: true) do %>
+    <nav class="space-y-1">
+      <% ["Dashboard", "Projects", "Team", "Calendar", "Documents", "Reports", "Settings"].each do |item| %>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+          <span class="text-sm font-medium"><%= item %></span>
+        </a>
+      <% end %>
+    </nav>
+  <% end %>
+
+<% when "drawer_form" %>
+  <%= drawer(title: "New Item", overlay: true) do |m| %>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Item name</label>
+        <input type="text" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Enter item name">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
+        <textarea rows="3" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Describe the item..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
+        <select class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
+          <option>General</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Books</option>
+        </select>
+      </div>
+    </div>
+    <% m.footer do %>
+      <div class="flex justify-end gap-3 w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-white dark:ring-slate-600 dark:hover:bg-slate-600">Cancel</button>
+        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Create</button>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

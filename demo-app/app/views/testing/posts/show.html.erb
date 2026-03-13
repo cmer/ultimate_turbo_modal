@@ -12,10 +12,10 @@
   </div>
 
   <%= m.footer do %>
-    <%= link_to 'Edit this post', edit_post_path(@post), class: "rounded-lg py-3 px-5 bg-blue-800 text-white inline-block font-medium" %>
+    <%= link_to 'Edit this post', edit_testing_post_path(@post), class: "rounded-lg py-3 px-5 bg-blue-800 text-white inline-block font-medium" %>
 
     <div class="inline-block ml-2">
-      <%= button_to 'Destroy this post', post_path(@post), method: :delete, class: "py-3 px-5 bg-transparent text-red-600" %>
+      <%= button_to 'Destroy this post', testing_post_path(@post), method: :delete, class: "py-3 px-5 bg-transparent text-red-600" %>
     </div>
   <% end %>
 <% end %>

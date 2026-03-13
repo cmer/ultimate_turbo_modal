@@ -18,8 +18,18 @@ ln -sf "$FLAVOR_SOURCE_DIR/tailwind.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_t
 ln -sf "$FLAVOR_SOURCE_DIR/vanilla.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_vanilla.rb"
 ln -sf "$FLAVOR_SOURCE_DIR/custom.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_custom.rb"
 
-(cd "$DEMO_APP_DIR" && bundle install && yarn install)
+(cd "$DEMO_APP_DIR" && bundle install && npm install)
 
+# Build the library JS package first so dist/vanilla.css exists for the CSS watcher
+(cd "$DEMO_APP_DIR/../javascript" && npm run build)
+
+echo "--------------------------------------------------------------------"
+echo ""
+echo "  Setup complete. Starting development servers..."
+echo ""
+echo "  You can access the demo app at http://localhost:$PORT"
+echo ""
+echo "--------------------------------------------------------------------"
 # Start the development servers
 if command -v overmind &> /dev/null; then
   overmind start -f $DEMO_APP_DIR/Procfile.dev "$@"

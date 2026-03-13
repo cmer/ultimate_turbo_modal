@@ -1,4 +1,4 @@
-class ModalController < ApplicationController
+class Testing::ModalController < ApplicationController
   before_action :set_modal_properties
 
   def index
