@@ -59,10 +59,6 @@ class UltimateTurboModal::Base < Phlex::HTML
       turbo_frame_tag("modal") do
         modal(&block)
       end
-    elsif turbo_stream?
-      turbo_stream_action_tag("update", target: "modal") do
-        modal(&block)
-      end
     else
       render block
     end
@@ -135,18 +131,42 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def modal(&block)
     styles
-    outer_divs do
-      div_content do
-        div_header
-        div_main(&block)
-        div_footer if footer?
+    dialog_element do
+      div_inner do
+        div_content do
+          div_header
+          div_main(&block)
+          div_footer if footer?
+        end
       end
     end
   end
 
   def styles
     style do
-      raw_html "html:has(dialog[open]),html:has(#modal-container) {overflow: hidden;} html {scrollbar-gutter: stable;}"
+      raw_html <<~CSS.squish
+        html:has(dialog[open]) { overflow: hidden; scrollbar-gutter: stable; }
+        dialog#modal-container { padding: 0; margin: 0; border: none; background: transparent;
+          max-width: 100vw; max-height: 100dvh; width: 100%; height: 100%; overflow-y: auto; }
+        @keyframes utmr-backdrop-in { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes utmr-backdrop-out { from { opacity: 1 } to { opacity: 0 } }
+        @keyframes utmr-dialog-in-mobile { from { opacity: 0; transform: translateY(1rem) } to { opacity: 1; transform: translateY(0) } }
+        @keyframes utmr-dialog-in-desktop { from { opacity: 0; transform: scale(0.95) } to { opacity: 1; transform: scale(1) } }
+        @keyframes utmr-dialog-out-mobile { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(1rem) } }
+        @keyframes utmr-dialog-out-desktop { from { opacity: 1; transform: scale(1) } to { opacity: 0; transform: scale(0.95) } }
+        dialog#modal-container[open]::backdrop { animation: utmr-backdrop-in 300ms ease-out forwards; }
+        dialog#modal-container[open] #modal-inner {
+          animation: utmr-dialog-in-mobile 300ms ease-out forwards; }
+        @media (min-width: 640px) {
+          dialog#modal-container[open] #modal-inner {
+            animation: utmr-dialog-in-desktop 300ms ease-out forwards; } }
+        dialog#modal-container[data-closing]::backdrop { animation: utmr-backdrop-out 200ms ease-in forwards; }
+        dialog#modal-container[data-closing] #modal-inner {
+          animation: utmr-dialog-out-mobile 200ms ease-in forwards; }
+        @media (min-width: 640px) {
+          dialog#modal-container[data-closing] #modal-inner {
+            animation: utmr-dialog-out-desktop 200ms ease-in forwards; } }
+      CSS
     end
   end
 
@@ -154,22 +174,13 @@ class UltimateTurboModal::Base < Phlex::HTML
     respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
   end
 
-  def outer_divs(&block)
-    div_dialog do
-      div_overlay
-      div_outer_dialog do
-        div_inner(&block)
-      end
-    end
-  end
-
-  def div_dialog(&block)
+  def dialog_element(&block)
     data_attributes = {
       controller: "modal",
       modal_target: "container",
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
-      action: "turbo:submit-end->modal#submitEnd keyup@window->modal#closeWithKeyboard click@window->modal#outsideModalClicked",
+      action: "turbo:submit-end->modal#submitEnd cancel->modal#cancelEvent click->modal#dialogClicked",
       padding: padding?.to_s,
       title: title?.to_s,
       header: header?.to_s,
@@ -182,36 +193,12 @@ class UltimateTurboModal::Base < Phlex::HTML
       data_attributes[:utmr_version] = UltimateTurboModal::VERSION
     end
 
-    div(id: "modal-container",
-      class: self.class::DIV_MODAL_CONTAINER_CLASSES,
-      role: "dialog",
+    dialog(id: "modal-container",
+      class: self.class::DIALOG_CLASSES,
       aria: {
-        modal: true,
         labelledby: "modal-title-h"
       },
       data: data_attributes, &block)
-  end
-
-  def div_overlay
-    div(id: "modal-overlay", class: self.class::DIV_OVERLAY_CLASSES,
-      data: { modal_target: "overlay" }.merge(transition_data(:overlay)))
-  end
-
-  def div_outer_dialog(&block)
-    div(id: "modal-outer", class: self.class::DIV_DIALOG_CLASSES,
-      data: { modal_target: "outer" }.merge(transition_data(:dialog)), &block)
-  end
-
-  def transition_data(element)
-    t = self.class::TRANSITIONS[element]
-    {
-      transition_enter: t[:enter][:animation],
-      transition_enter_start: t[:enter][:start],
-      transition_enter_end: t[:enter][:end],
-      transition_leave: t[:leave][:animation],
-      transition_leave_start: t[:leave][:start],
-      transition_leave_end: t[:leave][:end]
-    }
   end
 
   def div_inner(&block)
