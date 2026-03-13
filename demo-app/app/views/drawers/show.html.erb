@@ -1,0 +1,71 @@
+<%# Basic right drawer %>
+<% if params[:id] == "basic" %>
+  <%= drawer(title: "Panel title") do %>
+    <p>Drawer content here. This is a basic right-side drawer.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
+<%# Left drawer %>
+<% elsif params[:id] == "left" %>
+  <%= drawer(position: :left, title: "Left Panel") do %>
+    <p>Left-side drawer content.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
+<%# Drawer with overlay %>
+<% elsif params[:id] == "overlay" %>
+  <%= drawer(overlay: true, title: "With Overlay") do %>
+    <p>This drawer has a shaded backdrop overlay.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
+<%# Large drawer %>
+<% elsif params[:id] == "large" %>
+  <%= drawer(size: :lg, title: "Large Panel") do %>
+    <p>This is a wider drawer (max-w-2xl).</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 10) %></p>
+  <% end %>
+
+<%# Drawer with form %>
+<% elsif params[:id] == "form" %>
+  <%= drawer(title: "New Project") do |m| %>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Project name</label>
+        <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+        <textarea rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+      </div>
+    </div>
+    <% m.footer do %>
+      <div class="flex justify-end space-x-3 w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Cancel</button>
+        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Create</button>
+      </div>
+    <% end %>
+  <% end %>
+
+<%# Long scrolling content %>
+<% elsif params[:id] == "long" %>
+  <%= drawer(title: "Long Content") do %>
+    <div class="space-y-4">
+      <% 20.times do %>
+        <p><%= Faker::Lorem.paragraph(sentence_count: 10) %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+<%# Drawer with footer %>
+<% elsif params[:id] == "footer" %>
+  <%= drawer(title: "With Footer", footer_divider: true) do |m| %>
+    <p>This drawer has a footer section.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+    <% m.footer do %>
+      <div class="flex justify-end w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Done</button>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

@@ -86,6 +86,9 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 | `header_divider` | `true` | Whether to display a divider below the header. |
 | `padding` | `true` | Adds padding inside the modal. |
 | `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
+| `drawer` | `false` | Set to `:right` or `:left` to render as a drawer instead of a modal. |
+| `drawer_size` | `:md` | Drawer width: `:sm`, `:md`, `:lg`, `:xl`, `:full`, or a CSS string. |
+| `overlay` | `true` (modal) / `false` (drawer) | Whether to show a backdrop overlay. |
 
 ### Example usage with options
 
@@ -101,9 +104,85 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 <% end %>
 ```
 
+## Drawers
+
+UTMR includes built-in drawer (slide-out panel) support. Drawers share the same `<dialog>` element and Stimulus controller as modals — no additional JavaScript required.
+
+### Basic Usage
+
+Use the `drawer` helper instead of `modal`:
+
+```erb
+<%= drawer do %>
+  Drawer content here!
+<% end %>
+```
+
+Link to it the same way as a modal:
+
+```erb
+<%= link_to "Open Drawer", "/settings", data: { turbo_frame: "modal" } %>
+```
+
+### Drawer Options
+
+| Name | Default | Description |
+|------|---------|-------------|
+| `position` | `:right` | Which edge the drawer slides from. `:right` or `:left`. |
+| `size` | `:md` | Width of the drawer. One of `:sm`, `:md`, `:lg`, `:xl`, `:full`, or a CSS string (e.g. `"500px"`). |
+| `overlay` | `false` | Whether to show a backdrop overlay behind the drawer. |
+
+All standard modal options (`title`, `close_button`, `padding`, `header`, `footer_divider`, etc.) also work with drawers.
+
+```erb
+<%= drawer(position: :left, size: :lg, overlay: true, title: "Settings") do %>
+  <p>Drawer content</p>
+<% end %>
+```
+
+### Using `modal` with the `drawer` Option
+
+You can also use the `modal` helper directly with the `drawer` option:
+
+```erb
+<%= modal(drawer: :right, drawer_size: :lg) do %>
+  This renders as a drawer.
+<% end %>
+```
+
+### Drawer Size Reference
+
+| Size | Max Width |
+|------|-----------|
+| `:sm` | 24rem (384px) |
+| `:md` | 28rem (448px) |
+| `:lg` | 42rem (672px) |
+| `:xl` | 56rem (896px) |
+| `:full` | Full viewport width minus a small gutter |
+| CSS string | Custom value, e.g. `"500px"` or `"50vw"` |
+
+### Drawer Defaults
+
+Drawers differ from modals in a few defaults:
+- `advance` is always `false` (drawers don't push browser history)
+- `header_divider` is `false`
+- `overlay` is `false`
+
+### Global Configuration
+
+You can set drawer defaults in your initializer:
+
+```ruby
+UltimateTurboModal.configure do |config|
+  config.drawer_size = :lg
+  config.overlay = false
+end
+```
+
 ## Features and capabilities
 
 - Extremely easy to use
+- Built-in drawer (slide-out panel) support with left/right positioning and configurable sizes
 - Fully responsive
 - Does not break if a user navigates directly to a page that is usually shown in a modal
 - Opening a modal in a new browser tab (ie: right click) gracefully degrades without having to code a modal and non-modal version of the same page
@@ -155,6 +234,7 @@ The demo app provides examples of:
 - Different modal configurations
 - Custom styling options
 - Various trigger methods
+- Drawer panels (left and right)
 - Advanced features like scrollable content and custom footers
 
 ## Updating between minor versions

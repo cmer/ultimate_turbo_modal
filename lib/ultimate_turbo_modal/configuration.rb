@@ -12,10 +12,12 @@ module UltimateTurboModal
 
   delegate :flavor, :flavor=, :close_button, :close_button=,
     :advance, :advance=, :padding, :padding=,
+    :overlay, :overlay=, :drawer, :drawer=, :drawer_size, :drawer_size=,
     :allowed_click_outside_selector, :allowed_click_outside_selector=, to: :configuration
 
   class Configuration
-    attr_reader :flavor, :close_button, :advance, :padding, :header, :header_divider, :footer_divider
+    attr_reader :flavor, :close_button, :advance, :padding, :header, :header_divider, :footer_divider,
+      :overlay, :drawer, :drawer_size
     attr_accessor :allowed_click_outside_selector
 
     def self.boolean_option(name)
@@ -30,6 +32,7 @@ module UltimateTurboModal
     boolean_option :header
     boolean_option :header_divider
     boolean_option :footer_divider
+    boolean_option :overlay
 
     def initialize
       @flavor = :tailwind
@@ -39,7 +42,24 @@ module UltimateTurboModal
       @header = true
       @header_divider = true
       @footer_divider = true
+      @overlay = true
+      @drawer = false
+      @drawer_size = :md
       @allowed_click_outside_selector = []
+    end
+
+    def drawer=(value)
+      valid = [false, :right, :left]
+      raise ArgumentError, "Must be false, :right, or :left" unless valid.include?(value)
+      @drawer = value
+    end
+
+    def drawer_size=(value)
+      valid_symbols = [:sm, :md, :lg, :xl, :full]
+      unless valid_symbols.include?(value) || value.is_a?(String)
+        raise ArgumentError, "Must be one of #{valid_symbols} or a CSS string"
+      end
+      @drawer_size = value
     end
 
     def flavor=(flavor)

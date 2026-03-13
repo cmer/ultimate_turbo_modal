@@ -1,0 +1,20 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-3xl space-y-24">
+    <div>
+      <h1 class="<%= h1_classes %>">Drawers</h1>
+      <ul class="list-disc ml-6 dark:text-white">
+        <li class="py-2"><%= link_to "Right drawer (default)", drawer_path(:basic), data: {turbo_frame: "modal"} %>
+        <li class="py-2"><%= link_to "Left drawer", drawer_path(:left), data: {turbo_frame: "modal"} %>
+        <li class="py-2"><%= link_to "Drawer with overlay", drawer_path(:overlay), data: {turbo_frame: "modal"} %>
+        <li class="py-2"><%= link_to "Large drawer", drawer_path(:large), data: {turbo_frame: "modal"} %>
+        <li class="py-2"><%= link_to "Drawer with form", drawer_path(:form), data: {turbo_frame: "modal"} %>
+        <li class="py-2"><%= link_to "Drawer with long content", drawer_path(:long), data: {turbo_frame: "modal"} %>
+        <li class="py-2"><%= link_to "Drawer with footer", drawer_path(:footer), data: {turbo_frame: "modal"} %>
+      </ul>
+    </div>
+
+    <div>
+      <p class="dark:text-white"><%= link_to "← Back to modal demos", modal_index_path %></p>
+    </div>
+  </div>
+</div>

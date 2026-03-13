@@ -16,6 +16,7 @@
 - **BREAKING**: Replaced div-based modal with native HTML `<dialog>` element. Flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` replaced by `DIALOG_CLASSES`. Users with custom flavors must update their flavor file.
 - Removed `el-transition` and `focus-trap` npm dependencies — native `<dialog>` handles focus trapping, and CSS `@keyframes` handle animations
 - Simplified modal HTML structure from 6 nested containers to 3 (dialog + inner + content)
+- Added drawer support with `drawer()` view helper and `modal(drawer: :right)` option. Supports `:right` and `:left` positions, configurable size (`:sm`, `:md`, `:lg`, `:xl`, `:full`), and optional overlay backdrop. Drawers share the same `<dialog>` element and Stimulus controller — no JavaScript changes required.
 
 ## [2.2.2] - 2026-03-12
 
