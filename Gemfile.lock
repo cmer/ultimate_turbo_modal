@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ultimate_turbo_modal (2.2.2)
+    ultimate_turbo_modal (3.0.0.alpha)
       actionpack
       activesupport
       phlex-rails
@@ -180,6 +180,7 @@ PLATFORMS
   arm64-darwin-22
   arm64-darwin-23
   arm64-darwin-24
+  arm64-darwin-25
 
 DEPENDENCIES
   rake (~> 13.0)
