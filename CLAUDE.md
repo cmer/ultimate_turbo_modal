@@ -4,265 +4,311 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Ultimate Turbo Modal (UTMR) is a full-featured modal implementation for Rails applications using Turbo, Stimulus, and Hotwire. It consists of both a Ruby gem and an npm package that work together to provide seamless modal functionality with proper focus management, history manipulation, and customizable styling.
+Ultimate Turbo Modal (UTMR) is a full-featured modal implementation for Rails applications using Turbo, Stimulus, and Hotwire. It consists of a **Ruby gem** (server-side HTML generation via Phlex) and an **npm package** (client-side behavior via Stimulus), working together to provide seamless modal functionality with focus trapping, scroll locking, browser history manipulation, and customizable styling.
 
-## Architecture
-
-### High-Level Design
-
-The system follows a separation of concerns between server-side rendering (Ruby/Rails) and client-side behavior (JavaScript/Stimulus):
-
-1. **Server-Side (Ruby Gem)**: Handles HTML generation, configuration management, and Rails integration
-2. **Client-Side (JavaScript Package)**: Manages modal behavior, focus trapping, scroll locking, and Turbo interactions
-3. **Communication Layer**: Uses Turbo Frames, Turbo Streams, and data attributes to coordinate between server and client
-
-### Core Components
-
-#### Ruby Gem Architecture
-
-- **Module Structure**: `UltimateTurboModal` is the main module that delegates to configuration and instantiates modal classes
-- **Base Class**: `UltimateTurboModal::Base` extends `Phlex::HTML` for component-based HTML generation
-- **Configuration System**: Centralized configuration with validation and type checking
-- **Flavor System**: CSS framework-specific implementations (Tailwind, Vanilla, Custom) that define styling classes
-- **Rails Integration**: Via Railtie that injects helpers into ActionController and ActionView
-
-#### JavaScript Architecture
-
-- **Stimulus Controller**: `modal_controller.js` handles all modal interactions
-- **Dependencies**:
-  - `el-transition`: For smooth enter/leave animations
-  - `focus-trap`: For accessibility-compliant focus management
-  - `idiomorph`: For intelligent DOM morphing to prevent flicker
-- **Global Registration**: Modal instance exposed as `window.modal` for programmatic access
-- **Turbo Integration**: Custom stream actions and frame handling
-
-## Detailed Implementation
-
-### Ruby Components
-
-#### `UltimateTurboModal` Module (`lib/ultimate_turbo_modal.rb`)
-- Entry point for the gem
-- Factory method `new` creates modal instances
-- `modal_class` method dynamically loads flavor classes based on configuration
-- Extends self for module-level methods
-
-#### `Base` Class (`lib/ultimate_turbo_modal/base.rb`)
-- **Inheritance**: `Phlex::HTML` for HTML generation with Ruby DSL
-- **Mixins**:
-  - `Phlex::DeferredRenderWithMainContent` for content block handling
-  - Dynamic inclusion of Turbo helpers (FramesHelper, StreamsHelper)
-- **Key Methods**:
-  - `initialize`: Accepts configuration options with defaults from global config
-  - `view_template`: Main rendering method that wraps content in appropriate Turbo tags
-  - `modal`: Orchestrates HTML structure generation
-  - `div_*` methods: Generate specific HTML elements with proper classes and attributes
-- **Data Attributes**: Passes configuration to JavaScript via data attributes on the container div
-
-#### `Configuration` Class (`lib/ultimate_turbo_modal/configuration.rb`)
-- **Options with Validation**:
-  - `flavor`: Symbol/String for CSS framework (default: `:tailwind`)
-  - `close_button`: Boolean for showing close button
-  - `advance`: Boolean for browser history manipulation
-  - `padding`: Boolean or String for content padding
-  - `header`, `header_divider`, `footer_divider`: Boolean display options
-  - `allowed_click_outside_selector`: Array of CSS selectors that won't dismiss modal
-- **Type Safety**: Each setter validates input types and raises `ArgumentError` on invalid values
-
-#### Rails Helpers
-
-##### `ViewHelper` (`helpers/view_helper.rb`)
-- `modal` method: Renders modal component with current request context
-- Instantiates `UltimateTurboModal` with passed options
-
-##### `ControllerHelper` (`helpers/controller_helper.rb`)
-- `inside_modal?` method: Detects if request is within modal context
-- Uses `Turbo-Frame` header to determine modal context
-- Exposed as helper method to views
-
-##### `StreamHelper` (`helpers/stream_helper.rb`)
-- `modal` method: Generates Turbo Stream actions for modal control
-- Supports `:close` and `:hide` messages
-- Creates custom `modal` stream action with message attribute
-
-#### Flavor System
-- Located in generator templates (`lib/generators/ultimate_turbo_modal/templates/flavors/`)
-- Each flavor defines CSS class constants for modal elements:
-  - `DIV_DIALOG_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_OUTER_CLASSES`, etc.
-- Flavors inherit from `Base` and override class constants
-- Supports Tailwind (v3 and v4), Vanilla CSS, and Custom implementations
-
-### JavaScript Components
-
-#### Modal Controller (`javascript/modal_controller.js`)
-
-##### Stimulus Configuration
-- **Targets**: `container`, `content`
-- **Values**: `advanceUrl`, `allowedClickOutsideSelector`
-- **Actions**: Responds to keyboard, click, and Turbo events
-
-##### Lifecycle Methods
-- **`connect()`**:
-  - Initializes focus trap and scroll lock variables
-  - Shows modal immediately
-  - Sets up popstate listener for browser back button
-  - Exposes controller as `window.modal`
-- **`disconnect()`**: Cleans up focus trap and global reference
-
-##### Core Functionality
-
-###### Modal Display
-- **`showModal()`**:
-  - Locks body scroll
-  - Triggers enter transition
-  - Activates focus trap after transition
-  - Pushes history state if `advance` is enabled
-- **`hideModal()`**:
-  - Prevents double-hiding with `hidingModal` flag
-  - Dispatches cancelable `modal:closing` event
-  - Deactivates focus trap
-  - Triggers leave transition
-  - Cleans up DOM and history
-  - Dispatches `modal:closed` event
-
-###### Focus Management (`#activateFocusTrap()`, `#deactivateFocusTrap()`)
-- Creates focus trap with sensible defaults
-- Finds first focusable element or focuses modal itself
-- Handles errors gracefully without breaking modal
-- Respects modal's own keyboard/click handlers
-
-###### Scroll Locking (`#lockBodyScroll()`, `#unlockBodyScroll()`)
-- Stores current scroll position
-- Sets body to `position: fixed` to prevent scroll
-- Restores original overflow and scroll position on unlock
-- Prevents layout shift during modal display
-
-###### History Management
-- Uses data attribute on body to track history state
-- `#hasHistoryAdvanced()`, `#setHistoryAdvanced()`, `#resetHistoryAdvanced()`
-- Coordinates with browser back button via popstate listener
-
-###### Event Handlers
-- **`submitEnd()`**: Closes modal on successful form submission
-- **`closeWithKeyboard()`**: ESC key handler
-- **`outsideModalClicked()`**: Dismisses modal on outside clicks unless allowed selector matches
-
-###### Version Checking
-- `#checkVersions()`: Warns about gem/npm version mismatches in development
-- Helps developers keep packages in sync
-
-#### Main Package Entry (`javascript/index.js`)
-
-##### Turbo Stream Actions
-- Registers custom `modal` stream action
-- Handles `hide` and `close` messages via `window.modal` reference
-
-##### Turbo Frame Integration
-- **`handleTurboFrameMissing`**: Escapes modal on redirects
-- **`handleTurboBeforeFrameRender`**: Uses Idiomorph for intelligent morphing
-  - Prevents flicker and unwanted animations
-  - Morphs only innerHTML to preserve modal container
-
-### Modal Lifecycle Flow
-
-1. **Trigger**: Link/form targets `data-turbo-frame="modal"`
-2. **Request**: Rails controller renders modal content
-3. **Response**:
-   - If Turbo Frame request: Wrapped in `<turbo-frame id="modal">`
-   - If Turbo Stream: Wrapped in stream action targeting modal
-4. **Client Processing**:
-   - Turbo updates modal frame content
-   - Stimulus controller connects and shows modal
-   - Focus trap activates, scroll locks
-   - History state pushed (if enabled)
-5. **Interaction**:
-   - User interacts with modal content
-   - Form submissions handled via Turbo
-   - ESC key, close button, or outside clicks trigger hiding
-6. **Dismissal**:
-   - `modal:closing` event fired (cancelable)
-   - Focus trap deactivates
-   - Leave transition plays
-   - DOM cleaned up
-   - History restored
-   - `modal:closed` event fired
+**Author:** Carl Mercier (foss@carlmercier.com)
 
 ## Project Structure
 
-- **Ruby Gem**: Main gem code in `/lib/ultimate_turbo_modal/`
-  - `base.rb`: Core modal component (Phlex-based)
-  - `configuration.rb`: Global configuration management
-  - `helpers/`: Rails helpers for views and controllers
-  - `railtie.rb`: Rails integration setup
-  - Generators in `/lib/generators/` for installation
-
-- **JavaScript Package**: Located in `/javascript/`
-  - `modal_controller.js`: Stimulus controller for modal behavior
-  - `index.js`: Main entry point with Turbo integration
-  - `styles/`: CSS files for vanilla styling
-  - Distributed files built to `/javascript/dist/`
-
-- **Demo Application**: Located in `/demo-app/`
-  - `Procfile.dev`: Development process file for overmind/foreman
-  - `bin/dev`: Development script for starting the demo app
-
-## Common Development Commands
-
-### JavaScript Development (run from `/javascript/` directory)
-```bash
-# Install dependencies
-yarn install
-
-# Build the JavaScript package
-yarn build
-
-# Release to npm (updates version and publishes)
-yarn release
+```
+/                               # Ruby gem root
+├── VERSION                     # Single source of truth for version (read by both gem and npm)
+├── ultimate_turbo_modal.gemspec
+├── Gemfile                     # Gem dev dependencies (standard, standard-rails)
+├── Rakefile                    # Default task: standard (Ruby linter)
+├── CHANGELOG.md
+├── lib/
+│   ├── ultimate_turbo_modal.rb         # Entry point, factory method, flavor loading
+│   ├── ultimate_turbo_modal/
+│   │   ├── version.rb                  # Reads VERSION file
+│   │   ├── configuration.rb            # Config class + UltimateTurboModal.configure
+│   │   ├── base.rb                     # Core Phlex component (HTML rendering)
+│   │   ├── railtie.rb                  # Rails integration (hooks helpers into AC/AV)
+│   │   └── helpers/
+│   │       ├── controller_helper.rb    # inside_modal? method
+│   │       ├── view_helper.rb          # modal() view helper
+│   │       └── stream_helper.rb        # turbo_stream.modal(:close) helper
+│   ├── phlex/
+│   │   └── deferred_render_with_main_content.rb  # Phlex mixin for deferred rendering
+│   └── generators/ultimate_turbo_modal/
+│       ├── base.rb                     # Shared generator logic (JS package detection)
+│       ├── install_generator.rb        # `rails g ultimate_turbo_modal:install`
+│       ├── update_generator.rb         # `rails g ultimate_turbo_modal:update`
+│       └── templates/
+│           ├── ultimate_turbo_modal.rb # Initializer template
+│           └── flavors/
+│               ├── tailwind.rb         # Tailwind v4+ classes & transitions
+│               ├── vanilla.rb          # Vanilla CSS classes & transitions
+│               └── custom.rb           # Empty template for user-defined styling
+├── javascript/                 # npm package source
+│   ├── package.json            # npm: "ultimate_turbo_modal"
+│   ├── index.js                # Entry: Turbo stream actions, frame handlers, exports
+│   ├── modal_controller.js     # Stimulus controller (all modal behavior)
+│   ├── rollup.config.js        # Build config (ESM output, terser, version replacement)
+│   ├── styles/
+│   │   └── vanilla.css         # Vanilla CSS flavor styles + transitions
+│   ├── scripts/
+│   │   ├── release-npm.sh      # npm publish script
+│   │   └── update-version.js   # Syncs VERSION → package.json version
+│   └── dist/                   # Built output (committed, published to npm)
+├── script/
+│   └── build_and_release.sh    # Combined gem + npm release script
+└── demo-app/                   # Rails 8 app for manual testing
+    ├── Procfile.dev             # Run with overmind/foreman (web, css, js, lib watchers)
+    └── ...                     # Uses path gem + link:../javascript for local dev
 ```
 
-### Ruby Gem Development (run from root)
-```bash
-# Run tests
-bundle exec rake test
+## Architecture
 
-# Build gem
-gem build ultimate_turbo_modal.gemspec
+### How the Pieces Fit Together
 
-# Release process (Ruby + JS)
-./script/build_and_release.sh
+1. **Server-Side (Ruby Gem)**: The `modal()` view helper instantiates `UltimateTurboModal.new(...)`, which resolves the configured flavor class (e.g., `UltimateTurboModal::Flavors::Tailwind`). This class inherits from `UltimateTurboModal::Base` (a Phlex component) and defines CSS class constants + transition data. The base class renders the modal HTML structure with data attributes that configure the Stimulus controller.
+
+2. **Client-Side (npm Package)**: The Stimulus `modal` controller connects when the modal HTML appears in the DOM. It handles showing/hiding with enter/leave transitions (`el-transition`), focus trapping (`focus-trap`), scroll locking, browser history, and dismissal via ESC/click-outside/form-submission.
+
+3. **Communication**: Turbo Frames (`<turbo-frame id="modal">`) carry modal content. Turbo Streams can send `modal` stream actions to close modals from the server. Idiomorph is used for intelligent DOM morphing to prevent flicker when modal content updates.
+
+### Flavor System
+
+Flavors are Ruby classes that inherit from `UltimateTurboModal::Base` and define constants for CSS classes and transitions. They live in `config/initializers/` in the consuming Rails app (copied there by the install generator). Available flavors:
+
+- **`tailwind`** — Tailwind CSS v4+ (default). Uses utility classes and `group-data-[*]` selectors.
+- **`vanilla`** — Plain CSS with transition classes defined in `javascript/styles/vanilla.css`.
+- **`custom`** — Empty template for users to define their own classes.
+
+Each flavor defines these constants:
+- `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, `DIV_INNER_CLASSES`, `DIV_CONTENT_CLASSES`, `DIV_MAIN_CLASSES`, `DIV_HEADER_CLASSES`, `DIV_TITLE_CLASSES`, `DIV_TITLE_H_CLASSES`, `DIV_FOOTER_CLASSES`, `BUTTON_CLOSE_CLASSES`, `BUTTON_CLOSE_SR_ONLY_CLASSES`, `CLOSE_BUTTON_TAG_CLASSES`, `ICON_CLOSE_CLASSES`
+- `TRANSITIONS` hash with `overlay` and `dialog` keys, each containing `enter`/`leave` with `animation`, `start`, `end` values
+
+### Modal HTML Structure
+
+```
+#modal-container (role="dialog", data-controller="modal", data-* config)
+  #modal-overlay (transition targets for overlay fade)
+  #modal-outer (transition targets for dialog slide/scale)
+    turbo-frame#modal-inner (only when turbo frame request)
+      #modal-inner
+        #modal-content (data-modal-target="content", focus trap container)
+          #modal-header
+            #modal-title / #modal-title-h
+            #modal-close > button
+          #modal-main (user content rendered here)
+          #modal-footer (optional)
 ```
 
-## Architecture & Key Concepts
+### Stimulus Controller Targets and Values
 
-### Modal Options System
-Options can be set at three levels:
-1. **Global defaults** via `UltimateTurboModal.configure` in configuration.rb
-2. **Instance options** passed to the `modal` helper
-3. **Runtime values** via blocks (for title/footer)
+- **Targets**: `container`, `content`, `overlay`, `outer`
+- **Values**: `advanceUrl` (String), `allowedClickOutsideSelector` (String)
 
-Current options: `advance`, `close_button`, `header`, `header_divider`, `padding`, `title`
+### Key Data Attributes on `#modal-container`
 
-### Stimulus Controller Values
-The modal controller uses Stimulus values to receive configuration:
-- `advanceUrl`: URL for browser history manipulation
-- `allowedClickOutsideSelector`: CSS selectors that won't dismiss modal when clicked
+These data attributes are set by the Ruby side and used for conditional styling via CSS (Tailwind `group-data-[*]` or vanilla CSS `[data-*]` selectors):
+- `data-padding`, `data-title`, `data-header`, `data-close-button`, `data-header-divider`, `data-footer-divider`
+- `data-utmr-version` (dev/test only, for version mismatch warnings)
 
-### Modal Lifecycle
-1. Link clicked with `data-turbo-frame="modal"`
-2. Turbo loads content into the modal frame
-3. Stimulus controller connects and shows modal
-4. Modal can be dismissed via: ESC key, close button, clicking outside, or programmatically
+## Configuration Options
+
+Options can be set at three levels (lowest wins):
+1. **Global defaults** via `UltimateTurboModal.configure` block in an initializer
+2. **Per-instance** via the `modal()` view helper
+3. **Block content** via `m.title { }` and `m.footer { }` blocks
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `flavor` | Symbol/String | `:tailwind` | CSS framework flavor |
+| `advance` | Boolean or String | `true` | Push URL to browser history; pass a String for custom URL |
+| `close_button` | Boolean | `true` | Show close button |
+| `padding` | Boolean or String | `true` | Add padding to modal content |
+| `header` | Boolean | `true` | Show header section |
+| `header_divider` | Boolean | `true` | Show divider below header |
+| `footer_divider` | Boolean | `true` | Show divider above footer |
+| `title` | String | `nil` | Modal title text |
+| `allowed_click_outside_selector` | Array | `[]` | CSS selectors for elements outside modal that won't dismiss it |
+| `close_button_data_action` | String | `"modal#hideModal"` | Custom data-action for close button |
+| `close_button_sr_label` | String | `"Close modal"` | Screen reader label for close button |
+| `content_div_data` | Hash | `nil` | Additional data attributes on `#modal-content` |
 
 ### Adding New Configuration Options
+
 When adding a new option:
-
-1. Add to `Configuration` class with getter/setter methods
-2. Add to `UltimateTurboModal` delegators
+1. Add to `Configuration` class with getter/setter (use `boolean_option` macro for booleans)
+2. Add to `UltimateTurboModal` delegators if it should be globally configurable
 3. Add to `Base#initialize` parameters with default from configuration
-4. Pass to JavaScript via data attributes in `Base#div_dialog`
-5. Add as Stimulus value in `modal_controller.js`
-6. Update README.md options table
+4. Pass to JavaScript via data attributes in `Base#div_dialog` if needed by the controller
+5. Add as Stimulus value in `modal_controller.js` if JavaScript needs to read it
+6. Add corresponding CSS selectors in flavor files if styling depends on it
+7. Update README.md
 
-## Testing Approach
-- JavaScript: No test framework currently set up
-- Ruby: Use standard Rails testing practices
-- Manual testing via the demo app (located in `./demo-app`)
+## Modal Lifecycle
+
+1. User clicks a link with `data-turbo-frame="modal"` (or submits a form targeting that frame)
+2. Rails controller renders the view; the `modal()` helper wraps content in a `<turbo-frame id="modal">`
+3. Turbo replaces the frame content; Stimulus `modal` controller `connect()` fires
+4. Controller locks body scroll, runs enter transitions on overlay + outer, activates focus trap
+5. If `advance` is enabled, pushes URL to browser history
+6. User interacts; forms submit via Turbo within the modal
+7. Dismissal triggers: ESC key, close button click, outside click, successful form submission, `history.back()`, or programmatic `window.modal.hide()`
+8. `modal:closing` event fires (cancelable — if `preventDefault()` is called, modal stays open)
+9. Focus trap deactivates, leave transitions play
+10. After transitions complete: DOM cleaned up, frame `src` removed, container removed, history restored
+11. `modal:closed` event fires (not cancelable)
+
+### Server-Side Dismissal
+
+From a controller, use Turbo Streams to close the modal:
+```ruby
+turbo_stream.modal(:close)  # or :hide
+```
+
+This generates a `<turbo-stream action="modal" message="hide">` which the JS `Turbo.StreamActions.modal` handler processes. Typically used in `.turbo_stream.erb` templates:
+```erb
+<%= turbo_stream.modal(:hide) %>
+```
+
+### Detecting Modal Context
+
+Controllers and views can check if the current request is inside a modal:
+```ruby
+if inside_modal?
+  # Render modal-specific content
+end
+```
+This checks for the `Turbo-Frame: modal` request header.
+
+### Programmatic Access
+
+The modal controller instance is available as `window.modal` while a modal is open. Methods:
+- `window.modal.hide()` / `window.modal.close()` — dismiss the modal
+- `window.modal.hideModal()` — same as above
+- `window.modal.refreshPage()` — Turbo visit to refresh the current page
+
+### JavaScript Events
+
+- `modal:closing` (cancelable) — dispatched on the turbo-frame before the modal begins hiding
+- `modal:closed` (not cancelable) — dispatched on the turbo-frame after leave transitions complete and DOM cleanup is done
+
+## Development
+
+### Prerequisites
+- Ruby >= 3.0 (project uses 3.2.0 via `.ruby-version`)
+- Node.js + Yarn 1.x
+- Bundler
+
+### Common Commands
+
+```bash
+# Ruby linting (default rake task)
+bundle exec rake standard        # or just: bundle exec rake
+
+# Build the gem
+gem build ultimate_turbo_modal.gemspec
+
+# JavaScript (from /javascript/)
+cd javascript
+yarn install
+yarn build                        # Rollup build → dist/
+yarn build:watch                  # Watch mode
+
+# Demo app (from /demo-app/)
+cd demo-app
+bin/dev                           # Starts Rails + CSS + JS + lib watchers via Procfile.dev
+# Runs on http://localhost:3000
+# Choose Tailwind or Vanilla flavor from the landing page
+
+# Full release (gem + npm)
+./script/build_and_release.sh     # Options: --skip-gem, --skip-js
+```
+
+### Demo App Details
+
+The demo app is a Rails 8 app using:
+- Propshaft (asset pipeline)
+- jsbundling-rails (esbuild) + cssbundling-rails (PostCSS + Tailwind v4)
+- SQLite3 + Faker for seed data
+- Links the gem via `path: "../"` and the JS package via `link:../javascript`
+- The `SetFlavor` concern dynamically switches flavors based on URL params/cookies
+- `bin/dev` symlinks flavor files from the gem's `templates/flavors/` into `config/initializers/` before starting
+- `Procfile.dev` runs 4 processes: web server, CSS watcher, JS watcher, and library JS watcher
+
+### Version Management
+
+The `VERSION` file at the repo root is the single source of truth:
+- **Ruby gem**: `lib/ultimate_turbo_modal/version.rb` reads it via `File.read`
+- **npm package**: `javascript/scripts/update-version.js` syncs it to `package.json`
+- **Version check**: In dev/test, the gem passes its version as a data attribute; the JS controller compares against the npm package version and warns on mismatch
+
+### Release Process
+
+1. Update `VERSION` file with new version
+2. Update `CHANGELOG.md`
+3. Commit changes
+4. Run `./script/build_and_release.sh` which:
+   - Builds JS package, updates demo app deps, commits lock files
+   - Runs `bundle exec rake release` (builds gem, creates git tag, pushes to RubyGems)
+   - Runs `javascript/scripts/release-npm.sh` (syncs version, builds, commits, publishes to npm)
+
+### Build System
+
+The JavaScript package uses Rollup with these plugins:
+- `@rollup/plugin-node-resolve` — resolves node_modules
+- `rollup-plugin-css-only` — extracts vanilla.css to `dist/vanilla.css`
+- `@rollup/plugin-replace` — replaces `__PACKAGE_VERSION__` placeholder with actual version
+- `rollup-plugin-terser` — minifies the `.min.js` output
+
+Output: ESM format. `@hotwired/stimulus` is marked as external (not bundled).
+
+### Linting
+
+- **Ruby**: [Standard Ruby](https://github.com/standardrb/standard) with `standard-rails` plugin (targeting Rails 7.0). Run `bundle exec rake` (default task). Config in `.standard.yml`. Standard enforces no semicolons, double quotes, and other opinionated rules — do not add RuboCop-style configurations that conflict.
+- **JavaScript**: No linter currently configured.
+
+## Key Dependencies
+
+### Ruby Gem
+- `phlex-rails` — Component-based HTML rendering
+- `turbo-rails` — Turbo Frame/Stream helpers
+- `stimulus-rails` — Stimulus integration
+- `actionpack`, `activesupport`, `railties` — Minimal Rails dependencies
+
+### npm Package
+- `@hotwired/stimulus` (^3.2.2) — Stimulus controller framework (external, not bundled)
+- `@hotwired/turbo-rails` (^8.0.0) — Turbo integration
+- `el-transition` (^0.0.7) — CSS transition enter/leave helpers
+- `focus-trap` (^7.6.5) — Accessible focus trapping
+- `idiomorph` (^0.7.3) — Intelligent DOM morphing
+
+## Important Implementation Details
+
+### Phlex Compatibility
+- `raw_html()` helper in `Base` handles both Phlex 1 (`raw`) and Phlex 2 (`unsafe_raw`)
+- `Phlex::DeferredRenderWithMainContent` is a custom mixin (in `lib/phlex/`) that captures the block content and passes it to the template, enabling the `m.title { }` / `m.footer { }` DSL
+
+### Turbo Helper Inclusion
+Turbo helpers (`Turbo::FramesHelper`, `Turbo::StreamsHelper`, etc.) are included at the class level via `self.include_turbo_helpers` with a `@turbo_helpers_included` guard. This is called from `initialize` but only runs once per class for thread safety and performance.
+
+### `method_missing` / `respond_to_missing?`
+`Base` implements these to delegate to included modules. This is needed because Phlex components use a different method resolution order than typical Rails views.
+
+### Scroll Locking
+Uses `position: fixed` on `<body>` with stored scroll position. The `styles` method also injects an inline `<style>` tag that sets `overflow: hidden` and `scrollbar-gutter: stable` on `<html>` when a modal is present, preventing layout shift.
+
+### History Management
+Uses a `data-turbo-modal-history-advanced` attribute on `<body>` to track whether `history.pushState` was called. The popstate listener resets the modal when the user navigates back. The `disconnect()` lifecycle properly cleans up the popstate listener to prevent leaks.
+
+### Outside Click Handling
+`outsideModalClicked` checks three conditions:
+1. The clicked element is still in the DOM (`document.contains(e.target)`)
+2. The click was not inside `contentTarget`
+3. The click was not on an element matching `allowedClickOutsideSelectorValue`
+
+### Turbo Frame Integration (index.js)
+- `turbo:frame-missing` handler: When a response redirects and the target is a modal frame, it escapes the modal and performs a full Turbo visit
+- `turbo:before-frame-render` handler: Uses Idiomorph with `morphstyle: 'innerHTML'` for modal frames, preventing flicker and re-triggering of enter transitions
+- Event listeners are added with a preceding `removeEventListener` to prevent duplicates on hot reload
+
+## Testing
+
+- **No automated test suite** — Ruby has no test files; JavaScript has no test framework
+- **Manual testing** via the demo app at `./demo-app`
+- The demo app exercises: CRUD modals, photo modals (no header/padding), long scrolling content, form submission with server-side close, advance history, focus trapping
