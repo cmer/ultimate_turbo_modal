@@ -12,6 +12,8 @@ module UltimateTurboModal
 
   delegate :flavor, :flavor=, :close_button, :close_button=,
     :advance, :advance=, :padding, :padding=,
+    :header, :header=, :header_divider, :header_divider=,
+    :footer_divider, :footer_divider=,
     :overlay, :overlay=, :drawer, :drawer=, :drawer_size, :drawer_size=,
     :allowed_click_outside_selector, :allowed_click_outside_selector=, to: :configuration
 
