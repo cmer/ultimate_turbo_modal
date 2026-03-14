@@ -147,11 +147,11 @@ class UltimateTurboModal::Base < Phlex::HTML
   def modal(&block)
     styles
     dialog_element do
-      div_inner do
-        div_content do
-          div_header
-          div_main(&block)
-          div_footer if footer?
+      modal_inner do
+        modal_content do
+          modal_header
+          modal_main(&block)
+          modal_footer if footer?
         end
       end
     end
@@ -197,6 +197,11 @@ class UltimateTurboModal::Base < Phlex::HTML
       "Invalid drawer size: #{value.inspect}. Must be one of #{VALID_DRAWER_SIZES.map(&:inspect).join(", ")} or a CSS length string (e.g., \"30rem\", \"500px\", \"50vw\")"
   end
 
+  def classes_for(suffix)
+    prefix = drawer? ? "DRAWER" : "MODAL"
+    self.class.const_get("#{prefix}_#{suffix}")
+  end
+
   def custom_drawer_size?
     @drawer_size.present? && !VALID_DRAWER_SIZES.include?(@drawer_size.to_s.to_sym)
   end
@@ -226,7 +231,7 @@ class UltimateTurboModal::Base < Phlex::HTML
       data_attributes[:utmr_version] = UltimateTurboModal::VERSION
     end
 
-    dialog_classes = drawer? ? self.class::DRAWER_DIALOG_CLASSES : self.class::DIALOG_CLASSES
+    dialog_classes = classes_for("DIALOG_CLASSES")
 
     inline_style = nil
     if drawer? && custom_drawer_size?
@@ -244,52 +249,22 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   ## Modal-specific elements
 
-  def div_inner(&block)
+  def modal_inner(&block)
     maybe_turbo_frame("modal-inner") do
-      div(id: "modal-inner", class: self.class::DIV_INNER_CLASSES, &block)
+      div(id: "modal-inner", class: self.class::MODAL_INNER_CLASSES, &block)
     end
   end
 
-  def div_content(&block)
+  def modal_content(&block)
     data = (content_div_data || {}).merge({modal_target: "content"})
-    div(id: "modal-content", class: self.class::DIV_CONTENT_CLASSES, data: data, &block)
+    div(id: "modal-content", class: self.class::MODAL_CONTENT_CLASSES, data: data, &block)
   end
 
-  def div_main(&block)
-    div(id: "modal-main", class: self.class::DIV_MAIN_CLASSES, &block)
-  end
-
-  def div_header(&block)
-    div(id: "modal-header", class: self.class::DIV_HEADER_CLASSES) do
-      div_title
-      button_close
-    end
-  end
-
-  def div_title
-    div(id: "modal-title", class: self.class::DIV_TITLE_CLASSES) do
-      if @title_block.present?
-        render @title_block
-      else
-        h3(id: "modal-title-h", class: self.class::DIV_TITLE_H_CLASSES) { @title }
-      end
-    end
-  end
-
-  def div_footer
-    div(id: "modal-footer", class: self.class::DIV_FOOTER_CLASSES) do
-      render @footer
-    end
-  end
-
-  def button_close
-    div(id: "modal-close", class: self.class::BUTTON_CLOSE_CLASSES) do
-      close_button_tag(self.class::CLOSE_BUTTON_TAG_CLASSES) do
-        close_icon_svg(self.class::ICON_CLOSE_CLASSES)
-        span(class: self.class::BUTTON_CLOSE_SR_ONLY_CLASSES) { @close_button_sr_label }
-      end
-    end
-  end
+  def modal_main(&block) = render_main(&block)
+  def modal_header = render_header
+  def modal_title = render_title
+  def modal_footer = render_footer
+  def modal_close = render_close
 
   ## Drawer-specific elements
 
@@ -307,39 +282,52 @@ class UltimateTurboModal::Base < Phlex::HTML
     div(id: "modal-content", class: self.class::DRAWER_CONTENT_CLASSES, data: content_div_data, &block)
   end
 
-  def drawer_main(&block)
-    div(id: "modal-main", class: self.class::DRAWER_MAIN_CLASSES, &block)
-  end
+  def drawer_main(&block) = render_main(&block)
+  def drawer_header = render_header
+  def drawer_title = render_title
+  def drawer_footer = render_footer
 
-  def drawer_header(&block)
-    div(id: "modal-header", class: self.class::DRAWER_HEADER_CLASSES) do
-      drawer_title
-      drawer_button_close
+  def drawer_close
+    render_close do
+      span(class: self.class::DRAWER_CLOSE_HIT_AREA_CLASSES) if self.class.const_defined?(:DRAWER_CLOSE_HIT_AREA_CLASSES)
     end
   end
 
-  def drawer_title
-    div(id: "modal-title", class: self.class::DRAWER_TITLE_CLASSES) do
+  ## Shared rendering
+
+  def render_main(&block)
+    div(id: "modal-main", class: classes_for("MAIN_CLASSES"), &block)
+  end
+
+  def render_header
+    div(id: "modal-header", class: classes_for("HEADER_CLASSES")) do
+      render_title
+      drawer? ? drawer_close : modal_close
+    end
+  end
+
+  def render_title
+    div(id: "modal-title", class: classes_for("TITLE_CLASSES")) do
       if @title_block.present?
         render @title_block
       else
-        h3(id: "modal-title-h", class: self.class::DRAWER_TITLE_H_CLASSES) { @title }
+        h3(id: "modal-title-h", class: classes_for("TITLE_H_CLASSES")) { @title }
       end
     end
   end
 
-  def drawer_footer
-    div(id: "modal-footer", class: self.class::DRAWER_FOOTER_CLASSES) do
+  def render_footer
+    div(id: "modal-footer", class: classes_for("FOOTER_CLASSES")) do
       render @footer
     end
   end
 
-  def drawer_button_close
-    div(id: "modal-close", class: self.class::DRAWER_CLOSE_CLASSES) do
-      close_button_tag(self.class::DRAWER_CLOSE_BUTTON_CLASSES) do
-        span(class: self.class::DRAWER_CLOSE_HIT_AREA_CLASSES) if self.class.const_defined?(:DRAWER_CLOSE_HIT_AREA_CLASSES)
-        close_icon_svg(self.class::DRAWER_CLOSE_ICON_CLASSES)
-        span(class: self.class::DRAWER_CLOSE_SR_CLASSES) { @close_button_sr_label }
+  def render_close
+    div(id: "modal-close", class: classes_for("CLOSE_CLASSES")) do
+      close_button_tag(classes_for("CLOSE_BUTTON_CLASSES")) do
+        yield if block_given?
+        close_icon_svg(classes_for("CLOSE_ICON_CLASSES"))
+        span(class: classes_for("CLOSE_SR_CLASSES")) { @close_button_sr_label }
       end
     end
   end

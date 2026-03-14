@@ -7,18 +7,18 @@ module UltimateTurboModal::Flavors
   class Vanilla < UltimateTurboModal::Base
     STYLES = ""
 
-    DIALOG_CLASSES = "modal-container"
-    DIV_INNER_CLASSES = "modal-inner"
-    DIV_CONTENT_CLASSES = "modal-content"
-    DIV_MAIN_CLASSES = "modal-main"
-    DIV_HEADER_CLASSES = "modal-header"
-    DIV_TITLE_CLASSES = "modal-title"
-    DIV_TITLE_H_CLASSES = "modal-title-h"
-    DIV_FOOTER_CLASSES = "modal-footer"
-    BUTTON_CLOSE_CLASSES = "modal-close"
-    BUTTON_CLOSE_SR_ONLY_CLASSES = "sr-only"
-    CLOSE_BUTTON_TAG_CLASSES = "modal-close-button"
-    ICON_CLOSE_CLASSES = "modal-close-icon"
+    MODAL_DIALOG_CLASSES = "modal-container"
+    MODAL_INNER_CLASSES = "modal-inner"
+    MODAL_CONTENT_CLASSES = "modal-content"
+    MODAL_MAIN_CLASSES = "modal-main"
+    MODAL_HEADER_CLASSES = "modal-header"
+    MODAL_TITLE_CLASSES = "modal-title"
+    MODAL_TITLE_H_CLASSES = "modal-title-h"
+    MODAL_FOOTER_CLASSES = "modal-footer"
+    MODAL_CLOSE_CLASSES = "modal-close"
+    MODAL_CLOSE_BUTTON_CLASSES = "modal-close-button"
+    MODAL_CLOSE_SR_CLASSES = "sr-only"
+    MODAL_CLOSE_ICON_CLASSES = "modal-close-icon"
 
     # Drawer constants
     DRAWER_DIALOG_CLASSES = "drawer-container"
@@ -32,7 +32,7 @@ module UltimateTurboModal::Flavors
     DRAWER_FOOTER_CLASSES = "drawer-footer"
     DRAWER_CLOSE_CLASSES = "drawer-close"
     DRAWER_CLOSE_BUTTON_CLASSES = "drawer-close-button"
-    DRAWER_CLOSE_SR_CLASSES = "sr-only"
+    DRAWER_CLOSE_SR_CLASSES = MODAL_CLOSE_SR_CLASSES
     DRAWER_CLOSE_ICON_CLASSES = "drawer-close-icon"
   end
 end
