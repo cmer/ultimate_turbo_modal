@@ -231,7 +231,7 @@ class UltimateTurboModal::Base < Phlex::HTML
       data_attributes[:utmr_version] = UltimateTurboModal::VERSION
     end
 
-    dialog_classes = classes_for("DIALOG_CLASSES")
+    dialog_classes = ["utmr", classes_for("DIALOG_CLASSES")].reject(&:blank?).join(" ")
 
     inline_style = nil
     if drawer? && custom_drawer_size?
