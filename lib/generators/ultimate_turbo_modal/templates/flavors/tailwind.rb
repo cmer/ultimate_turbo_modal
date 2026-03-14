@@ -86,7 +86,7 @@ module UltimateTurboModal::Flavors
       # Closing: back off-screen
       "group-data-[closing]:[translate:var(--utmr-hide)]",
       # Transition
-      "transition-[translate] duration-500 ease-in-out sm:duration-700",
+      "transition-[translate] duration-250 ease-in-out sm:duration-400",
       "will-change-[translate]",
       # Hidden before animation ready
       "group-[&:not([data-enter-ready]):not([data-entered])]:invisible"

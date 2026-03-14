@@ -239,11 +239,11 @@ dialog.utmr {
     height: 100%;
     width: min(var(--utmr-w), calc(100vw - var(--utmr-gutter)));
     translate: var(--utmr-hide);
-    transition: translate 500ms ease-in-out;
+    transition: translate 250ms ease-in-out;
     will-change: translate;
 
     @media (min-width: 640px) {
-      transition-duration: 700ms;
+      transition-duration: 400ms;
     }
   }
   &.drawer-container:not([data-enter-ready]):not([data-entered]) .drawer-panel {
