@@ -69,14 +69,14 @@ export default class extends Controller {
   hideModal() {
     // Prevent multiple calls to hideModal.
     // Sometimes some events are double-triggered.
-    if (this.hidingModal) return
+    if (this.hidingModal) return false
     this.hidingModal = true;
 
     let event = new Event('modal:closing', { cancelable: true });
     this.turboFrame.dispatchEvent(event);
     if (event.defaultPrevented) {
       this.hidingModal = false;
-      return
+      return false
     }
 
     this.#resetModalElement();

@@ -24,7 +24,7 @@ const isModalFrameTarget = (event) => {
 const handleTurboFrameMissing = (event) => {
   if (isModalFrameTarget(event)) {
     event.preventDefault()
-    window.modal?.hide()
+    if (window.modal?.hideModal() === false) return
     event.detail.visit(event.detail.response)
   }
 };
