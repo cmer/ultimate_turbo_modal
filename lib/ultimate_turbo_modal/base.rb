@@ -184,7 +184,6 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def base_styles
     <<~CSS.squish
-      html:has(dialog[open]) { overflow: hidden; scrollbar-gutter: stable; }
       dialog#modal-container { position: fixed; inset: 0; padding: 0; margin: 0; border: none; background: transparent;
         max-width: 100vw; max-height: 100dvh; width: 100%; height: 100%; overflow-y: auto; }
       @keyframes utmr-backdrop-in { from { opacity: 0 } to { opacity: 1 } }
