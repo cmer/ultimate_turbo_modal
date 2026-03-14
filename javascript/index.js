@@ -17,10 +17,14 @@ const isModalFrameTarget = (event) => {
   );
 };
 
-// Escape modal from the backend on redirects
+// Escape modal when the target frame is missing from the response.
+// This handles both redirects and regular links (e.g., <a href="/">) clicked
+// inside the modal/drawer — the response won't contain the modal frame,
+// so we escape to a full-page Turbo visit.
 const handleTurboFrameMissing = (event) => {
-  if (event.detail.response.redirected && isModalFrameTarget(event)) {
+  if (isModalFrameTarget(event)) {
     event.preventDefault()
+    window.modal?.hide()
     event.detail.visit(event.detail.response)
   }
 };

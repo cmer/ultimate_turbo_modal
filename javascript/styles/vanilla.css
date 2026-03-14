@@ -254,11 +254,13 @@ dialog.drawer-container[data-overlay="true"]::backdrop {
   width: 100%;
   overflow-y: auto;
   background-color: #ffffff;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+.drawer-container[data-padding="true"] .drawer-content {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .drawer-header {
@@ -280,16 +282,16 @@ dialog.drawer-container[data-overlay="true"]::backdrop {
 
 .drawer-main {
   position: relative;
-  margin-top: 1.5rem;
   flex: 1;
+}
+.drawer-container[data-padding="true"] .drawer-main {
+  margin-top: 1.5rem;
 }
 
 .drawer-footer {
   display: flex;
   flex-shrink: 0;
-  padding-top: 1.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 1rem;
 }
 @media (min-width: 640px) {
   .drawer-footer { padding-left: 1.5rem; padding-right: 1.5rem; }

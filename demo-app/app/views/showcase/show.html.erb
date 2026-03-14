@@ -96,10 +96,10 @@
   <% end %>
 
 <% when "colored_header_drawer" %>
-  <%= drawer(header: false, close_button: false, padding: false, overlay: true) do %>
+  <%= drawer(header: false, close_button: false, padding: false, overlay: true, footer_divider: true) do |m| %>
     <div class="bg-indigo-700 px-4 py-6 sm:px-6">
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold text-white">Panel title</h2>
+        <h2 class="text-base font-semibold text-white">New project</h2>
         <div class="ml-3 flex h-7 items-center">
           <button type="button" data-action="modal#hideModal" class="relative rounded-md text-indigo-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
             <span class="absolute -inset-2.5"></span>
@@ -111,51 +111,113 @@
         </div>
       </div>
       <div class="mt-1">
-        <p class="text-sm text-indigo-300">Lorem, ipsum dolor sit amet consectetur adipisicing elit aliquam ad hic recusandae soluta.</p>
+        <p class="text-sm text-indigo-300">Get started by filling in the information below to create your new project.</p>
       </div>
     </div>
-    <div class="relative flex-1 px-4 py-6 sm:px-6">
-      <div class="space-y-4">
-        <% 5.times do |i| %>
-          <div class="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50">
-            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-sm font-medium"><%= (65 + i).chr %></div>
-            <div>
-              <p class="text-sm font-medium text-slate-900 dark:text-white"><%= Faker::Name.name %></p>
-              <p class="text-sm text-slate-500 dark:text-slate-400"><%= Faker::Lorem.sentence(word_count: 8) %></p>
-              <p class="text-xs text-slate-400 dark:text-slate-500 mt-1"><%= (i + 1) * 5 %> minutes ago</p>
+    <div class="flex flex-1 flex-col justify-between">
+      <div class="divide-y divide-gray-200 px-4 sm:px-6">
+        <div class="space-y-6 pt-6 pb-5">
+          <div>
+            <label for="project-name" class="block text-sm/6 font-medium text-gray-900">Project name</label>
+            <div class="mt-2">
+              <input id="project-name" type="text" name="project-name" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 sm:text-sm/6" />
             </div>
           </div>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-
-<% when "drawer_form" %>
-  <%= drawer(title: "New Item", overlay: true) do |m| %>
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Item name</label>
-        <input type="text" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Enter item name">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
-        <textarea rows="3" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Describe the item..."></textarea>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
-        <select class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
-          <option>General</option>
-          <option>Electronics</option>
-          <option>Clothing</option>
-          <option>Books</option>
-        </select>
+          <div>
+            <label for="project-description" class="block text-sm/6 font-medium text-gray-900">Description</label>
+            <div class="mt-2">
+              <textarea id="project-description" name="project-description" rows="3" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 sm:text-sm/6"></textarea>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm/6 font-medium text-gray-900">Team Members</h3>
+            <div class="mt-2">
+              <div class="flex space-x-2">
+                <a href="#" class="relative rounded-full hover:opacity-75">
+                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Tom Cook" class="inline-block size-8 rounded-full bg-gray-100 outline -outline-offset-1 outline-black/5" />
+                </a>
+                <a href="#" class="relative rounded-full hover:opacity-75">
+                  <img src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Whitney Francis" class="inline-block size-8 rounded-full bg-gray-100 outline -outline-offset-1 outline-black/5" />
+                </a>
+                <a href="#" class="relative rounded-full hover:opacity-75">
+                  <img src="https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Leonard Krasner" class="inline-block size-8 rounded-full bg-gray-100 outline -outline-offset-1 outline-black/5" />
+                </a>
+                <a href="#" class="relative rounded-full hover:opacity-75">
+                  <img src="https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Floyd Miles" class="inline-block size-8 rounded-full bg-gray-100 outline -outline-offset-1 outline-black/5" />
+                </a>
+                <a href="#" class="relative rounded-full hover:opacity-75">
+                  <img src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Emily Selman" class="inline-block size-8 rounded-full bg-gray-100 outline -outline-offset-1 outline-black/5" />
+                </a>
+                <button type="button" class="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-gray-200 bg-white text-gray-400 hover:border-gray-300 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  <span class="absolute -inset-2"></span>
+                  <span class="sr-only">Add team member</span>
+                  <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+                    <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <fieldset>
+            <legend class="text-sm/6 font-medium text-gray-900">Privacy</legend>
+            <div class="mt-2 space-y-4">
+              <div class="relative flex items-start">
+                <div class="absolute flex h-6 items-center">
+                  <input id="privacy-public" type="radio" name="privacy" value="public" checked aria-describedby="privacy-public-description" class="relative size-4 appearance-none rounded-full border border-gray-300 before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" />
+                </div>
+                <div class="pl-7 text-sm/6">
+                  <label for="privacy-public" class="font-medium text-gray-900">Public access</label>
+                  <p id="privacy-public-description" class="text-gray-500">Everyone with the link will see this project.</p>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="absolute flex h-6 items-center">
+                  <input id="privacy-private-to-project" type="radio" name="privacy" value="private-to-project" aria-describedby="privacy-private-to-project-description" class="relative size-4 appearance-none rounded-full border border-gray-300 before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" />
+                </div>
+                <div class="pl-7 text-sm/6">
+                  <label for="privacy-private-to-project" class="font-medium text-gray-900">Private to project members</label>
+                  <p id="privacy-private-to-project-description" class="text-gray-500">Only members of this project would be able to access.</p>
+                </div>
+              </div>
+              <div class="relative flex items-start">
+                <div class="absolute flex h-6 items-center">
+                  <input id="privacy-private" type="radio" name="privacy" value="private" aria-describedby="privacy-private-description" class="relative size-4 appearance-none rounded-full border border-gray-300 before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" />
+                </div>
+                <div class="pl-7 text-sm/6">
+                  <label for="privacy-private" class="font-medium text-gray-900">Private to you</label>
+                  <p id="privacy-private-description" class="text-gray-500">You are the only one able to access this project.</p>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="pt-4 pb-6">
+          <div class="flex text-sm">
+            <a href="#" class="group inline-flex items-center font-medium text-indigo-600 hover:text-indigo-900">
+              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 text-indigo-500 group-hover:text-indigo-900">
+                <path d="M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z" />
+                <path d="M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z" />
+              </svg>
+              <span class="ml-2">Copy link</span>
+            </a>
+          </div>
+          <div class="mt-4 flex text-sm">
+            <a href="#" class="group inline-flex items-center text-gray-500 hover:text-gray-900">
+              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 text-gray-400 group-hover:text-gray-500">
+                <path d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.94 6.94a.75.75 0 1 1-1.061-1.061 3 3 0 1 1 2.871 5.026v.345a.75.75 0 0 1-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 1 0 8.94 6.94ZM10 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" fill-rule="evenodd" />
+              </svg>
+              <span class="ml-2">Learn more about sharing</span>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
     <% m.footer do %>
-      <div class="flex justify-end gap-3 w-full">
-        <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-white dark:ring-slate-600 dark:hover:bg-slate-600">Cancel</button>
-        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Create</button>
+      <div class="flex shrink-0 justify-end w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50">Cancel</button>
+        <button type="submit" class="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
       </div>
     <% end %>
   <% end %>
+
 <% end %>

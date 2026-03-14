@@ -35,7 +35,7 @@ module UltimateTurboModal::Flavors
     DRAWER_TITLE_CLASSES = ""
     DRAWER_TITLE_H_CLASSES = "group-data-[title=false]:hidden text-base font-semibold text-gray-900 dark:text-white"
     DRAWER_MAIN_CLASSES = "relative group-data-[padding=true]:mt-6 flex-1 group-data-[padding=true]:px-4 group-data-[padding=true]:sm:px-6"
-    DRAWER_FOOTER_CLASSES = "flex shrink-0 px-4 pt-6 sm:px-6 group-data-[footer-divider=true]:border-t group-data-[footer-divider=true]:border-gray-200 dark:group-data-[footer-divider=true]:border-gray-600"
+    DRAWER_FOOTER_CLASSES = "flex shrink-0 px-4 py-4 sm:px-6 group-data-[footer-divider=true]:border-t group-data-[footer-divider=true]:border-gray-200 dark:group-data-[footer-divider=true]:border-gray-600"
     DRAWER_CLOSE_CLASSES = "ml-3 flex h-7 items-center group-data-[close-button=false]:hidden"
     DRAWER_CLOSE_BUTTON_CLASSES = "relative rounded-md text-gray-400 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
     DRAWER_CLOSE_SR_CLASSES = "sr-only"
