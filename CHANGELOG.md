@@ -1,22 +1,10 @@
 ## [3.0.0] - Unreleased
 
+- **BREAKING**: Replaced div-based modal with native HTML `<dialog>` element. Flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` replaced by `DIALOG_CLASSES`. Users with custom flavors must update their flavor file. Just run the generator again: `rails g ultimate_turbo_modal:update`
 - **BREAKING**: Removed Tailwind v3 flavor. Use the `tailwind` flavor (Tailwind v4+) or `custom` to define your own classes.
-- Fixed popstate event listener leak when modal connects/disconnects multiple times
-- Fixed `modal:closed` event now fires after leave transition completes (was firing before)
-- Fixed duplicate click handler on outside modal clicks
-- Fixed `content_div_data` no longer duplicated on both `#modal-inner` and `#modal-content`
-- Added `method_missing` to complement existing `respond_to_missing?`
-- Refactored boolean config setters into a declarative `boolean_option` macro
-- Extracted `transition_data` helper to DRY up overlay/dialog transition attributes
-- Centralized Phlex `unsafe_raw`/`raw` compat into `raw_html` helper
-- Moved Turbo helper module inclusion to class-level for thread safety and performance
-- Removed redundant `rails_root_join` override in update generator
-- Simplified `detect_flavor` and stream action handler
-- Switched from Yarn to npm for building and publishing the npm package
-- **BREAKING**: Replaced div-based modal with native HTML `<dialog>` element. Flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` replaced by `DIALOG_CLASSES`. Users with custom flavors must update their flavor file.
+- Added support for slide-out drawers.
 - Removed `el-transition` and `focus-trap` npm dependencies — native `<dialog>` handles focus trapping, and CSS `@keyframes` handle animations
-- Simplified modal HTML structure from 6 nested containers to 3 (dialog + inner + content)
-- Added drawer support with `drawer()` view helper and `modal(drawer: :right)` option. Supports `:right` and `:left` positions, configurable size (`:sm`, `:md`, `:lg`, `:xl`, `:full`), and optional overlay backdrop. Drawers share the same `<dialog>` element and Stimulus controller — no JavaScript changes required.
+- ... plus a million tweaks, optimizations, refactors, etc.
 
 ## [2.2.2] - 2026-03-12
 
