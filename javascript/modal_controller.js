@@ -12,6 +12,7 @@ export default class extends Controller {
 
   connect() {
     this.#checkVersions();
+    this.#cleanupStaleDialogs();
     this.hidingModal = false;
     this.showModal();
     this.turboFrame = this.element.closest('turbo-frame');
@@ -112,6 +113,7 @@ export default class extends Controller {
     // The dialog is full-screen, so clicks on the area outside the modal card
     // land on the dialog or its inner wrapper (#modal-inner), not on ::backdrop.
     // Dismiss if the click is outside the content (modal card).
+    if (!this.hasContentTarget) return;
     if (this.contentTarget.contains(e.target)) return;
     if (this.#isAllowedOutsideClick(e.target)) return;
     this.hideModal();
@@ -130,7 +132,7 @@ export default class extends Controller {
     this.#cancelDrawerEnter();
 
     const closeEventName = this.#isDrawer() ? 'transitionend' : 'animationend';
-    const closeEventTarget = this.#isDrawer() ? this.contentTarget : dialog;
+    const closeEventTarget = this.#isDrawer() && this.hasContentTarget ? this.contentTarget : dialog;
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
 
     let cleaned = false;
@@ -139,16 +141,26 @@ export default class extends Controller {
       cleaned = true;
       clearTimeout(this.closeTimeout);
       const frame = this.turboFrame;
-      dialog.close();
-      frame.removeAttribute("src");
-      dialog.remove();
+      try { dialog.close(); } catch (_) {}
+      try { frame.removeAttribute("src"); } catch (_) {}
+      try { dialog.remove(); } catch (_) {}
       this.#resetHistoryAdvanced();
-      frame.dispatchEvent(new Event('modal:closed', { cancelable: false }));
+      try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
     };
 
     closeEventTarget.addEventListener(closeEventName, cleanup, { once: true });
     // Fallback if no animation defined (custom flavor with empty classes)
     this.closeTimeout = setTimeout(cleanup, closeTimeoutMs);
+  }
+
+  // Remove any stale dialogs left over from a previous failed close
+  #cleanupStaleDialogs() {
+    document.querySelectorAll('dialog#modal-container').forEach(d => {
+      if (d !== this.containerTarget) {
+        try { d.close(); } catch (_) {}
+        d.remove();
+      }
+    });
   }
 
   #isDrawer() {

@@ -46,4 +46,19 @@ document.addEventListener("turbo:frame-missing", handleTurboFrameMissing);
 document.removeEventListener("turbo:before-frame-render", handleTurboBeforeFrameRender);
 document.addEventListener("turbo:before-frame-render", handleTurboBeforeFrameRender);
 
+// Clean up any modal dialogs before Turbo caches the page.
+// The Stimulus controller has its own turbo:before-cache handler, but if the
+// controller has already disconnected or cleanup failed, the dialog can survive
+// into the cache and leave the page in a broken state on restore.
+const handleTurboBeforeCache = () => {
+  document.querySelectorAll('dialog#modal-container, dialog.drawer-container').forEach(d => {
+    try { d.close(); } catch (_) {}
+    d.remove();
+  });
+  document.body.removeAttribute('data-turbo-modal-history-advanced');
+};
+
+document.removeEventListener("turbo:before-cache", handleTurboBeforeCache);
+document.addEventListener("turbo:before-cache", handleTurboBeforeCache);
+
 export { UltimateTurboModalController };
