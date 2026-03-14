@@ -3,7 +3,8 @@
 - **BREAKING**: Replaced div-based modal with native HTML `<dialog>` element. 
 - **BREAKING**: If you customized the look and feel of a flavor, you'll need to reapply your customizations since the underlying markup has changed.
 - **BREAKING**: Removed Tailwind v3 flavor. Use the `tailwind` flavor (Tailwind v4+) or `custom` to define your own classes.
-- Added support for slide-out drawers.
+- **BREAKING**: Configuration options are now split between `config.modal` and `config.drawer` blocks instead of flat on the config object. See UPGRADING.md for migration details.
+- Added support for slide-out drawers with separate default configuration.
 - Removed `el-transition` and `focus-trap` npm dependencies.
 - ... plus a million tweaks, optimizations, refactors, etc.
 

@@ -87,31 +87,45 @@ Do not get overwhelmed with all the options. The defaults are sensible. You can 
 
 UltimateTurboModal.configure do |config|
   config.flavor = :tailwind
-  config.advance = true
-  config.close_button = true
-  config.header = true
-  config.header_divider = true
-  config.footer_divider = true
-  config.padding = true
-  config.overlay = true
-  config.drawer_size = :md
   config.allowed_click_outside_selector = []
+
+  config.modal do |m|
+    m.advance = true
+    m.close_button = true
+    m.header = true
+    m.header_divider = true
+    m.footer_divider = true
+    m.padding = true
+    m.overlay = true
+  end
+
+  config.drawer do |d|
+    d.position = :right
+    d.close_button = true
+    d.header = true
+    d.header_divider = false
+    d.footer_divider = true
+    d.padding = true
+    d.overlay = true
+    d.size = :md
+  end
 end
 ```
 
 Per-instance options passed to `modal()` or `drawer()` override the defaults.
 
-| name | default value | description |
-|------|---------------|-------------|
-| `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
+### Modal Options
+
+| Name | Default | Description |
+|------|---------|-------------|
+| `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
 | `header` | `true` | Whether to display a modal header. |
 | `header_divider` | `true` | Whether to display a divider below the header. |
+| `footer_divider` | `true` | Whether to display a divider above the footer. |
 | `padding` | `true` | Adds padding inside the modal. |
-| `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
-| `drawer` | N/A | Set to `:right` or `:left` to render as a drawer instead of a modal. |
-| `size` | `:md` | Drawer width: `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or a CSS string. Use `drawer_size` in the configuration block. |
 | `overlay` | `true` | Whether to show a backdrop overlay. |
+| `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
 
 ### Example usage with options
 
@@ -154,8 +168,12 @@ Link to it the same way as a modal:
 | `position` | `:right` | Which edge the drawer slides from. `:right` or `:left`. |
 | `size` | `:md` | Width of the drawer. One of `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or a CSS string (e.g. `"500px"`). |
 | `overlay` | `true` | Whether to show a backdrop overlay behind the drawer. |
-
-All standard modal options (`title`, `close_button`, `padding`, `header`, `footer_divider`, etc.) also work with drawers.
+| `close_button` | `true` | Shows or hide a close button (X). |
+| `header` | `true` | Whether to display a header. |
+| `header_divider` | `false` | Whether to display a divider below the header. |
+| `footer_divider` | `true` | Whether to display a divider above the footer. |
+| `padding` | `true` | Adds padding inside the drawer. |
+| `title` | `nil` | Title to display in the drawer header. |
 
 ```erb
 <%= drawer(position: :left, size: :lg, overlay: false, title: "Settings") do %>

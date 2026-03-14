@@ -129,24 +129,49 @@ Set by the Ruby side, used for conditional styling via CSS selectors:
 ## Configuration Options
 
 Options can be set at three levels (lowest wins):
-1. **Global defaults** via `UltimateTurboModal.configure` block in an initializer
+1. **Global defaults** via `UltimateTurboModal.configure` block in an initializer (split between `config.modal` and `config.drawer` blocks)
 2. **Per-instance** via the `modal()` or `drawer()` view helpers
 3. **Block content** via `m.title { }` and `m.footer { }` blocks
+
+### Global Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `flavor` | Symbol/String | `:tailwind` | CSS framework flavor |
-| `advance` | Boolean or String | `true` | Push URL to browser history; String for custom URL. Auto-disabled for drawers. |
-| `close_button` | Boolean | `true` | Show close button |
-| `padding` | Boolean or String | `true` | Add padding to modal content |
-| `header` | Boolean | `true` | Show header section |
-| `header_divider` | Boolean | `true` | Show divider below header. Auto-disabled for drawers. |
-| `footer_divider` | Boolean | `true` | Show divider above footer |
-| `title` | String | `nil` | Modal title text |
-| `drawer` | `false`, `:right`, `:left` | `false` | Render as drawer instead of modal |
-| `drawer_size` | Symbol or String | `:md` | Drawer width: `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or CSS string |
-| `overlay` | Boolean | `true` | Show backdrop overlay |
 | `allowed_click_outside_selector` | Array | `[]` | CSS selectors for elements outside modal that won't dismiss it |
+
+### Modal Options (`config.modal`)
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `advance` | Boolean or String | `true` | Push URL to browser history; String for custom URL |
+| `close_button` | Boolean | `true` | Show close button |
+| `header` | Boolean | `true` | Show header section |
+| `header_divider` | Boolean | `true` | Show divider below header |
+| `footer_divider` | Boolean | `true` | Show divider above footer |
+| `padding` | Boolean or String | `true` | Add padding to modal content |
+| `overlay` | Boolean | `true` | Show backdrop overlay |
+
+### Drawer Options (`config.drawer`)
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `position` | `:right`, `:left` | `:right` | Which edge the drawer slides from |
+| `close_button` | Boolean | `true` | Show close button |
+| `header` | Boolean | `true` | Show header section |
+| `header_divider` | Boolean | `false` | Show divider below header |
+| `footer_divider` | Boolean | `true` | Show divider above footer |
+| `padding` | Boolean | `true` | Add padding to drawer content |
+| `overlay` | Boolean | `true` | Show backdrop overlay |
+| `size` | Symbol or String | `:md` | Drawer width: `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or CSS string |
+
+Note: `advance` is always `false` for drawers and cannot be configured.
+
+### Per-Instance Only Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `title` | String | `nil` | Modal/drawer title text |
 | `close_button_data_action` | String | `"modal#hideModal"` | Custom data-action for close button |
 | `close_button_sr_label` | String | `"Close modal"` | Screen reader label for close button |
 | `content_div_data` | Hash | `nil` | Additional data attributes on `#modal-content` |
@@ -154,13 +179,12 @@ Options can be set at three levels (lowest wins):
 ### Adding New Configuration Options
 
 When adding a new option:
-1. Add to `Configuration` class with getter/setter (use `boolean_option` macro for booleans, custom setter for validated options)
-2. Add to `UltimateTurboModal` delegators if it should be globally configurable
-3. Add to `Base#initialize` parameters with default from configuration
-4. Pass to JavaScript via data attributes in `Base#dialog_element` if needed by the controller
-5. Add as Stimulus value in `modal_controller.js` if JavaScript needs to read it
-6. Add corresponding CSS selectors in flavor files if styling depends on it (both modal and drawer constants)
-7. Update README.md
+1. Add to `Configuration::ModalConfig` and/or `Configuration::DrawerConfig` with getter/setter (use `boolean_option` macro for booleans, custom setter for validated options)
+2. Add to `Base#initialize` parameters with `nil` default, resolve from the appropriate config in the modal/drawer branch
+3. Pass to JavaScript via data attributes in `Base#dialog_element` if needed by the controller
+4. Add as Stimulus value in `modal_controller.js` if JavaScript needs to read it
+5. Add corresponding CSS selectors in flavor files if styling depends on it (both modal and drawer constants)
+6. Update README.md
 
 ## Modal Lifecycle
 

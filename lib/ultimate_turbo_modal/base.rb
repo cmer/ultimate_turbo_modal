@@ -2,49 +2,67 @@
 
 class UltimateTurboModal::Base < Phlex::HTML
   prepend Phlex::DeferredRenderWithMainContent
-  # @param advance [Boolean] Whether to update the browser history when opening and closing the modal
+  # @param advance [Boolean, String] Whether to update the browser history when opening and closing the modal (modal-only, ignored for drawers)
   # @param allowed_click_outside_selector [String] CSS selectors for elements that are allowed to be clicked outside of the modal without dismissing the modal
   # @param close_button [Boolean] Whether to show a close button
   # @param close_button_data_action [String] `data-action` attribute for the close button
   # @param close_button_sr_label [String] Close button label for screen readers
-  # @param drawer [Symbol, false] Drawer position (:right, :left) or false for standard modal
-  # @param drawer_size [Symbol, String] Drawer width preset (:xs, :sm, :md, :lg, :xl, :"2xl", :full) or CSS string
+  # @param _drawer_position [Symbol, false] Internal: drawer position (:right, :left) or false for standard modal. Use the `drawer()` view helper instead.
   # @param footer_divider [Boolean] Whether to show a divider between the main content and the footer
+  # @param header [Boolean] Whether to show a modal header
   # @param header_divider [Boolean] Whether to show a divider between the header and the main content
-  # @param overlay [Boolean] Whether to show a backdrop overlay (drawers default to false, modals always true)
+  # @param overlay [Boolean] Whether to show a backdrop overlay
   # @param padding [Boolean] Whether to add padding around the modal content
   # @param request [ActionDispatch::Request] The current Rails request object
+  # @param size [Symbol, String] Drawer width preset (:xs, :sm, :md, :lg, :xl, :"2xl", :full) or CSS string (drawer-only)
   # @param content_div_data [Hash] `data` attribute for the div where the modal content will be rendered
   # @param title [String] The title of the modal
   def initialize(
-    advance: UltimateTurboModal.configuration.advance,
+    advance: nil,
     allowed_click_outside_selector: UltimateTurboModal.configuration.allowed_click_outside_selector,
-    close_button: UltimateTurboModal.configuration.close_button,
+    close_button: nil,
     close_button_data_action: "modal#hideModal",
     close_button_sr_label: "Close modal",
-    drawer: UltimateTurboModal.configuration.drawer,
-    drawer_size: UltimateTurboModal.configuration.drawer_size,
-    footer_divider: UltimateTurboModal.configuration.footer_divider,
-    header: UltimateTurboModal.configuration.header,
-    header_divider: UltimateTurboModal.configuration.header_divider,
-    overlay: UltimateTurboModal.configuration.overlay,
-    padding: UltimateTurboModal.configuration.padding,
+    _drawer_position: false,
+    footer_divider: nil,
+    header: nil,
+    header_divider: nil,
+    overlay: nil,
+    padding: nil,
+    size: nil,
     content_div_data: nil,
     request: nil, title: nil
   )
-    @drawer = drawer
-    @advance = drawer ? false : !!advance
-    @advance_url = (!drawer && advance.present? && advance.is_a?(String)) ? advance : nil
+    @drawer = _drawer_position
+
+    if drawer?
+      cfg = UltimateTurboModal.configuration.drawer_config
+      @advance = false
+      @advance_url = nil
+      @close_button = close_button.nil? ? cfg.close_button : close_button
+      @drawer_size = self.class.validate_drawer_size!(size || cfg.size)
+      @footer_divider = footer_divider.nil? ? cfg.footer_divider : footer_divider
+      @header = header.nil? ? cfg.header : header
+      @header_divider = header_divider.nil? ? cfg.header_divider : header_divider
+      @overlay = overlay.nil? ? cfg.overlay : overlay
+      @padding = padding.nil? ? cfg.padding : padding
+    else
+      cfg = UltimateTurboModal.configuration.modal_config
+      adv = advance.nil? ? cfg.advance : advance
+      @advance = !!adv
+      @advance_url = (adv.present? && adv.is_a?(String)) ? adv : nil
+      @close_button = close_button.nil? ? cfg.close_button : close_button
+      @drawer_size = nil
+      @footer_divider = footer_divider.nil? ? cfg.footer_divider : footer_divider
+      @header = header.nil? ? cfg.header : header
+      @header_divider = header_divider.nil? ? cfg.header_divider : header_divider
+      @overlay = overlay.nil? ? cfg.overlay : overlay
+      @padding = padding.nil? ? cfg.padding : padding
+    end
+
     @allowed_click_outside_selector = allowed_click_outside_selector
-    @close_button = close_button
     @close_button_data_action = close_button_data_action
     @close_button_sr_label = close_button_sr_label
-    @drawer_size = self.class.validate_drawer_size!(drawer_size)
-    @footer_divider = footer_divider
-    @header = header
-    @header_divider = drawer ? false : header_divider
-    @overlay = overlay
-    @padding = padding
     @content_div_data = content_div_data
     @request = request
     @title = title
@@ -66,7 +84,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   def view_template(&block)
     if turbo_frame?
       turbo_frame_tag("modal") do
-        drawer? ? drawer(&block) : modal(&block)
+        drawer? ? render_drawer(&block) : render_modal(&block)
       end
     else
       render block
@@ -144,7 +162,7 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   ## HTML components — Modal
 
-  def modal(&block)
+  def render_modal(&block)
     styles
     dialog_element do
       modal_inner do
@@ -159,7 +177,7 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   ## HTML components — Drawer
 
-  def drawer(&block)
+  def render_drawer(&block)
     styles
     dialog_element do
       drawer_wrapper do
@@ -224,6 +242,8 @@ class UltimateTurboModal::Base < Phlex::HTML
     if drawer?
       data_attributes[:drawer] = drawer_position.to_s
       data_attributes[:drawer_size] = (@drawer_size.presence || "md").to_s
+      data_attributes[:overlay] = overlay?.to_s
+    else
       data_attributes[:overlay] = overlay?.to_s
     end
 

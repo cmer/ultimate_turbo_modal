@@ -30,6 +30,58 @@ v3.0 includes a few breaking changes:
 - **Simplified HTML structure**: The modal markup has been reduced from 6 nested containers to 3 (`dialog` + `inner` + `content`).
 - **Tailwind v3 flavor removed**: Only Tailwind v4+ is supported via the `tailwind` flavor. Use `custom` if you need to define your own classes.
 - **Custom flavor update required**: The flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` have been replaced by `DIALOG_CLASSES`. If you have a custom flavor, you must update it to use the new constants.
+- **Configuration restructured**: Configuration options are now split between `config.modal` and `config.drawer` blocks instead of being flat on the config object. This allows modals and drawers to have different defaults (e.g., `header_divider` defaults to `true` for modals but `false` for drawers). See below for migration details.
+
+### Configuration migration
+
+The old flat configuration:
+
+```ruby
+UltimateTurboModal.configure do |config|
+  config.flavor = :tailwind
+  config.advance = true
+  config.close_button = true
+  config.header = true
+  config.header_divider = true
+  config.footer_divider = true
+  config.padding = true
+  config.overlay = true
+  config.drawer_size = :md
+  config.allowed_click_outside_selector = []
+end
+```
+
+Should be updated to:
+
+```ruby
+UltimateTurboModal.configure do |config|
+  config.flavor = :tailwind
+  config.allowed_click_outside_selector = []
+
+  config.modal do |m|
+    m.advance = true
+    m.close_button = true
+    m.header = true
+    m.header_divider = true
+    m.footer_divider = true
+    m.padding = true
+    m.overlay = true
+  end
+
+  config.drawer do |d|
+    d.position = :right
+    d.close_button = true
+    d.header = true
+    d.header_divider = false
+    d.footer_divider = true
+    d.padding = true
+    d.overlay = true
+    d.size = :md
+  end
+end
+```
+
+Global options (`flavor`, `allowed_click_outside_selector`) remain on the top-level config. All other options are now set within `config.modal` or `config.drawer` blocks. The defaults shown above are the built-in defaults, so you only need to set the options you want to change.
 
 But upgrading is easy! To upgrade:
 
