@@ -36,6 +36,13 @@
     </div>
   <% end %>
 
+<%# Drawer with header divider %>
+<% elsif params[:id] == "header_divider" %>
+  <%= drawer(title: "Header Divider", header_divider: true) do %>
+    <p>This drawer has a divider below the header.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
 <%# Drawer with footer %>
 <% elsif params[:id] == "footer" %>
   <%= drawer(title: "With Footer", footer_divider: true) do |m| %>

@@ -94,7 +94,7 @@ module UltimateTurboModal::Flavors
 
     DRAWER_CONTENT_CLASSES = "relative flex h-full w-full flex-col bg-white group-data-[padding=true]:pt-6 shadow-xl dark:bg-gray-800 dark:text-white"
 
-    DRAWER_HEADER_CLASSES = "flex items-start justify-between w-full px-4 sm:px-6 group-data-[header-divider=true]:border-b group-data-[header=false]:hidden"
+    DRAWER_HEADER_CLASSES = "flex items-start justify-between w-full px-4 sm:px-6 group-data-[header-divider=true]:pb-4 group-data-[header-divider=true]:border-b group-data-[header-divider=true]:border-gray-200 dark:group-data-[header-divider=true]:border-gray-600 group-data-[header=false]:hidden"
     DRAWER_TITLE_CLASSES = ""
     DRAWER_TITLE_H_CLASSES = "group-data-[title=false]:hidden text-base font-semibold text-gray-900 dark:text-white"
     DRAWER_MAIN_CLASSES = "relative group-data-[padding=true]:mt-6 flex-1 overflow-y-auto group-data-[padding=true]:px-4 group-data-[padding=true]:sm:px-6 group-data-[padding=true]:pb-6"
