@@ -110,7 +110,7 @@ Per-instance options passed to `modal()` or `drawer()` override the defaults.
 | `padding` | `true` | Adds padding inside the modal. |
 | `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
 | `drawer` | N/A | Set to `:right` or `:left` to render as a drawer instead of a modal. |
-| `size` | `:md` | Drawer width: `:sm`, `:md`, `:lg`, `:xl`, `:full`, or a CSS string. Use `drawer_size` in the configuration block. |
+| `size` | `:md` | Drawer width: `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or a CSS string. Use `drawer_size` in the configuration block. |
 | `overlay` | `true` | Whether to show a backdrop overlay. |
 
 ### Example usage with options
@@ -152,7 +152,7 @@ Link to it the same way as a modal:
 | Name | Default | Description |
 |------|---------|-------------|
 | `position` | `:right` | Which edge the drawer slides from. `:right` or `:left`. |
-| `size` | `:md` | Width of the drawer. One of `:sm`, `:md`, `:lg`, `:xl`, `:full`, or a CSS string (e.g. `"500px"`). |
+| `size` | `:md` | Width of the drawer. One of `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or a CSS string (e.g. `"500px"`). |
 | `overlay` | `true` | Whether to show a backdrop overlay behind the drawer. |
 
 All standard modal options (`title`, `close_button`, `padding`, `header`, `footer_divider`, etc.) also work with drawers.

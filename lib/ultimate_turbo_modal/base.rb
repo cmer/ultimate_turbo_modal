@@ -8,7 +8,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   # @param close_button_data_action [String] `data-action` attribute for the close button
   # @param close_button_sr_label [String] Close button label for screen readers
   # @param drawer [Symbol, false] Drawer position (:right, :left) or false for standard modal
-  # @param drawer_size [Symbol, String] Drawer width preset (:sm, :md, :lg, :xl, :full) or CSS string
+  # @param drawer_size [Symbol, String] Drawer width preset (:xs, :sm, :md, :lg, :xl, :"2xl", :full) or CSS string
   # @param footer_divider [Boolean] Whether to show a divider between the main content and the footer
   # @param header_divider [Boolean] Whether to show a divider between the header and the main content
   # @param overlay [Boolean] Whether to show a backdrop overlay (drawers default to false, modals always true)
@@ -187,7 +187,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
   end
 
-  VALID_DRAWER_SIZES = %i[sm md lg xl full].freeze
+  VALID_DRAWER_SIZES = %i[xs sm md lg xl 2xl full].freeze
 
   def self.validate_drawer_size!(value)
     return value if VALID_DRAWER_SIZES.include?(value.to_s.to_sym)

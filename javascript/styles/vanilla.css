@@ -250,11 +250,13 @@ dialog.drawer-container[data-closing]::backdrop {
     --utmr-gutter: 4rem;
   }
 }
-.drawer-container[data-drawer-size="sm"] { --utmr-w: 24rem; }
+.drawer-container[data-drawer-size="xs"] { --utmr-w: 16rem; }
+.drawer-container[data-drawer-size="sm"] { --utmr-w: 20rem; }
 .drawer-container[data-drawer-size="md"],
-.drawer-container[data-drawer-size=""] { --utmr-w: 28rem; }
-.drawer-container[data-drawer-size="lg"] { --utmr-w: 42rem; }
-.drawer-container[data-drawer-size="xl"] { --utmr-w: 56rem; }
+.drawer-container[data-drawer-size=""] { --utmr-w: 24rem; }
+.drawer-container[data-drawer-size="lg"] { --utmr-w: 28rem; }
+.drawer-container[data-drawer-size="xl"] { --utmr-w: 42rem; }
+.drawer-container[data-drawer-size="2xl"] { --utmr-w: 56rem; }
 .drawer-container[data-drawer-size="full"] { --utmr-w: 100vw; }
 
 /* Drawer direction */

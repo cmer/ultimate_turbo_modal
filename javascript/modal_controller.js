@@ -17,9 +17,14 @@ export default class extends Controller {
     this.showModal();
     this.turboFrame = this.element.closest('turbo-frame');
 
-    // hide modal when back button is pressed
+    // When the user presses the browser back button, Turbo handles the
+    // navigation (restoring the previous page). We just need to clean up
+    // the dialog element — no animation needed since the page is changing.
     this.popstateHandler = () => {
-      if (this.#hasHistoryAdvanced()) this.#resetModalElement();
+      if (this.#hasHistoryAdvanced()) {
+        this.#resetHistoryAdvanced();
+        this.#immediateCleanup();
+      }
     };
     window.addEventListener('popstate', this.popstateHandler);
 
@@ -58,8 +63,9 @@ export default class extends Controller {
     }
   }
 
-  // if we advanced history, go back, which will trigger
-  // hiding the model. Otherwise, hide the modal directly.
+  // Animate the close transition, then clean up.
+  // history.back() is deferred to after the animation so Turbo doesn't
+  // replace the page before the animation finishes.
   hideModal() {
     // Prevent multiple calls to hideModal.
     // Sometimes some events are double-triggered.
@@ -73,13 +79,7 @@ export default class extends Controller {
       return
     }
 
-    if (this.#hasHistoryAdvanced()) {
-      // history.back() will fire popstate, which triggers #resetModalElement
-      // via the popstateHandler. Don't call it directly to avoid double cleanup.
-      history.back();
-    } else {
-      this.#resetModalElement();
-    }
+    this.#resetModalElement();
   }
 
   hide() {
@@ -139,18 +139,25 @@ export default class extends Controller {
       : dialog.querySelector('#modal-inner');
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
 
+    const historyWasAdvanced = this.#hasHistoryAdvanced();
+
     let cleaned = false;
     const cleanup = () => {
       if (cleaned) return;
       cleaned = true;
       clearTimeout(this.closeTimeout);
       dialog.removeEventListener('transitionend', onTransitionEnd);
+      window.removeEventListener('popstate', this.popstateHandler);
       const frame = this.turboFrame;
       try { dialog.close(); } catch (_) {}
       try { frame.removeAttribute("src"); } catch (_) {}
       try { dialog.remove(); } catch (_) {}
       this.#resetHistoryAdvanced();
       try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
+
+      // Go back in history AFTER the dialog is removed and animation is done.
+      // This triggers Turbo's popstate navigation to restore the previous page.
+      if (historyWasAdvanced) history.back();
     };
 
     const onTransitionEnd = (e) => {
@@ -160,6 +167,19 @@ export default class extends Controller {
     dialog.addEventListener('transitionend', onTransitionEnd);
     // Fallback if no transition defined (custom flavor with empty classes)
     this.closeTimeout = setTimeout(cleanup, closeTimeoutMs);
+  }
+
+  // Quick cleanup without animation — used when the browser back button
+  // is pressed and Turbo is already navigating to the previous page.
+  #immediateCleanup() {
+    this.#cancelEnter();
+    clearTimeout(this.closeTimeout);
+    const dialog = this.containerTarget;
+    const frame = this.turboFrame;
+    try { dialog.close(); } catch (_) {}
+    try { frame.removeAttribute("src"); } catch (_) {}
+    try { dialog.remove(); } catch (_) {}
+    try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
   }
 
   // Remove any stale dialogs left over from a previous failed close

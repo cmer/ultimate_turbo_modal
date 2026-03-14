@@ -122,8 +122,8 @@ Set by the Ruby side, used for conditional styling via CSS selectors:
 - `data-padding`, `data-title`, `data-header`, `data-close-button`, `data-header-divider`, `data-footer-divider`
 - `data-drawer` (position: "right" or "left", only present for drawers)
 - `data-drawer-size`, `data-overlay` (drawer-specific)
-- `data-enter-ready`, `data-entered` (drawer animation state, managed by JS)
-- `data-closing` (closing animation state, managed by JS)
+- `data-enter-ready`, `data-entered` (enter animation state for both modals and drawers, managed by JS)
+- `data-closing` (closing animation state for both modals and drawers, managed by JS)
 - `data-utmr-version` (dev/test only, for version mismatch warnings)
 
 ## Configuration Options
@@ -144,7 +144,7 @@ Options can be set at three levels (lowest wins):
 | `footer_divider` | Boolean | `true` | Show divider above footer |
 | `title` | String | `nil` | Modal title text |
 | `drawer` | `false`, `:right`, `:left` | `false` | Render as drawer instead of modal |
-| `drawer_size` | Symbol or String | `:md` | Drawer width: `:sm`, `:md`, `:lg`, `:xl`, `:full`, or CSS string |
+| `drawer_size` | Symbol or String | `:md` | Drawer width: `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or CSS string |
 | `overlay` | Boolean | `true` | Show backdrop overlay |
 | `allowed_click_outside_selector` | Array | `[]` | CSS selectors for elements outside modal that won't dismiss it |
 | `close_button_data_action` | String | `"modal#hideModal"` | Custom data-action for close button |
@@ -168,14 +168,14 @@ When adding a new option:
 2. Rails controller renders the view; the `modal()` helper wraps content in a `<turbo-frame id="modal">`
 3. Turbo replaces the frame content; Stimulus `modal` controller `connect()` fires
 4. Controller calls `dialog.showModal()`, which locks body scroll and traps focus natively
-5. For modals: CSS `@keyframes` animate entry. For drawers: `data-enter-ready` then `data-entered` attributes trigger CSS transitions via `requestAnimationFrame` double-frame technique
+5. `#queueEnter()` uses a double `requestAnimationFrame` to set `data-enter-ready` then `data-entered` on the dialog, triggering CSS transitions for both modals and drawers
 6. If `advance` is enabled, pushes URL to browser history
 7. User interacts; forms submit via Turbo within the modal
 8. Dismissal triggers: ESC key (intercepted via `cancel` event), close button, outside click, successful form submission, `history.back()`, or programmatic `window.modal.hide()`
 9. `modal:closing` event fires (cancelable — if `preventDefault()` is called, modal stays open)
-10. `data-closing` attribute set on dialog, triggering leave animations
-11. After animation/transition ends (or timeout fallback): `dialog.close()`, DOM cleanup, frame `src` removed, history restored
-12. `modal:closed` event fires (not cancelable)
+10. `data-closing` attribute set and `data-entered` removed on dialog, triggering leave transitions on `#modal-inner` (modals) or `#drawer-panel` (drawers)
+11. After `transitionend` fires on the transition target (or timeout fallback): `dialog.close()`, DOM cleanup, frame `src` removed, `modal:closed` event fires
+12. If history was advanced, `history.back()` is called after cleanup so Turbo doesn't replace the page before the animation finishes
 
 ### Server-Side Dismissal
 
@@ -302,7 +302,7 @@ Output: ESM format. `@hotwired/stimulus` is marked as external (not bundled).
 - **Modal styles**: `@keyframes` for dialog enter/leave (slide-up on mobile, scale on desktop)
 - **Drawer styles**: CSS `translate` transitions controlled by `data-enter-ready`/`data-entered`/`data-closing` attributes, `--utmr-drawer-width` CSS variable with responsive sizing
 
-Drawer width presets: `:sm` (24rem), `:md` (28rem), `:lg` (42rem), `:xl` (56rem), `:full` (100vw minus gutter). Custom CSS strings also accepted.
+Drawer width presets: `:xs` (16rem), `:sm` (20rem), `:md` (24rem), `:lg` (28rem), `:xl` (42rem), `:"2xl"` (56rem), `:full` (100vw minus gutter). Custom CSS strings also accepted.
 
 ### Phlex Compatibility
 - `raw_html()` helper in `Base` handles both Phlex 1 (`raw`) and Phlex 2 (`unsafe_raw`)

@@ -57,10 +57,12 @@ module UltimateTurboModal::Flavors
       # Responsive gutter
       "[--utmr-gutter:2.5rem] sm:[--utmr-gutter:4rem]",
       # Drawer sizes via data attribute
-      "data-[drawer-size=sm]:[--utmr-w:24rem]",
-      "data-[drawer-size=md]:[--utmr-w:28rem]",
-      "data-[drawer-size=lg]:[--utmr-w:42rem]",
-      "data-[drawer-size=xl]:[--utmr-w:56rem]",
+      "data-[drawer-size=xs]:[--utmr-w:16rem]",
+      "data-[drawer-size=sm]:[--utmr-w:20rem]",
+      "data-[drawer-size=md]:[--utmr-w:24rem]",
+      "data-[drawer-size=lg]:[--utmr-w:28rem]",
+      "data-[drawer-size=xl]:[--utmr-w:42rem]",
+      "data-[drawer-size=2xl]:[--utmr-w:56rem]",
       "data-[drawer-size=full]:[--utmr-w:100vw]",
       # Drawer direction → hidden translate
       "data-[drawer=left]:[--utmr-hide:-100%_0]",
