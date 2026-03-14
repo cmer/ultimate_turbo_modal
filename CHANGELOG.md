@@ -1,9 +1,10 @@
 ## [3.0.0] - Unreleased
 
-- **BREAKING**: Replaced div-based modal with native HTML `<dialog>` element. Flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` replaced by `DIALOG_CLASSES`. Users with custom flavors must update their flavor file. Just run the generator again: `rails g ultimate_turbo_modal:update`
+- **BREAKING**: Replaced div-based modal with native HTML `<dialog>` element. 
+- **BREAKING**: If you customized the look and feel of a flavor, you'll need to reapply your customizations since the underlying markup has changed.
 - **BREAKING**: Removed Tailwind v3 flavor. Use the `tailwind` flavor (Tailwind v4+) or `custom` to define your own classes.
 - Added support for slide-out drawers.
-- Removed `el-transition` and `focus-trap` npm dependencies — native `<dialog>` handles focus trapping, and CSS `@keyframes` handle animations
+- Removed `el-transition` and `focus-trap` npm dependencies.
 - ... plus a million tweaks, optimizations, refactors, etc.
 
 ## [2.2.2] - 2026-03-12
