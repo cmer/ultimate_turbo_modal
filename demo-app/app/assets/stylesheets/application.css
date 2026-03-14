@@ -29,6 +29,25 @@
   }
 }
 
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="url"],
+.dark input[type="date"],
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+  background-color: var(--color-slate-700);
+  border-color: var(--color-gray-600);
+  color: white;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--color-gray-500);
+}
+
 #ts-notice:not(:empty) {
   position: fixed;
   top: 0.5rem;

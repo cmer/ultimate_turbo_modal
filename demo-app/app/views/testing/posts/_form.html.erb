@@ -1,7 +1,7 @@
 <div class="w-96">
   <%= form_with(model: post, url: post.persisted? ? testing_post_path(post) : testing_posts_path, class: "contents") do |form| %>
     <% if post.errors.any? %>
-      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+      <div id="error_explanation" class="bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 px-3 py-2 font-medium rounded-lg mt-3">
         <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
         <ul>
           <% post.errors.each do |error| %>
@@ -11,18 +11,18 @@
       </div>
     <% end %>
     <div class="my-5">
-      <%= form.label :title %>
-      <%= form.text_field :title, class: "block shadow-sm rounded-md border border-gray-200 outline-hidden px-3 py-2 mt-2 w-full" %>
+      <%= form.label :title, class: "dark:text-white" %>
+      <%= form.text_field :title, class: "block shadow-sm rounded-md border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white outline-hidden px-3 py-2 mt-2 w-full" %>
     </div>
     <div class="my-5">
-      <%= form.label :body %>
-      <%= form.text_field :body, class: "block shadow-sm rounded-md border border-gray-200 outline-hidden px-3 py-2 mt-2 w-full" %>
+      <%= form.label :body, class: "dark:text-white" %>
+      <%= form.text_field :body, class: "block shadow-sm rounded-md border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white outline-hidden px-3 py-2 mt-2 w-full" %>
     </div>
     <div class="my-5">
-      <%= form.label :publish_on %>
-      <div class="text-xs">Modal will not close when clicking the calendar, even when outside of the modal boundaries.</div>
+      <%= form.label :publish_on, class: "dark:text-white" %>
+      <div class="text-xs dark:text-gray-400">Modal will not close when clicking the calendar, even when outside of the modal boundaries.</div>
       <%= form.text_field :publish_on,
-          class: "block shadow-sm rounded-md border border-gray-200 outline-hidden px-3 py-2 mt-2 w-full",
+          class: "block shadow-sm rounded-md border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white outline-hidden px-3 py-2 mt-2 w-full",
           data: {
             controller: "flatpickr",
             flatpickr_min_date: Date.current.strftime("%Y-%m-%d"),
