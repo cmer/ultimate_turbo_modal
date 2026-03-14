@@ -2,6 +2,9 @@
 @import 'ultimate_turbo_modal/dist/vanilla.css' layer(components);
 @import 'flatpickr/dist/flatpickr.css' layer(base);
 
+/* Tailwind doesn't follow symlinks. We therefore point directly to the Tailwind flavor file. */
+@source '../../../../lib/generators/ultimate_turbo_modal/templates/flavors/*.rb';
+
 @plugin '@tailwindcss/aspect-ratio';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
