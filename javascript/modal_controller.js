@@ -131,10 +131,12 @@ export default class extends Controller {
     dialog.removeAttribute('data-entered');
     this.#cancelEnter();
 
-    // Listen on the dialog — transitionend bubbles up from #modal-inner (modals)
-    // or #drawer-panel (drawers). Using contentTarget doesn't work for modals
-    // because the transition is on #modal-inner, which is a parent of contentTarget.
-    const closeEventTarget = dialog;
+    // The closing transition runs on #modal-inner (modals) or #drawer-panel (drawers).
+    // We listen on the dialog for the bubbling transitionend, but filter by target
+    // to avoid firing early from other transitions (e.g. backdrop opacity).
+    const transitionTarget = this.#isDrawer()
+      ? dialog.querySelector('#drawer-panel')
+      : dialog.querySelector('#modal-inner');
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
 
     let cleaned = false;
@@ -142,6 +144,7 @@ export default class extends Controller {
       if (cleaned) return;
       cleaned = true;
       clearTimeout(this.closeTimeout);
+      dialog.removeEventListener('transitionend', onTransitionEnd);
       const frame = this.turboFrame;
       try { dialog.close(); } catch (_) {}
       try { frame.removeAttribute("src"); } catch (_) {}
@@ -150,8 +153,12 @@ export default class extends Controller {
       try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
     };
 
-    closeEventTarget.addEventListener('transitionend', cleanup, { once: true });
-    // Fallback if no animation defined (custom flavor with empty classes)
+    const onTransitionEnd = (e) => {
+      if (e.target === transitionTarget) cleanup();
+    };
+
+    dialog.addEventListener('transitionend', onTransitionEnd);
+    // Fallback if no transition defined (custom flavor with empty classes)
     this.closeTimeout = setTimeout(cleanup, closeTimeoutMs);
   }
 
