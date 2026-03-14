@@ -2,8 +2,14 @@
 
 # Custom
 # TODO: define the classes for each HTML element.
+#
+# STYLES: Optional CSS string injected as an inline <style> tag inside the dialog.
+# Use this for @keyframes, transitions, or any CSS that can't be expressed as classes.
+# Set to "" or omit entirely if you handle all styling via classes and external CSS.
 module UltimateTurboModal::Flavors
   class Custom < UltimateTurboModal::Base
+    STYLES = ""
+
     DIALOG_CLASSES = ""
     DIV_INNER_CLASSES = ""
     DIV_CONTENT_CLASSES = ""

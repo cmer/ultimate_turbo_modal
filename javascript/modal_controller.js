@@ -33,7 +33,7 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.#cancelDrawerEnter();
+    this.#cancelEnter();
     clearTimeout(this.closeTimeout);
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
@@ -50,7 +50,7 @@ export default class extends Controller {
     const scrollY = window.scrollY;
     this.containerTarget.showModal();
     window.scrollTo(scrollX, scrollY);
-    if (this.#isDrawer()) this.#queueDrawerEnter();
+    this.#queueEnter();
 
     if (this.advanceUrlValue && !this.#hasHistoryAdvanced()) {
       this.#setHistoryAdvanced();
@@ -129,10 +129,9 @@ export default class extends Controller {
     dialog.setAttribute('data-closing', '');
     dialog.setAttribute('data-enter-ready', '');
     dialog.removeAttribute('data-entered');
-    this.#cancelDrawerEnter();
+    this.#cancelEnter();
 
-    const closeEventName = this.#isDrawer() ? 'transitionend' : 'animationend';
-    const closeEventTarget = this.#isDrawer() && this.hasContentTarget ? this.contentTarget : dialog;
+    const closeEventTarget = this.hasContentTarget ? this.contentTarget : dialog;
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
 
     let cleaned = false;
@@ -148,7 +147,7 @@ export default class extends Controller {
       try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
     };
 
-    closeEventTarget.addEventListener(closeEventName, cleanup, { once: true });
+    closeEventTarget.addEventListener('transitionend', cleanup, { once: true });
     // Fallback if no animation defined (custom flavor with empty classes)
     this.closeTimeout = setTimeout(cleanup, closeTimeoutMs);
   }
@@ -167,25 +166,25 @@ export default class extends Controller {
     return this.containerTarget.dataset.drawer !== undefined
   }
 
-  #queueDrawerEnter() {
-    this.#cancelDrawerEnter();
+  #queueEnter() {
+    this.#cancelEnter();
 
-    this.drawerEnterFrame = requestAnimationFrame(() => {
+    this.enterFrame = requestAnimationFrame(() => {
       if (!this.containerTarget.isConnected || this.containerTarget.hasAttribute('data-closing')) return;
       this.containerTarget.setAttribute('data-enter-ready', '');
 
-      this.drawerEnterFrame = requestAnimationFrame(() => {
+      this.enterFrame = requestAnimationFrame(() => {
         if (!this.containerTarget.isConnected || this.containerTarget.hasAttribute('data-closing')) return;
         this.containerTarget.setAttribute('data-entered', '');
-        this.drawerEnterFrame = null;
+        this.enterFrame = null;
       });
     });
   }
 
-  #cancelDrawerEnter() {
-    if (!this.drawerEnterFrame) return;
-    cancelAnimationFrame(this.drawerEnterFrame);
-    this.drawerEnterFrame = null;
+  #cancelEnter() {
+    if (!this.enterFrame) return;
+    cancelAnimationFrame(this.enterFrame);
+    this.enterFrame = null;
   }
 
   #hasHistoryAdvanced() {

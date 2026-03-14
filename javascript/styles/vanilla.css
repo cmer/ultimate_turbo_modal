@@ -15,45 +15,80 @@
   border-width: 0;
 }
 
-.dark {
-  dialog.modal-container::backdrop {
-    background-color: rgba(17, 24, 39, 0.8);
-  }
+/* ========================================
+   Dialog reset (shared modal + drawer)
+   ======================================== */
 
-  .modal-header,
-  .modal-footer {
-    border-color: #4B5563;
-  }
-
-  .modal-content {
-    background-color: #1F2937;
-    color: #ffffff;
-  }
-
-  .modal-close-button:hover,
-  .modal-close-icon:hover {
-    background-color: #6B7280;
-    color: #ffffff;
-  }
+dialog.modal-container,
+dialog.drawer-container {
+  position: fixed;
+  inset: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  max-width: 100vw;
+  max-height: 100dvh;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
-:not(.dark) {
+/* ========================================
+   Modal styles
+   ======================================== */
 
-  .modal-close-button,
-  .modal-close-icon {
-    color: #9CA3AF;
-
-    &:hover {
-      color: #111827;
-      background-color: #E5E7EB;
-    }
-  }
-}
-
+/* Backdrop transitions */
 dialog.modal-container::backdrop {
   background-color: rgba(17, 24, 39, 0.7);
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+dialog.modal-container[data-entered]::backdrop {
+  opacity: 1;
+}
+dialog.modal-container[data-closing]::backdrop {
+  transition-duration: 200ms;
+  transition-timing-function: ease-in;
 }
 
+.dark dialog.modal-container::backdrop {
+  background-color: rgba(17, 24, 39, 0.8);
+}
+
+/* Modal enter/leave transitions */
+.modal-container:not([data-enter-ready]):not([data-entered]) .modal-inner {
+  visibility: hidden;
+}
+.modal-inner {
+  display: flex;
+  padding: 0.25rem;
+  padding-top: 5vh;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  opacity: 0;
+  translate: 0 1rem;
+  transition: opacity 300ms ease-out, translate 300ms ease-out, scale 300ms ease-out;
+
+  @media (min-width: 640px) {
+    padding: 1rem;
+    padding-top: 5vh;
+    translate: none;
+    scale: 0.95;
+  }
+}
+.modal-container[data-entered] .modal-inner {
+  opacity: 1;
+  translate: none;
+  scale: 1;
+}
+.modal-container[data-closing] .modal-inner {
+  transition-duration: 200ms;
+  transition-timing-function: ease-in;
+}
+
+/* Modal conditional styling via data attributes */
 .modal-container {
   position: relative;
 
@@ -85,20 +120,6 @@ dialog.modal-container::backdrop {
 
   &[data-close-button="false"] .modal-close {
     display: none;
-  }
-}
-
-.modal-inner {
-  display: flex;
-  padding: 0.25rem;
-  padding-top: 5vh;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100%;
-
-  @media (min-width: 640px) {
-    padding: 1rem;
-    padding-top: 5vh;
   }
 }
 
@@ -164,33 +185,28 @@ dialog.modal-container::backdrop {
   height: 1.25rem;
 }
 
-/* Drawer styles */
-
+/* Modal dark mode */
 .dark {
-  dialog.drawer-container[data-overlay="true"]::backdrop {
-    background-color: rgba(17, 24, 39, 0.8);
-  }
-
-  .drawer-header,
-  .drawer-footer {
+  .modal-header,
+  .modal-footer {
     border-color: #4B5563;
   }
 
-  .drawer-content {
+  .modal-content {
     background-color: #1F2937;
     color: #ffffff;
   }
 
-  .drawer-close-button:hover,
-  .drawer-close-icon:hover {
+  .modal-close-button:hover,
+  .modal-close-icon:hover {
     background-color: #6B7280;
     color: #ffffff;
   }
 }
 
 :not(.dark) {
-  .drawer-close-button,
-  .drawer-close-icon {
+  .modal-close-button,
+  .modal-close-icon {
     color: #9CA3AF;
 
     &:hover {
@@ -200,13 +216,80 @@ dialog.modal-container::backdrop {
   }
 }
 
+/* ========================================
+   Drawer styles
+   ======================================== */
+
+/* Drawer backdrop transitions */
+dialog.drawer-container::backdrop {
+  background: transparent;
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
 dialog.drawer-container[data-overlay="true"]::backdrop {
   background-color: rgba(17, 24, 39, 0.7);
 }
+dialog.drawer-container[data-overlay="true"][data-entered]::backdrop {
+  opacity: 1;
+}
+dialog.drawer-container[data-closing]::backdrop {
+  transition-duration: 200ms;
+  transition-timing-function: ease-in;
+}
 
+.dark dialog.drawer-container[data-overlay="true"]::backdrop {
+  background-color: rgba(17, 24, 39, 0.8);
+}
+
+/* Drawer sizing via data attributes */
 .drawer-container {
+  --utmr-gutter: 2.5rem;
   position: relative;
 
+  @media (min-width: 640px) {
+    --utmr-gutter: 4rem;
+  }
+}
+.drawer-container[data-drawer-size="sm"] { --utmr-w: 24rem; }
+.drawer-container[data-drawer-size="md"],
+.drawer-container[data-drawer-size=""] { --utmr-w: 28rem; }
+.drawer-container[data-drawer-size="lg"] { --utmr-w: 42rem; }
+.drawer-container[data-drawer-size="xl"] { --utmr-w: 56rem; }
+.drawer-container[data-drawer-size="full"] { --utmr-w: 100vw; }
+
+/* Drawer direction */
+.drawer-container[data-drawer="left"] { --utmr-hide: -100% 0; }
+.drawer-container[data-drawer="left"] .drawer-panel { left: 0; }
+.drawer-container[data-drawer="right"] { --utmr-hide: 100% 0; }
+.drawer-container[data-drawer="right"] .drawer-panel { right: 0; }
+
+/* Drawer panel transitions */
+.drawer-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: min(var(--utmr-w), calc(100vw - var(--utmr-gutter)));
+  translate: var(--utmr-hide);
+  transition: translate 500ms ease-in-out;
+  will-change: translate;
+
+  @media (min-width: 640px) {
+    transition-duration: 700ms;
+  }
+}
+.drawer-container:not([data-enter-ready]):not([data-entered]) .drawer-panel {
+  visibility: hidden;
+}
+.drawer-container[data-entered] .drawer-panel {
+  translate: 0;
+}
+.drawer-container[data-closing] .drawer-panel {
+  translate: var(--utmr-hide);
+}
+
+/* Drawer conditional styling via data attributes */
+.drawer-container {
   &[data-header="false"] .drawer-header {
     display: none;
   }
@@ -237,13 +320,6 @@ dialog.drawer-container[data-overlay="true"]::backdrop {
   position: absolute;
   inset: 0;
   overflow: hidden;
-}
-
-.drawer-panel {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  height: 100%;
 }
 
 .drawer-content {
@@ -321,4 +397,35 @@ dialog.drawer-container[data-overlay="true"]::backdrop {
 .drawer-close-icon {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* Drawer dark mode */
+.dark {
+  .drawer-header,
+  .drawer-footer {
+    border-color: #4B5563;
+  }
+
+  .drawer-content {
+    background-color: #1F2937;
+    color: #ffffff;
+  }
+
+  .drawer-close-button:hover,
+  .drawer-close-icon:hover {
+    background-color: #6B7280;
+    color: #ffffff;
+  }
+}
+
+:not(.dark) {
+  .drawer-close-button,
+  .drawer-close-icon {
+    color: #9CA3AF;
+
+    &:hover {
+      color: #111827;
+      background-color: #E5E7EB;
+    }
+  }
 }

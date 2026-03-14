@@ -3,8 +3,33 @@
 # Tailwind CSS v4
 module UltimateTurboModal::Flavors
   class Tailwind < UltimateTurboModal::Base
-    DIALOG_CLASSES = "group backdrop:bg-gray-900/70 dark:backdrop:bg-gray-900/80"
-    DIV_INNER_CLASSES = "flex min-h-full items-start justify-center pt-[10vh] sm:p-4"
+    # Modal constants
+
+    DIALOG_CLASSES = [
+      "group",
+      # Dialog reset
+      "fixed inset-0 p-0 m-0 border-none bg-transparent",
+      "max-w-[100vw] max-h-dvh w-full h-full overflow-y-auto",
+      # Backdrop
+      "backdrop:bg-gray-900/70 dark:backdrop:bg-gray-900/80",
+      "backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-300 backdrop:ease-out",
+      "data-[entered]:backdrop:opacity-100",
+      "data-[closing]:backdrop:duration-200 data-[closing]:backdrop:ease-in"
+    ].join(" ")
+
+    DIV_INNER_CLASSES = [
+      "flex min-h-full items-start justify-center pt-[10vh] sm:p-4",
+      # Hidden before animation starts
+      "group-[&:not([data-enter-ready]):not([data-entered])]:invisible",
+      # Transition
+      "transition duration-300 ease-out",
+      "group-data-[closing]:duration-200 group-data-[closing]:ease-in",
+      # Default state (closed): faded + shifted
+      "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
+      # Entered state
+      "group-data-[entered]:opacity-100 group-data-[entered]:translate-y-0 group-data-[entered]:scale-100"
+    ].join(" ")
+
     DIV_CONTENT_CLASSES = "relative transform max-h-screen overflow-hidden rounded-lg bg-white text-left shadow-lg transition-all sm:my-8 sm:max-w-3xl dark:bg-gray-800 dark:text-white"
     DIV_MAIN_CLASSES = "group-data-[padding=true]:p-4 group-data-[padding=true]:pt-2 overflow-y-auto max-h-[75vh]"
     DIV_HEADER_CLASSES = "flex justify-between items-center w-full py-4 rounded-t dark:border-gray-600 group-data-[header-divider=true]:border-b group-data-[header=false]:absolute"
@@ -17,14 +42,52 @@ module UltimateTurboModal::Flavors
     ICON_CLOSE_CLASSES = "w-5 h-5"
 
     # Drawer constants
-    DRAWER_DIALOG_CLASSES = "group data-[overlay=true]:backdrop:bg-gray-900/70 dark:data-[overlay=true]:backdrop:bg-gray-900/80"
+
+    DRAWER_DIALOG_CLASSES = [
+      "group",
+      # Dialog reset
+      "fixed inset-0 p-0 m-0 border-none bg-transparent",
+      "max-w-[100vw] max-h-dvh w-full h-full overflow-y-auto",
+      # Backdrop (only when overlay enabled)
+      "data-[overlay=true]:backdrop:bg-gray-900/70 dark:data-[overlay=true]:backdrop:bg-gray-900/80",
+      "backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-300 backdrop:ease-out",
+      "data-[entered]:data-[overlay=true]:backdrop:opacity-100",
+      "data-[overlay=false]:backdrop:bg-transparent",
+      "data-[closing]:backdrop:duration-200 data-[closing]:backdrop:ease-in",
+      # Responsive gutter
+      "[--utmr-gutter:2.5rem] sm:[--utmr-gutter:4rem]",
+      # Drawer sizes via data attribute
+      "data-[drawer-size=sm]:[--utmr-w:24rem]",
+      "data-[drawer-size=md]:[--utmr-w:28rem]",
+      "data-[drawer-size=lg]:[--utmr-w:42rem]",
+      "data-[drawer-size=xl]:[--utmr-w:56rem]",
+      "data-[drawer-size=full]:[--utmr-w:100vw]",
+      # Drawer direction → hidden translate
+      "data-[drawer=left]:[--utmr-hide:-100%_0]",
+      "data-[drawer=right]:[--utmr-hide:100%_0]"
+    ].join(" ")
 
     DRAWER_WRAPPER_CLASSES = [
       "absolute inset-0 overflow-hidden"
     ].join(" ")
 
     DRAWER_PANEL_CLASSES = [
-      "absolute inset-y-0"
+      "absolute inset-y-0",
+      # Position based on direction
+      "group-data-[drawer=left]:left-0 group-data-[drawer=right]:right-0",
+      # Width (size variable + gutter)
+      "w-[min(var(--utmr-w),calc(100vw_-_var(--utmr-gutter)))]",
+      # Default: translated off-screen
+      "[translate:var(--utmr-hide)]",
+      # Entered: in place
+      "group-data-[entered]:[translate:0]",
+      # Closing: back off-screen
+      "group-data-[closing]:[translate:var(--utmr-hide)]",
+      # Transition
+      "transition-[translate] duration-500 ease-in-out sm:duration-700",
+      "will-change-[translate]",
+      # Hidden before animation ready
+      "group-[&:not([data-enter-ready]):not([data-entered])]:invisible"
     ].join(" ")
 
     DRAWER_CONTENT_CLASSES = [

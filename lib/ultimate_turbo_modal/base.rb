@@ -177,82 +177,18 @@ class UltimateTurboModal::Base < Phlex::HTML
   ## Styles
 
   def styles
-    style do
-      raw_html(drawer? ? drawer_styles : modal_styles)
-    end
-  end
-
-  def base_styles
-    <<~CSS.squish
-      dialog#modal-container { position: fixed; inset: 0; padding: 0; margin: 0; border: none; background: transparent;
-        max-width: 100vw; max-height: 100dvh; width: 100%; height: 100%; overflow-y: auto; }
-      @keyframes utmr-backdrop-in { from { opacity: 0 } to { opacity: 1 } }
-      @keyframes utmr-backdrop-out { from { opacity: 1 } to { opacity: 0 } }
-      dialog#modal-container[open]::backdrop { animation: utmr-backdrop-in 300ms ease-out forwards; }
-      dialog#modal-container[data-closing]::backdrop { animation: utmr-backdrop-out 200ms ease-in forwards; }
-    CSS
-  end
-
-  def modal_styles
-    <<~CSS.squish
-      #{base_styles}
-      @keyframes utmr-dialog-in-mobile { from { opacity: 0; transform: translateY(1rem) } to { opacity: 1; transform: translateY(0) } }
-      @keyframes utmr-dialog-in-desktop { from { opacity: 0; transform: scale(0.95) } to { opacity: 1; transform: scale(1) } }
-      @keyframes utmr-dialog-out-mobile { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(1rem) } }
-      @keyframes utmr-dialog-out-desktop { from { opacity: 1; transform: scale(1) } to { opacity: 0; transform: scale(0.95) } }
-      dialog#modal-container[open] #modal-inner {
-        animation: utmr-dialog-in-mobile 300ms ease-out forwards; }
-      @media (min-width: 640px) {
-        dialog#modal-container[open] #modal-inner {
-          animation: utmr-dialog-in-desktop 300ms ease-out forwards; } }
-      dialog#modal-container[data-closing] #modal-inner {
-        animation: utmr-dialog-out-mobile 200ms ease-in forwards; }
-      @media (min-width: 640px) {
-        dialog#modal-container[data-closing] #modal-inner {
-          animation: utmr-dialog-out-desktop 200ms ease-in forwards; } }
-    CSS
-  end
-
-  def drawer_styles
-    drawer_edge = drawer_position == :left ? "left" : "right"
-    hidden_translate = drawer_position == :left ? "-100% 0" : "100% 0"
-
-    <<~CSS.squish
-      #{base_styles}
-      dialog#modal-container[data-overlay="false"]::backdrop { background: transparent !important; }
-      dialog#modal-container { --utmr-drawer-width: #{drawer_width_css("2.5rem")}; }
-      dialog#modal-container #drawer-panel {
-        width: var(--utmr-drawer-width);
-        #{drawer_edge}: 0;
-        translate: #{hidden_translate};
-        transition: translate 500ms ease-in-out;
-        will-change: translate;
-      }
-      @media (min-width: 640px) {
-        dialog#modal-container { --utmr-drawer-width: #{drawer_width_css("4rem")}; }
-        dialog#modal-container #drawer-panel { transition-duration: 700ms; }
-      }
-      dialog#modal-container:not([data-enter-ready]):not([data-entered]) #drawer-panel { visibility: hidden; }
-      dialog#modal-container[data-entered] #drawer-panel { translate: 0; }
-      dialog#modal-container[data-closing] #drawer-panel { translate: #{hidden_translate}; }
-    CSS
-  end
-
-  def drawer_width_css(gutter)
-    available_width = "calc(100vw - #{gutter})"
-
-    case @drawer_size.to_s
-    when "", "md" then "min(28rem, #{available_width})"
-    when "sm" then "min(24rem, #{available_width})"
-    when "lg" then "min(42rem, #{available_width})"
-    when "xl" then "min(56rem, #{available_width})"
-    when "full" then available_width
-    else "min(#{@drawer_size}, #{available_width})"
-    end
+    return unless self.class.const_defined?(:STYLES)
+    css = self.class::STYLES
+    return if css.nil? || css.empty?
+    style { raw_html(css) }
   end
 
   def raw_html(str)
     respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
+  end
+
+  def custom_drawer_size?
+    @drawer_size.present? && !%w[sm md lg xl full].include?(@drawer_size.to_s)
   end
 
   def dialog_element(&block)
@@ -272,7 +208,7 @@ class UltimateTurboModal::Base < Phlex::HTML
 
     if drawer?
       data_attributes[:drawer] = drawer_position.to_s
-      data_attributes[:drawer_size] = @drawer_size.to_s
+      data_attributes[:drawer_size] = (@drawer_size.presence || "md").to_s
       data_attributes[:overlay] = overlay?.to_s
     end
 
@@ -282,8 +218,14 @@ class UltimateTurboModal::Base < Phlex::HTML
 
     dialog_classes = drawer? ? self.class::DRAWER_DIALOG_CLASSES : self.class::DIALOG_CLASSES
 
+    inline_style = nil
+    if drawer? && custom_drawer_size?
+      inline_style = "--utmr-w: #{@drawer_size}"
+    end
+
     dialog(id: "modal-container",
       class: dialog_classes,
+      style: inline_style,
       aria: {
         labelledby: "modal-title-h"
       },

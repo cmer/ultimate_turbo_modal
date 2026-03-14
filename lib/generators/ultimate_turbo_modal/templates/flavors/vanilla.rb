@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
 # Vanilla CSS
+# All animation, transition, and structural CSS lives in vanilla.css.
+# Set STYLES to a CSS string if you need additional inline styles.
 module UltimateTurboModal::Flavors
   class Vanilla < UltimateTurboModal::Base
+    STYLES = ""
+
     DIALOG_CLASSES = "modal-container"
     DIV_INNER_CLASSES = "modal-inner"
     DIV_CONTENT_CLASSES = "modal-content"
