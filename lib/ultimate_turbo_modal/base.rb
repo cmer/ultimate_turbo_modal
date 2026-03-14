@@ -39,7 +39,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     @close_button = close_button
     @close_button_data_action = close_button_data_action
     @close_button_sr_label = close_button_sr_label
-    @drawer_size = drawer_size
+    @drawer_size = self.class.validate_drawer_size!(drawer_size)
     @footer_divider = footer_divider
     @header = header
     @header_divider = drawer ? false : header_divider
@@ -187,8 +187,18 @@ class UltimateTurboModal::Base < Phlex::HTML
     respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
   end
 
+  VALID_DRAWER_SIZES = %i[sm md lg xl full].freeze
+
+  def self.validate_drawer_size!(value)
+    return value if VALID_DRAWER_SIZES.include?(value.to_s.to_sym)
+    return value if value.is_a?(String) && value.match?(/\A\d+(\.\d+)?\s*(rem|em|px|%|vw|vh|dvw|dvh|svw|svh|lvw|lvh|ch|ex|cm|mm|in|pt|pc)\z/)
+
+    raise ArgumentError,
+      "Invalid drawer size: #{value.inspect}. Must be one of #{VALID_DRAWER_SIZES.map(&:inspect).join(", ")} or a CSS length string (e.g., \"30rem\", \"500px\", \"50vw\")"
+  end
+
   def custom_drawer_size?
-    @drawer_size.present? && !%w[sm md lg xl full].include?(@drawer_size.to_s)
+    @drawer_size.present? && !VALID_DRAWER_SIZES.include?(@drawer_size.to_s.to_sym)
   end
 
   def dialog_element(&block)

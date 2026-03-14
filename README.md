@@ -1,12 +1,13 @@
 # The Ultimate Turbo Modal for Rails (UTMR)
 
-There are MANY Turbo/Hotwire/Stimulus modal dialog implementations out there, and it seems like everyone goes about it a different way. However, as you may have learned the hard way, the majority fall short in different, often subtle ways. They generally cover the basics quite well, but do not check all the boxes for real-world use.
+There are MANY Turbo/Hotwire/Stimulus modal dialog implementations out there. However, as you may have learned, the majority fall short in different, often subtle ways. They generally cover the basics quite well, but do not check all the boxes for real-world use.
 
 UTMR aims to be the be-all and end-all of Turbo Modals. I believe it is the best (only?) full-featured implementation and checks all the boxes. It is feature-rich, yet extremely easy to use.
 
 Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https://turbo.hotwired.dev/), the native HTML [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) element, and [Idiomorph](https://github.com/bigskysoftware/idiomorph).
 
-It currently ships in two flavors: Tailwind (v4+) and regular, vanilla CSS. It is easy to create your own variant to suit your needs.
+It ships in two flavors: Tailwind (v4+) and vanilla CSS. It is easy to create your own flavor to suit your needs.
+
 
 ## Installation
 
@@ -14,6 +15,7 @@ It currently ships in two flavors: Tailwind (v4+) and regular, vanilla CSS. It i
 $ bundle add ultimate_turbo_modal
 $ bundle exec rails g ultimate_turbo_modal:install
 ```
+
 
 ## Usage
 
@@ -34,6 +36,8 @@ $ bundle exec rails g ultimate_turbo_modal:install
 Clicking on the link will automatically open the content of the view inside a modal. If you open the link in a new tab, it will render normally outside of the modal. Nothing to do!
 
 This is really all you should need to do for most use cases.
+
+**Please note:** The generator automatically adds `<turbo-frame id="modal"></turbo-frame>` to your application layout. If you need to open modals or drawers in another layout, please add this HTML snippet manually.
 
 ### Setting Title and Footer
 
@@ -76,7 +80,26 @@ If you need to do something a little bit more advanced when the view is shown ou
 &nbsp;
 ## Options
 
-Do not get overwhelmed with all the options. The defaults are sensible.
+Do not get overwhelmed with all the options. The defaults are sensible. You can change the defaults with an initializer:
+
+```ruby
+# config/initializers/ultimate_turbo_modal.rb
+
+UltimateTurboModal.configure do |config|
+  config.flavor = :tailwind
+  config.advance = true
+  config.close_button = true
+  config.header = true
+  config.header_divider = true
+  config.footer_divider = true
+  config.padding = true
+  config.overlay = true
+  config.drawer_size = :md
+  config.allowed_click_outside_selector = []
+end
+```
+
+Per-instance options passed to `modal()` or `drawer()` override the defaults.
 
 | name | default value | description |
 |------|---------------|-------------|
@@ -86,9 +109,9 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 | `header_divider` | `true` | Whether to display a divider below the header. |
 | `padding` | `true` | Adds padding inside the modal. |
 | `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
-| `drawer` | `false` | Set to `:right` or `:left` to render as a drawer instead of a modal. |
-| `drawer_size` | `:md` | Drawer width: `:sm`, `:md`, `:lg`, `:xl`, `:full`, or a CSS string. |
-| `overlay` | `true` (modal) / `false` (drawer) | Whether to show a backdrop overlay. |
+| `drawer` | N/A | Set to `:right` or `:left` to render as a drawer instead of a modal. |
+| `size` | `:md` | Drawer width: `:sm`, `:md`, `:lg`, `:xl`, `:full`, or a CSS string. Use `drawer_size` in the configuration block. |
+| `overlay` | `true` | Whether to show a backdrop overlay. |
 
 ### Example usage with options
 
@@ -130,23 +153,13 @@ Link to it the same way as a modal:
 |------|---------|-------------|
 | `position` | `:right` | Which edge the drawer slides from. `:right` or `:left`. |
 | `size` | `:md` | Width of the drawer. One of `:sm`, `:md`, `:lg`, `:xl`, `:full`, or a CSS string (e.g. `"500px"`). |
-| `overlay` | `false` | Whether to show a backdrop overlay behind the drawer. |
+| `overlay` | `true` | Whether to show a backdrop overlay behind the drawer. |
 
 All standard modal options (`title`, `close_button`, `padding`, `header`, `footer_divider`, etc.) also work with drawers.
 
 ```erb
-<%= drawer(position: :left, size: :lg, overlay: true, title: "Settings") do %>
+<%= drawer(position: :left, size: :lg, overlay: false, title: "Settings") do %>
   <p>Drawer content</p>
-<% end %>
-```
-
-### Using `modal` with the `drawer` Option
-
-You can also use the `modal` helper directly with the `drawer` option:
-
-```erb
-<%= modal(drawer: :right, drawer_size: :lg) do %>
-  This renders as a drawer.
 <% end %>
 ```
 
@@ -161,23 +174,6 @@ You can also use the `modal` helper directly with the `drawer` option:
 | `:full` | Full viewport width minus a small gutter |
 | CSS string | Custom value, e.g. `"500px"` or `"50vw"` |
 
-### Drawer Defaults
-
-Drawers differ from modals in a few defaults:
-- `advance` is always `false` (drawers don't push browser history)
-- `header_divider` is `false`
-- `overlay` is `false`
-
-### Global Configuration
-
-You can set drawer defaults in your initializer:
-
-```ruby
-UltimateTurboModal.configure do |config|
-  config.drawer_size = :lg
-  config.overlay = false
-end
-```
 
 ## Features and capabilities
 
@@ -191,7 +187,6 @@ end
 - Seamless support for multi-page navigation within the modal
 - Seamless support for forms with validations
 - Seamless support for Rails flash messages
-- Enter/leave animation (fade in/out)
 - Support for long, scrollable modals
 - Properly locks the background page when scrolling a long modal
 - Click outside the modal to dismiss
@@ -213,15 +208,6 @@ The repository includes a demo application in the `demo-app` directory that show
 # Navigate to the demo app directory
 cd demo-app
 
-# Install Ruby dependencies
-bundle install
-
-# Create and setup the database
-bin/rails db:create db:migrate db:seed
-
-# Install JavaScript dependencies
-npm install
-
 # Start the development server
 bin/dev
 
@@ -229,70 +215,11 @@ bin/dev
 open http://localhost:3000
 ```
 
-The demo app provides examples of:
-- Basic modal usage
-- Different modal configurations
-- Custom styling options
-- Various trigger methods
-- Drawer panels (left and right)
-- Advanced features like scrollable content and custom footers
 
-## Updating between minor versions
+## Upgrading
 
-To upgrade within the same major version (for example 3.0 → 3.1):
+Please see the [Upgrading Guide](UPGRADING.md) for detailed instructions on upgrading between versions.
 
-1. Change the UTMR gem version in your `Gemfile`:
-
-   ```ruby
-   gem "ultimate_turbo_modal", "~> 3.0"
-   ```
-
-2. Install updated dependencies:
-
-   ```sh
-   bundle install
-   ```
-
-3. Run the update generator:
-
-   ```sh
-   bundle exec rails g ultimate_turbo_modal:update
-   ```
-
-## Upgrading from 2.x
-
-v3.0 includes several breaking changes:
-
-- **Native `<dialog>` element**: The modal now uses the native HTML `<dialog>` element instead of custom `<div>`-based markup. This provides native focus trapping and improved accessibility, removing the need for the `el-transition` and `focus-trap` JavaScript dependencies.
-- **Simplified HTML structure**: The modal markup has been reduced from 6 nested containers to 3 (`dialog` + `inner` + `content`).
-- **Tailwind v3 flavor removed**: Only Tailwind v4+ is supported via the `tailwind` flavor. Use `custom` if you need to define your own classes.
-- **Custom flavor update required**: The flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` have been replaced by `DIALOG_CLASSES`. If you have a custom flavor, you must update it to use the new constants.
-
-To upgrade:
-
-1. Update your `Gemfile`:
-
-   ```ruby
-   gem "ultimate_turbo_modal", "~> 3.0"
-   ```
-
-2. Install updated dependencies:
-
-   ```sh
-   bundle install
-   ```
-
-3. Re-run the install generator to get the updated flavor file and JavaScript package:
-
-   ```sh
-   bundle exec rails g ultimate_turbo_modal:install
-   ```
-
-4. If you have a custom flavor, update it to use the new `DIALOG_CLASSES` constant instead of the removed constants.
-
-## Upgrading from 1.x
-
-Please see the [Upgrading Guide](UPGRADING.md) for detailed instructions on how to upgrade from version 1.x.
 
 ## Thanks
 

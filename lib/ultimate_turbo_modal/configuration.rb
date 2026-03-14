@@ -55,11 +55,7 @@ module UltimateTurboModal
     end
 
     def drawer_size=(value)
-      valid_symbols = [:sm, :md, :lg, :xl, :full]
-      unless valid_symbols.include?(value) || value.is_a?(String)
-        raise ArgumentError, "Must be one of #{valid_symbols} or a CSS string"
-      end
-      @drawer_size = value
+      @drawer_size = UltimateTurboModal::Base.validate_drawer_size!(value)
     end
 
     def flavor=(flavor)

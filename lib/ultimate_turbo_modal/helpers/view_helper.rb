@@ -6,7 +6,8 @@ module UltimateTurboModal::Helpers
       render(UltimateTurboModal.new(request:, **), &)
     end
 
-    def drawer(position: :right, overlay: false, size: UltimateTurboModal.configuration.drawer_size, **options, &block)
+    def drawer(position: :right, overlay: true, size: UltimateTurboModal.configuration.drawer_size, **options, &block)
+      UltimateTurboModal::Base.validate_drawer_size!(size)
       modal(drawer: position, overlay: overlay, drawer_size: size, **options, &block)
     end
   end

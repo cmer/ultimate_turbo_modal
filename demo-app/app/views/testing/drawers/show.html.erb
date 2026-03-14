@@ -7,15 +7,15 @@
 
 <%# Left drawer %>
 <% elsif params[:id] == "left" %>
-  <%= drawer(position: :left, title: "Left Panel") do %>
+  <%= drawer(position: :left, size: :sm, title: "Left Panel") do %>
     <p>Left-side drawer content.</p>
     <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
   <% end %>
 
 <%# Drawer with overlay %>
 <% elsif params[:id] == "overlay" %>
-  <%= drawer(overlay: true, title: "With Overlay") do %>
-    <p>This drawer has a shaded backdrop overlay.</p>
+  <%= drawer(overlay: false, title: "Without Overlay") do %>
+    <p>This drawer doesn't have a backdrop overlay.</p>
     <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
   <% end %>
 

@@ -145,7 +145,7 @@ Options can be set at three levels (lowest wins):
 | `title` | String | `nil` | Modal title text |
 | `drawer` | `false`, `:right`, `:left` | `false` | Render as drawer instead of modal |
 | `drawer_size` | Symbol or String | `:md` | Drawer width: `:sm`, `:md`, `:lg`, `:xl`, `:full`, or CSS string |
-| `overlay` | Boolean | `true` | Show backdrop overlay. Drawers default to `false` via the `drawer()` helper. |
+| `overlay` | Boolean | `true` | Show backdrop overlay |
 | `allowed_click_outside_selector` | Array | `[]` | CSS selectors for elements outside modal that won't dismiss it |
 | `close_button_data_action` | String | `"modal#hideModal"` | Custom data-action for close button |
 | `close_button_sr_label` | String | `"Close modal"` | Screen reader label for close button |

@@ -131,7 +131,10 @@ export default class extends Controller {
     dialog.removeAttribute('data-entered');
     this.#cancelEnter();
 
-    const closeEventTarget = this.hasContentTarget ? this.contentTarget : dialog;
+    // Listen on the dialog — transitionend bubbles up from #modal-inner (modals)
+    // or #drawer-panel (drawers). Using contentTarget doesn't work for modals
+    // because the transition is on #modal-inner, which is a parent of contentTarget.
+    const closeEventTarget = dialog;
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
 
     let cleaned = false;
