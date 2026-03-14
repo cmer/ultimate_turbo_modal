@@ -7,7 +7,7 @@
 
 <%# Left drawer %>
 <% elsif params[:id] == "left" %>
-  <%= drawer(position: :left, size: :sm, title: "Left Panel") do %>
+  <%= drawer(position: :left, size: :xs, title: "Left Panel") do %>
     <p>Left-side drawer content.</p>
     <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
   <% end %>
@@ -21,8 +21,8 @@
 
 <%# Large drawer %>
 <% elsif params[:id] == "large" %>
-  <%= drawer(size: :lg, title: "Large Panel") do %>
-    <p>This is a wider drawer (max-w-2xl).</p>
+  <%= drawer(size: :"2xl", title: "Large Panel") do %>
+    <p>This is a wider drawer.</p>
     <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 10) %></p>
   <% end %>
 
