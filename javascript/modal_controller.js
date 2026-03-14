@@ -199,22 +199,25 @@ export default class extends Controller {
   #queueEnter() {
     this.#cancelEnter();
 
-    this.enterFrame = requestAnimationFrame(() => {
+    this.enterFrames = [];
+    const outerFrame = requestAnimationFrame(() => {
       if (!this.containerTarget.isConnected || this.containerTarget.hasAttribute('data-closing')) return;
       this.containerTarget.setAttribute('data-enter-ready', '');
 
-      this.enterFrame = requestAnimationFrame(() => {
+      const innerFrame = requestAnimationFrame(() => {
         if (!this.containerTarget.isConnected || this.containerTarget.hasAttribute('data-closing')) return;
         this.containerTarget.setAttribute('data-entered', '');
-        this.enterFrame = null;
+        this.enterFrames = null;
       });
+      this.enterFrames?.push(innerFrame);
     });
+    this.enterFrames.push(outerFrame);
   }
 
   #cancelEnter() {
-    if (!this.enterFrame) return;
-    cancelAnimationFrame(this.enterFrame);
-    this.enterFrame = null;
+    if (!this.enterFrames) return;
+    this.enterFrames.forEach(id => cancelAnimationFrame(id));
+    this.enterFrames = null;
   }
 
   #hasHistoryAdvanced() {
