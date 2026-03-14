@@ -8,7 +8,7 @@
 # Set to "" or omit entirely if you handle all styling via classes and external CSS.
 module UltimateTurboModal::Flavors
   class Custom < UltimateTurboModal::Base
-    STYLES = ""
+    STYLES = "html:has(dialog#modal-container[open]) { overflow: hidden; }"
 
     MODAL_DIALOG_CLASSES = ""
     MODAL_INNER_CLASSES = ""
