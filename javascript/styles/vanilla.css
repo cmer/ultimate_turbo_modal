@@ -94,8 +94,6 @@ dialog.utmr {
 
   /* Modal conditional styling via data attributes */
   &.modal-container {
-    position: relative;
-
     &[data-header="false"] .modal-header {
       position: absolute;
     }
@@ -213,7 +211,6 @@ dialog.utmr {
   /* Drawer sizing via data attributes */
   &.drawer-container {
     --utmr-gutter: 2.5rem;
-    position: relative;
 
     @media (min-width: 640px) {
       --utmr-gutter: 4rem;
