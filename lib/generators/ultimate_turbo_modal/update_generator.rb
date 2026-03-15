@@ -29,7 +29,7 @@ module UltimateTurboModal
         end
 
         package_name = "ultimate_turbo_modal"
-        new_version = UltimateTurboModal::VERSION.to_s
+        new_version = gem_version_to_npm(UltimateTurboModal::VERSION.to_s)
 
         # Special case: demo app links to local JS package; never update its version
         local_link = json.dig("dependencies", package_name) || json.dig("devDependencies", package_name)
@@ -38,12 +38,14 @@ module UltimateTurboModal
           return
         end
 
+        found = false
         updated = false
 
         %w[dependencies devDependencies].each do |section|
           next unless json.key?(section) && json[section].is_a?(Hash)
 
           if json[section].key?(package_name)
+            found = true
             old = json[section][package_name]
             json[section][package_name] = new_version
             updated = true if old != new_version
@@ -53,8 +55,13 @@ module UltimateTurboModal
         if updated
           File.write(package_json_path, JSON.pretty_generate(json) + "\n")
           say "Updated #{package_name} version in package.json to #{new_version}.", :green
+        elsif found
+          say "#{package_name} in package.json is already at version #{new_version}.", :blue
         else
-          say "Did not find #{package_name} in package.json dependencies. Nothing to update.", :blue
+          json["dependencies"] ||= {}
+          json["dependencies"][package_name] = new_version
+          File.write(package_json_path, JSON.pretty_generate(json) + "\n")
+          say "Added #{package_name} (#{new_version}) to package.json dependencies.", :green
         end
       end
 
@@ -83,6 +90,13 @@ module UltimateTurboModal
       end
 
       private
+
+      # Convert Ruby gem version to npm semver format.
+      # Ruby: "3.0.0.beta.1" → npm: "3.0.0-beta.1"
+      # Ruby: "3.0.0.alpha"  → npm: "3.0.0-alpha.0"
+      def gem_version_to_npm(version)
+        version.sub(/\.([a-z]+)(?:\.(\d+))?$/) { "-#{$1}.#{$2 || "0"}" }
+      end
 
       def detect_flavor
         return options[:flavor] if options[:flavor]
