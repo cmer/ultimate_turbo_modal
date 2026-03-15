@@ -1,1 +1,0 @@
-../../../lib/generators/ultimate_turbo_modal/templates/flavors/tailwind.rb

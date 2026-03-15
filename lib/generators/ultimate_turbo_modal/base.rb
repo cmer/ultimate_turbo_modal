@@ -37,10 +37,10 @@ module UltimateTurboModal
             run "bun add #{version_spec}"
             say "✅ Added '#{package_name}' using Bun.", :green
           else
-            say "Attempting to add with Yarn. If you use npm or Bun, please add manually.", :yellow
-            run "yarn add #{version_spec}"
-            say "If this failed or you use npm/bun, please run:", :yellow
-            say "npm install --save #{version_spec}", :cyan
+            say "Attempting to add with npm. If you use Yarn or Bun, please add manually.", :yellow
+            run "npm install --save #{version_spec}"
+            say "If this failed or you use yarn/bun, please run:", :yellow
+            say "yarn add #{version_spec}", :cyan
             say "# or", :cyan
             say "bun add #{version_spec}", :cyan
           end
@@ -82,8 +82,8 @@ module UltimateTurboModal
           run "bun install"
           say "✅ Installed dependencies with Bun.", :green
         else
-          say "Attempting to install with Yarn. If you use npm or Bun, please run the appropriate command.", :yellow
-          run "yarn install"
+          say "Attempting to install with npm. If you use Yarn or Bun, please run the appropriate command.", :yellow
+          run "npm install"
         end
       end
 

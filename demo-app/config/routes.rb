@@ -1,11 +1,15 @@
 Rails.application.routes.draw do
-  resources :modal
-  resources :posts
-  resource :hide_from_backend, only: [:new, :create]
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root to: "showcase#index"
+  resources :showcase, only: [:show]
+  post "/showcase/submit", to: "showcase#submit", as: :showcase_submit
+
+  namespace :testing do
+    resources :modal
+    resources :drawers
+    resources :posts
+    resource :hide_from_backend, only: [:new, :create]
+    root to: "welcome#index"
+  end
 
   get "/custom-advance-history-url", to: redirect("/")
-
-  # Defines the root path route ("/")
-  root to: "welcome#index"
 end

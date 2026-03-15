@@ -2,7 +2,6 @@
 
 require "rails/generators"
 require "json"
-require "pathname"
 require_relative "base"
 
 module UltimateTurboModal
@@ -11,6 +10,8 @@ module UltimateTurboModal
       source_root File.expand_path("templates", __dir__)
 
       desc "Updates UltimateTurboModal: aligns npm package version to gem version and refreshes the configured flavor initializer."
+
+      class_option :flavor, type: :string, desc: "CSS framework flavor (e.g. tailwind, vanilla, custom). Skips auto-detection when provided."
 
       def update_npm_package_version
         package_json_path = rails_root_join("package.json")
@@ -31,9 +32,9 @@ module UltimateTurboModal
         new_version = UltimateTurboModal::VERSION.to_s
 
         # Special case: demo app links to local JS package; never update its version
-        if json.dig("dependencies", package_name) == "link:../javascript" ||
-           json.dig("devDependencies", package_name) == "link:../javascript"
-          say "Detected local link for '#{package_name}' (link:../javascript). Skipping version update.", :blue
+        local_link = json.dig("dependencies", package_name) || json.dig("devDependencies", package_name)
+        if local_link&.match?(/\A(file|link):/)
+          say "Detected local link for '#{package_name}' (#{local_link}). Skipping version update.", :blue
           return
         end
 
@@ -84,24 +85,17 @@ module UltimateTurboModal
       private
 
       def detect_flavor
-        command = nil
-        if File.exist?(rails_root_join("bin", "rails"))
-          command = "#{rails_root_join("bin", "rails")} runner \"puts UltimateTurboModal.configuration.flavor\""
-        else
-          command = "bundle exec rails runner \"puts UltimateTurboModal.configuration.flavor\""
-        end
+        return options[:flavor] if options[:flavor]
 
-        output = `#{command}`
-        flavor = output.to_s.strip
-        flavor.empty? ? nil : flavor
+        rails_bin = rails_root_join("bin", "rails")
+        command = File.exist?(rails_bin) ? rails_bin.to_s : "bundle exec rails"
+        output = `#{command} runner "puts UltimateTurboModal.configuration.flavor"`.to_s.strip
+        output.empty? ? nil : output
       rescue StandardError => e
         say "Error determining flavor via rails runner: #{e.message}", :red
         nil
       end
 
-      def rails_root_join(*args)
-        Pathname.new(destination_root).join(*args)
-      end
     end
   end
 end

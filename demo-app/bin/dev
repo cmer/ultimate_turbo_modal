@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Set PORT to $CONDUCTOR_PORT if set, otherwise fallback to $PORT, default to 3000
-PORT="${CONDUCTOR_PORT:-${PORT:-3000}}"
+export PORT="${CONDUCTOR_PORT:-${PORT:-3000}}"
 
 # Build the ultimate_turbo_modal JavaScript package
 echo "Building ultimate_turbo_modal JavaScript package..."
@@ -15,14 +15,21 @@ FLAVOR_DEST_DIR="$DEMO_APP_DIR/config/initializers"
 
 # Symlink each flavor file with the appropriate naming (force overwrite)
 ln -sf "$FLAVOR_SOURCE_DIR/tailwind.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind.rb"
-ln -sf "$FLAVOR_SOURCE_DIR/tailwind3.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_tailwind3.rb"
 ln -sf "$FLAVOR_SOURCE_DIR/vanilla.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_vanilla.rb"
 ln -sf "$FLAVOR_SOURCE_DIR/custom.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_custom.rb"
 
-(cd "$DEMO_APP_DIR" && bundle install)
+(cd "$DEMO_APP_DIR" && bundle install && npm install)
 
-(cd "$DEMO_APP_DIR" && bundle install)
+# Build the library JS package first so dist/vanilla.css exists for the CSS watcher
+(cd "$DEMO_APP_DIR/../javascript" && npm run build)
 
+echo "--------------------------------------------------------------------"
+echo ""
+echo "  Setup complete. Starting development servers..."
+echo ""
+echo "  You can access the demo app at http://localhost:$PORT"
+echo ""
+echo "--------------------------------------------------------------------"
 # Start the development servers
 if command -v overmind &> /dev/null; then
   overmind start -f $DEMO_APP_DIR/Procfile.dev "$@"

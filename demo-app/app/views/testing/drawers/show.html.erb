@@ -1,0 +1,57 @@
+<%# Basic right drawer %>
+<% if params[:id] == "basic" %>
+  <%= drawer(title: "Panel title") do %>
+    <p>Drawer content here. This is a basic right-side drawer.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
+<%# Left drawer %>
+<% elsif params[:id] == "left" %>
+  <%= drawer(position: :left, size: :xs, title: "Left Panel") do %>
+    <p>Left-side drawer content.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
+<%# Drawer with overlay %>
+<% elsif params[:id] == "overlay" %>
+  <%= drawer(overlay: false, title: "Without Overlay") do %>
+    <p>This drawer doesn't have a backdrop overlay.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
+<%# Large drawer %>
+<% elsif params[:id] == "large" %>
+  <%= drawer(size: :"2xl", title: "Large Panel") do %>
+    <p>This is a wider drawer.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 10) %></p>
+  <% end %>
+
+<%# Long scrolling content %>
+<% elsif params[:id] == "long" %>
+  <%= drawer(title: "Long Content") do %>
+    <div class="space-y-4">
+      <% 20.times do %>
+        <p><%= Faker::Lorem.paragraph(sentence_count: 10) %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+<%# Drawer with header divider %>
+<% elsif params[:id] == "header_divider" %>
+  <%= drawer(title: "Header Divider", header_divider: true) do %>
+    <p>This drawer has a divider below the header.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+  <% end %>
+
+<%# Drawer with footer %>
+<% elsif params[:id] == "footer" %>
+  <%= drawer(title: "With Footer", footer_divider: true) do |m| %>
+    <p>This drawer has a footer section.</p>
+    <p class="mt-4"><%= Faker::Lorem.paragraph(sentence_count: 5) %></p>
+    <% m.footer do %>
+      <div class="flex justify-end w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Done</button>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

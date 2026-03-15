@@ -2,6 +2,9 @@
 @import 'ultimate_turbo_modal/dist/vanilla.css' layer(components);
 @import 'flatpickr/dist/flatpickr.css' layer(base);
 
+/* Tailwind doesn't follow symlinks. We therefore point directly to the Tailwind flavor file. */
+@source '../../../../lib/generators/ultimate_turbo_modal/templates/flavors/*.rb';
+
 @plugin '@tailwindcss/aspect-ratio';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
@@ -24,6 +27,25 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
+}
+
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="url"],
+.dark input[type="date"],
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+  background-color: var(--color-slate-700);
+  border-color: var(--color-gray-600);
+  color: white;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--color-gray-500);
 }
 
 #ts-notice:not(:empty) {

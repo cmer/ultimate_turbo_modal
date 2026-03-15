@@ -1,0 +1,12 @@
+class Testing::ModalController < ApplicationController
+  before_action :set_modal_properties
+
+  def index
+    @post = Post.first
+  end
+
+  def show
+    @header = !(params[:id] == "photo")
+    @overlay = params[:id] != "no_overlay"
+  end
+end

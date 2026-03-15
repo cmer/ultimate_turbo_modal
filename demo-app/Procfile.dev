@@ -1,4 +1,4 @@
 web: bin/rails server -p ${PORT}
-css: yarn build:css --watch
-js: yarn build --watch
-lib: bash -lc 'cd ../javascript && yarn build:watch'
+css: npm run build:css -- --watch
+js: npm run build -- --watch
+lib: bash -lc 'cd ../javascript && npm run build:watch'
