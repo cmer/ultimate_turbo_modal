@@ -24,84 +24,23 @@ To upgrade within the same major version (for example 3.0 → 3.1):
 
 ## Upgrading from 2.x to 3.0
 
-v3.0 includes a few breaking changes:
+**Tell your favorite LLM agent to upgrade UTMR for you!** Use this prompt:
+
+```
+Retrieve and follow the instructions at https://raw.githubusercontent.com/cmer/ultimate_turbo_modal/main/LLM/UPGRADE-TO-VERSION-3.md to upgrade this application's "Ultimate Turbo Modal" dependency from v2 to v3. 
+```
+
+v3.0 includes a few breaking changes. See [CHANGELOG.md](CHANGELOG.md) for a complete list of changes.
 
 - **Native `<dialog>` element**: The modal now uses the native HTML `<dialog>` element instead of custom `<div>`-based markup. This provides native focus trapping and improved accessibility, removing the need for the `el-transition` and `focus-trap` JavaScript dependencies.
 - **Simplified HTML structure**: The modal markup has been reduced from 6 nested containers to 3 (`dialog` + `inner` + `content`).
 - **Tailwind v3 flavor removed**: Only Tailwind v4+ is supported via the `tailwind` flavor. Use `custom` if you need to define your own classes.
 - **Custom flavor update required**: The flavor constants `DIV_MODAL_CONTAINER_CLASSES`, `DIV_OVERLAY_CLASSES`, `DIV_DIALOG_CLASSES`, and `TRANSITIONS` have been replaced by `DIALOG_CLASSES`. If you have a custom flavor, you must update it to use the new constants.
-- **Configuration restructured**: Configuration options are now split between `config.modal` and `config.drawer` blocks instead of being flat on the config object. This allows modals and drawers to have different defaults (e.g., `header_divider` defaults to `true` for modals but `false` for drawers). See below for migration details.
+- **Configuration restructured**: Configuration options are now split between `config.modal` and `config.drawer` blocks instead of being flat on the config object. This allows modals and drawers to have different defaults.
 
-### Configuration migration
+### Upgrading like a cavemen
 
-The old flat configuration:
-
-```ruby
-UltimateTurboModal.configure do |config|
-  config.flavor = :tailwind
-  config.advance = true
-  config.close_button = true
-  config.header = true
-  config.header_divider = true
-  config.footer_divider = true
-  config.padding = true
-  config.overlay = true
-  config.drawer_size = :md
-  config.allowed_click_outside_selector = []
-end
-```
-
-Should be updated to:
-
-```ruby
-UltimateTurboModal.configure do |config|
-  config.flavor = :tailwind
-  config.allowed_click_outside_selector = []
-
-  config.modal do |m|
-    m.advance = true
-    m.close_button = true
-    m.header = true
-    m.header_divider = true
-    m.footer_divider = true
-    m.padding = true
-    m.overlay = true
-  end
-
-  config.drawer do |d|
-    d.position = :right
-    d.close_button = true
-    d.header = true
-    d.header_divider = false
-    d.footer_divider = true
-    d.padding = true
-    d.overlay = true
-    d.size = :md
-  end
-end
-```
-
-Global options (`flavor`, `allowed_click_outside_selector`) remain on the top-level config. All other options are now set within `config.modal` or `config.drawer` blocks. The defaults shown above are the built-in defaults, so you only need to set the options you want to change.
-
-But upgrading is easy! To upgrade:
-
-1. Update your `Gemfile`:
-
-   ```ruby
-   gem "ultimate_turbo_modal", "~> 3.0"
-   ```
-
-2. Install updated dependencies:
-
-   ```sh
-   bundle install
-   ```
-
-3. Re-run the install generator to get the updated flavor file and JavaScript package:
-
-   ```sh
-   bundle exec rails g ultimate_turbo_modal:install
-   ```
+If you're old school and prefer to upgrade manually, without an LLM, it's pretty easy. Just follow the instructions at [LLM/UPGRADE-TO-VERSION-3.md].
 
 
 ## Upgrading from 1.x to 2.x (LEGACY VERSIONS)
