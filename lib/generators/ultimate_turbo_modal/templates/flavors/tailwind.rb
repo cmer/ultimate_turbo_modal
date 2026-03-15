@@ -12,10 +12,11 @@ module UltimateTurboModal::Flavors
       # Dialog reset
       "fixed inset-0 p-0 m-0 border-none bg-transparent",
       "max-w-[100vw] max-h-dvh w-full h-full overflow-y-auto",
-      # Backdrop
-      "backdrop:bg-gray-900/70 dark:backdrop:bg-gray-900/80",
+      # Backdrop (only when overlay enabled)
+      "data-[overlay=true]:backdrop:bg-gray-900/70 dark:data-[overlay=true]:backdrop:bg-gray-900/80",
       "backdrop:opacity-0 backdrop:transition-opacity backdrop:duration-300 backdrop:ease-out",
-      "data-[entered]:backdrop:opacity-100",
+      "data-[entered]:data-[overlay=true]:backdrop:opacity-100",
+      "data-[overlay=false]:backdrop:bg-transparent",
       "data-[closing]:backdrop:duration-200 data-[closing]:backdrop:ease-in"
     ].join(" ")
 

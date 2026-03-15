@@ -45,11 +45,16 @@ dialog.utmr {
 
   /* Backdrop transitions */
   &.modal-container::backdrop {
-    background-color: rgba(17, 24, 39, 0.7);
     opacity: 0;
     transition: opacity 300ms ease-out;
   }
-  &.modal-container[data-entered]::backdrop {
+  &.modal-container[data-overlay="true"]::backdrop {
+    background-color: rgba(17, 24, 39, 0.7);
+  }
+  &.modal-container[data-overlay="false"]::backdrop {
+    background-color: transparent;
+  }
+  &.modal-container[data-overlay="true"][data-entered]::backdrop {
     opacity: 1;
   }
   &.modal-container[data-closing]::backdrop {

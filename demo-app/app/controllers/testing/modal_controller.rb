@@ -7,5 +7,6 @@ class Testing::ModalController < ApplicationController
 
   def show
     @header = !(params[:id] == "photo")
+    @overlay = params[:id] != "no_overlay"
   end
 end

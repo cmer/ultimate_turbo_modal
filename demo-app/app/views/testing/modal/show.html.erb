@@ -1,4 +1,4 @@
-<%= modal(padding: @padding, advance: @override_url || @advance, header: @header, close_button: @close_button) do %>
+<%= modal(padding: @padding, advance: @override_url || @advance, header: @header, close_button: @close_button, overlay: @overlay) do %>
   <% unless inside_modal? %>
     <h1 class="text-2xl mb-8">This is not inside a modal</h1>
   <% end %>
@@ -16,6 +16,10 @@
   <% elsif params[:id] == "photo_no_advance" %>
     <div class="w-full">
       <img src="/img/unicat.jpg">
+    </div>
+  <% elsif params[:id] == "no_overlay" %>
+    <div class="w-full">
+      <p>This modal has no backdrop overlay. Click outside to dismiss.</p>
     </div>
   <% elsif params[:id] == "form" %>
     <div class="w-full p-4">
