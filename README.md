@@ -208,7 +208,7 @@ Link to it the same way as a modal:
 - Support for long, scrollable modals
 - Properly locks the background page when scrolling a long modal
 - Click outside the modal to dismiss
-- Option to whitelist CSS selectors that won't dismiss the modal when clicked outside the modal (ie: datepicker)
+- Option to whitelist CSS selectors that won't dismiss the modal when clicked outside the modal (see [body-appended widgets guide](docs/body-appended-widgets.md) for datepickers and similar popups)
 - Keyboard control; ESC to dismiss
 - Automatic (or not) close button
 - Native focus trapping via the `<dialog>` element for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
