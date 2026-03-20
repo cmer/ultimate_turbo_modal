@@ -201,6 +201,15 @@ When adding a new option:
 11. After `transitionend` fires on the transition target (or timeout fallback): `dialog.close()`, DOM cleanup, frame `src` removed, `modal:closed` event fires
 12. If history was advanced, `history.back()` is called after cleanup so Turbo doesn't replace the page before the animation finishes
 
+### Smooth Redirects
+
+When a form inside a modal/drawer submits and the server redirects, the behavior depends on the redirect target:
+- **Same-page redirect**: The page body behind the modal is morphed using Idiomorph (preserving the modal dialog), then the modal closes with its normal animation. History state is replaced rather than pushed.
+- **Different-page redirect**: The modal closes with its animation first, then `Turbo.visit()` navigates to the new page.
+- **Frame-breaking links**: Links inside the modal that don't target the modal frame get the same smooth treatment via the `turbo:frame-missing` handler.
+
+The `submitEnd` handler skips immediate close for redirected responses, deferring to `turbo:frame-missing`. The controller exposes `hideModalWithPromise()` which returns a Promise that resolves after `modal:closed` fires. Both paths pass `skipHistoryBack: true` to avoid Turbo popstate interference.
+
 ### Server-Side Dismissal
 
 ```ruby

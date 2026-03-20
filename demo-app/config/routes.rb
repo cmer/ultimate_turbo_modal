@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :drawers
     resources :posts
     resource :hide_from_backend, only: [:new, :create]
+    resources :smooth_redirects, only: [:new, :create]
     root to: "welcome#index"
   end
 

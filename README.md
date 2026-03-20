@@ -212,6 +212,7 @@ Link to it the same way as a modal:
 - Keyboard control; ESC to dismiss
 - Automatic (or not) close button
 - Native focus trapping via the `<dialog>` element for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
+- Smooth redirects: form submissions that redirect back to the same page morph the content behind the modal before closing; redirects to a different page close the modal with animation first, then navigate
 
 
 ## Demo Video

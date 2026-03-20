@@ -14,6 +14,7 @@ export default class extends Controller {
     this.#checkVersions();
     this.#cleanupStaleDialogs();
     this.hidingModal = false;
+    this.originalUrl = window.location.href;
     this.showModal();
     this.turboFrame = this.element.closest('turbo-frame');
 
@@ -66,7 +67,7 @@ export default class extends Controller {
   // Animate the close transition, then clean up.
   // history.back() is deferred to after the animation so Turbo doesn't
   // replace the page before the animation finishes.
-  hideModal() {
+  hideModal({ skipHistoryBack = false } = {}) {
     // Prevent multiple calls to hideModal.
     // Sometimes some events are double-triggered.
     if (this.hidingModal) return false
@@ -79,7 +80,23 @@ export default class extends Controller {
       return false
     }
 
+    this._skipHistoryBack = skipHistoryBack;
     this.#resetModalElement();
+  }
+
+  hideModalWithPromise(options = {}) {
+    return new Promise((resolve) => {
+      const frame = this.turboFrame;
+      const handler = () => {
+        frame.removeEventListener('modal:closed', handler);
+        resolve();
+      };
+      frame.addEventListener('modal:closed', handler);
+      if (this.hideModal(options) === false) {
+        frame.removeEventListener('modal:closed', handler);
+        resolve();
+      }
+    });
   }
 
   hide() {
@@ -97,7 +114,14 @@ export default class extends Controller {
   // hide modal on successful form submission
   // action: "turbo:submit-end->modal#submitEnd"
   submitEnd(e) {
-    if (e.detail.success) this.hideModal();
+    if (e.detail.success) {
+      const response = e.detail.fetchResponse?.response;
+      if (response?.redirected) {
+        this._pendingRedirectUrl = response.url;
+        return;
+      }
+      this.hideModal();
+    }
   }
 
   // Intercept native dialog cancel event (ESC key)
@@ -157,7 +181,7 @@ export default class extends Controller {
 
       // Go back in history AFTER the dialog is removed and animation is done.
       // This triggers Turbo's popstate navigation to restore the previous page.
-      if (historyWasAdvanced) history.back();
+      if (historyWasAdvanced && !this._skipHistoryBack) history.back();
     };
 
     const onTransitionEnd = (e) => {

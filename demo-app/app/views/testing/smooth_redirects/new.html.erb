@@ -1,0 +1,25 @@
+<% wrapper = @type == "drawer" ? method(:drawer) : method(:modal) %>
+
+<%= wrapper.call(title: "Smooth Redirect Test", close_button: true) do %>
+  <%= form_with url: testing_smooth_redirects_path, method: :post, class: "space-y-6 p-2" do |f| %>
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      Choose where to redirect after form submission:
+    </p>
+
+    <div class="space-y-3">
+      <label class="flex items-center gap-3 cursor-pointer">
+        <%= f.radio_button :redirect_to, "same", checked: true, class: "text-indigo-600" %>
+        <span class="text-sm font-medium text-gray-900 dark:text-white">Redirect to same page</span>
+      </label>
+
+      <label class="flex items-center gap-3 cursor-pointer">
+        <%= f.radio_button :redirect_to, "different", class: "text-indigo-600" %>
+        <span class="text-sm font-medium text-gray-900 dark:text-white">Redirect to different page</span>
+      </label>
+    </div>
+
+    <div>
+      <%= f.submit "Submit", class: "w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer" %>
+    </div>
+  <% end %>
+<% end %>

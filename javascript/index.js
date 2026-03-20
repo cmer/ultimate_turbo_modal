@@ -17,26 +17,99 @@ const isModalFrameTarget = (event) => {
   );
 };
 
-// Escape modal when the target frame is missing from the response.
-// This handles both redirects and regular links (e.g., <a href="/">) clicked
-// inside the modal/drawer — the response won't contain the modal frame,
-// so we escape to a full-page Turbo visit.
-const handleTurboFrameMissing = (event) => {
-  if (isModalFrameTarget(event)) {
-    event.preventDefault()
-    if (window.modal?.hideModal() === false) return
-    event.detail.visit(event.detail.response)
+const isSamePageUrl = (url1, url2) => {
+  try {
+    const a = new URL(url1, window.location.origin);
+    const b = new URL(url2, window.location.origin);
+    return a.pathname === b.pathname;
+  } catch { return false; }
+};
+
+const morphPageBehindModal = (html) => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  Idiomorph.morph(document.body, doc.body, {
+    morphStyle: 'innerHTML',
+    ignoreActiveValue: true,
+    callbacks: {
+      beforeNodeMorphed: (oldNode) => {
+        if (oldNode.id === 'modal-container') return false;
+        if (oldNode.tagName?.toLowerCase() === 'turbo-frame' &&
+            (oldNode.id === 'modal' || oldNode.id === 'modal-inner')) return false;
+        return true;
+      }
+    }
+  });
+};
+
+// Perform a smooth redirect: morph same-page content or close-then-navigate
+const performSmoothRedirect = async (modal, redirectUrl) => {
+  const originalUrl = modal.originalUrl;
+
+  if (isSamePageUrl(originalUrl, redirectUrl)) {
+    // Same-page: fetch fresh HTML, morph body behind modal, then close
+    try {
+      const freshResponse = await fetch(redirectUrl, {
+        headers: { 'Accept': 'text/html' }
+      });
+      const html = await freshResponse.text();
+      morphPageBehindModal(html);
+    } catch (_) {
+      // If morph fails, fall back to close + navigate
+      await modal.hideModalWithPromise({ skipHistoryBack: true });
+      window.Turbo.visit(redirectUrl);
+      return;
+    }
+    if (document.body.getAttribute('data-turbo-modal-history-advanced') === 'true') {
+      history.replaceState({}, '', redirectUrl);
+    }
+    await modal.hideModalWithPromise({ skipHistoryBack: true });
+  } else {
+    // Different page: close modal first, then navigate
+    await modal.hideModalWithPromise({ skipHistoryBack: true });
+    window.Turbo.visit(redirectUrl);
   }
 };
 
-// Morph the innerHTML of the modal to prevent flickering and transition animations
+// Escape modal when the target frame is missing from the response.
+// This handles redirects to pages that don't contain the modal frame,
+// and regular links (e.g., <a href="/">) clicked inside the modal/drawer.
+const handleTurboFrameMissing = (event) => {
+  if (!isModalFrameTarget(event)) return;
+  event.preventDefault();
+
+  const modal = window.modal;
+  if (!modal) {
+    event.detail.visit(event.detail.response);
+    return;
+  }
+
+  // Check if submitEnd stored a redirect URL
+  const redirectUrl = modal._pendingRedirectUrl || event.detail.response.url;
+  modal._pendingRedirectUrl = null;
+
+  performSmoothRedirect(modal, redirectUrl);
+};
+
+// Intercept frame renders for modal frames.
+// - For redirect responses (flagged by submitEnd), prevent render and do smooth redirect.
+// - For normal modal content updates, use Idiomorph to prevent flicker.
 const handleTurboBeforeFrameRender = (event) => {
-  if (isModalFrameTarget(event)) {
-    event.detail.render = (currentElement, newElement) => {
-      Idiomorph.morph(currentElement, newElement, {
-        morphstyle: 'innerHTML'
-      })
-    }
+  if (!isModalFrameTarget(event)) return;
+
+  const modal = window.modal;
+  if (modal?._pendingRedirectUrl) {
+    event.preventDefault();
+    const redirectUrl = modal._pendingRedirectUrl;
+    modal._pendingRedirectUrl = null;
+    performSmoothRedirect(modal, redirectUrl);
+    return;
+  }
+
+  // Normal modal content update: morph innerHTML to prevent flicker
+  event.detail.render = (currentElement, newElement) => {
+    Idiomorph.morph(currentElement, newElement, {
+      morphstyle: 'innerHTML'
+    })
   }
 };
 
