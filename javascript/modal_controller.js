@@ -256,12 +256,11 @@ export default class extends Controller {
     document.body.removeAttribute("data-turbo-modal-history-advanced");
   }
 
-  // Normalize a version string so Ruby gem format ("3.0.0.alpha") and
-  // npm/semver format ("3.0.0-alpha.0") can be compared reliably.
+  // Normalize a version string so Ruby gem format ("3.0.0.alpha.1") and
+  // npm/semver format ("3.0.0-alpha.1") can be compared reliably.
   #normalizeVersion(v) {
     return v
-      .replace(/\.([a-z]+)(?:\.(\d+))?$/, '-$1') // "3.0.0.alpha" → "3.0.0-alpha"
-      .replace(/-([a-z]+)\.\d+$/, '-$1');          // "3.0.0-alpha.0" → "3.0.0-alpha"
+      .replace(/\.([a-z]+)(?:\.(\d+))?$/, (_, tag, num) => `-${tag}${num ? `.${num}` : ''}`) // "3.0.0.alpha.1" → "3.0.0-alpha.1", "3.0.0.alpha" → "3.0.0-alpha"
   }
 
   #checkVersions() {
