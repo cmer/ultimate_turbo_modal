@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "rails/generators"
-require "pathname"
 
 module UltimateTurboModal
   module Generators
@@ -121,5 +120,3 @@ module UltimateTurboModal
     end
   end
 end
-
-

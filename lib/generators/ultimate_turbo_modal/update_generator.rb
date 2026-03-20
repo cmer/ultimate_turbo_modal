@@ -98,13 +98,10 @@ module UltimateTurboModal
         command = File.exist?(rails_bin) ? rails_bin.to_s : "bundle exec rails"
         output = `#{command} runner "puts UltimateTurboModal.configuration.flavor"`.to_s.strip
         output.empty? ? nil : output
-      rescue StandardError => e
+      rescue => e
         say "Error determining flavor via rails runner: #{e.message}", :red
         nil
       end
-
     end
   end
 end
-
-

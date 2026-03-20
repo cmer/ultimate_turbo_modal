@@ -30,8 +30,8 @@ class Testing::PostsController < ApplicationController
 
     if @post.save
       redirect_to testing_root_path,
-                  notice: "Post was successfully created.",
-                  status: :see_other
+        notice: "Post was successfully created.",
+        status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -41,8 +41,8 @@ class Testing::PostsController < ApplicationController
   def update
     if @post.update(post_params)
       redirect_to testing_root_path,
-                  notice: "Post was successfully updated.",
-                  status: :see_other
+        notice: "Post was successfully updated.",
+        status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -51,8 +51,8 @@ class Testing::PostsController < ApplicationController
   # DELETE /testing/posts/1
   def destroy
     redirect_to testing_root_path,
-                notice: "Post was successfully destroyed. (but not really)",
-                status: :see_other
+      notice: "Post was successfully destroyed. (but not really)",
+      status: :see_other
   end
 
   private

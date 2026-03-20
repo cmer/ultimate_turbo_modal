@@ -108,7 +108,6 @@ module UltimateTurboModal
         end
       end
 
-
       def copy_initializer_and_flavor
         say "\nCreating initializer for `#{@framework}` flavor...", :green
         copy_file "ultimate_turbo_modal.rb", "config/initializers/ultimate_turbo_modal.rb"

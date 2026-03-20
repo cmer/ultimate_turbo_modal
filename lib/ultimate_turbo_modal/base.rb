@@ -2,6 +2,7 @@
 
 class UltimateTurboModal::Base < Phlex::HTML
   prepend Phlex::DeferredRenderWithMainContent
+
   # @param advance [Boolean, String] Whether to update the browser history when opening and closing the modal (modal-only, ignored for drawers)
   # @param allowed_click_outside_selector [String] CSS selectors for elements that are allowed to be clicked outside of the modal without dismissing the modal
   # @param close_button [Boolean] Whether to show a close button
@@ -78,6 +79,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     include Phlex::Rails::Helpers::ContentTag
     include Phlex::Rails::Helpers::Routes
     include Phlex::Rails::Helpers::Tag
+
     @turbo_helpers_included = true
   end
 
@@ -148,11 +150,11 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def respond_to_missing?(method, include_private = false)
-    self.class.included_modules.any? { |mod| mod.instance_methods.include?(method) } || super
+    self.class.included_modules.any? { |mod| mod.method_defined?(method) } || super
   end
 
   def method_missing(method, *, &block)
-    mod = self.class.included_modules.find { |m| m.instance_methods.include?(method) }
+    mod = self.class.included_modules.find { |m| m.method_defined?(method) }
     if mod
       mod.instance_method(method).bind_call(self, *, &block)
     else
@@ -247,7 +249,7 @@ class UltimateTurboModal::Base < Phlex::HTML
       data_attributes[:overlay] = overlay?.to_s
     end
 
-    if defined?(Rails) && (Rails.env.development? || Rails.env.test?)
+    if defined?(Rails) && Rails.env.local?
       data_attributes[:utmr_version] = UltimateTurboModal::VERSION
     end
 
@@ -368,5 +370,4 @@ class UltimateTurboModal::Base < Phlex::HTML
       s.path(d: "M6 18 18 6M6 6l12 12", stroke_linecap: "round", stroke_linejoin: "round")
     end
   end
-
 end
