@@ -8,10 +8,9 @@ module UltimateTurboModal::Helpers
 
     def drawer(position: nil, size: nil, **options, &block)
       cfg = UltimateTurboModal.configuration.drawer_config
-      pos = position || cfg.position
-      valid = %i[right left]
-      raise ArgumentError, "Drawer position must be :right or :left, got #{pos.inspect}" unless valid.include?(pos)
-      modal(drawer_position: pos, size: size, **options, &block)
+      position = UltimateTurboModal::Base.validate_drawer_position!(position || cfg.position)
+      size = UltimateTurboModal::Base.validate_drawer_size!(size || cfg.size)
+      modal(drawer_position: position, size: size, **options, &block)
     end
   end
 end

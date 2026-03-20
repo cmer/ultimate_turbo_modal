@@ -4,6 +4,8 @@ class UltimateTurboModal::Base < Phlex::HTML
   prepend Phlex::DeferredRenderWithMainContent
 
   attr_accessor :request, :allowed_click_outside_selector, :content_div_data
+  VALID_DRAWER_SIZES = %i[xs sm md lg xl 2xl full].freeze
+  VALID_DRAWER_POSITIONS = %i[right left].freeze
 
   # @param advance [Boolean, String] Whether to update the browser history when opening and closing the modal (modal-only, ignored for drawers)
   # @param allowed_click_outside_selector [String] CSS selectors for elements that are allowed to be clicked outside of the modal without dismissing the modal
@@ -96,6 +98,23 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def footer(&block)
     @footer = block
+  end
+
+  class << self
+    def validate_drawer_size!(value)
+      return value if VALID_DRAWER_SIZES.include?(value.to_s.to_sym)
+      return value if value.is_a?(String) && value.match?(/\A\d+(\.\d+)?\s*(rem|em|px|%|vw|vh|dvw|dvh|svw|svh|lvw|lvh|ch|ex|cm|mm|in|pt|pc)\z/)
+
+      raise ArgumentError,
+        "Invalid drawer size: #{value.inspect}. Must be one of #{VALID_DRAWER_SIZES.map(&:inspect).join(", ")} or a CSS length string (e.g., \"30rem\", \"500px\", \"50vw\")"
+    end
+
+    def validate_drawer_position!(value)
+      return value if VALID_DRAWER_POSITIONS.include?(value.to_s.to_sym)
+
+      raise ArgumentError,
+        "Invalid drawer position: #{value.inspect}. Must be one of #{VALID_DRAWER_POSITIONS.map(&:inspect).join(", ")}"
+    end
   end
 
   private
@@ -200,16 +219,6 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def raw_html(str)
     respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
-  end
-
-  VALID_DRAWER_SIZES = %i[xs sm md lg xl 2xl full].freeze
-
-  def self.validate_drawer_size!(value) # rubocop:disable Lint/IneffectiveAccessModifier
-    return value if VALID_DRAWER_SIZES.include?(value.to_s.to_sym)
-    return value if value.is_a?(String) && value.match?(/\A\d+(\.\d+)?\s*(rem|em|px|%|vw|vh|dvw|dvh|svw|svh|lvw|lvh|ch|ex|cm|mm|in|pt|pc)\z/)
-
-    raise ArgumentError,
-      "Invalid drawer size: #{value.inspect}. Must be one of #{VALID_DRAWER_SIZES.map(&:inspect).join(", ")} or a CSS length string (e.g., \"30rem\", \"500px\", \"50vw\")"
   end
 
   def classes_for(suffix)

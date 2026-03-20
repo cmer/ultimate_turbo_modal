@@ -100,9 +100,7 @@ module UltimateTurboModal
       end
 
       def position=(value)
-        valid = %i[right left]
-        raise ArgumentError, "Must be :right or :left" unless valid.include?(value)
-        @position = value
+        @position = UltimateTurboModal::Base.validate_drawer_position!(value)
       end
     end
   end
