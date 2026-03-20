@@ -42,11 +42,6 @@ class UltimateTurboModal::Base < Phlex::HTML
       @advance_url = nil
       @close_button = close_button.nil? ? cfg.close_button : close_button
       @drawer_size = self.class.validate_drawer_size!(size || cfg.size)
-      @footer_divider = footer_divider.nil? ? cfg.footer_divider : footer_divider
-      @header = header.nil? ? cfg.header : header
-      @header_divider = header_divider.nil? ? cfg.header_divider : header_divider
-      @overlay = overlay.nil? ? cfg.overlay : overlay
-      @padding = padding.nil? ? cfg.padding : padding
     else
       cfg = UltimateTurboModal.configuration.modal_config
       adv = advance.nil? ? cfg.advance : advance
@@ -54,12 +49,12 @@ class UltimateTurboModal::Base < Phlex::HTML
       @advance_url = (adv.present? && adv.is_a?(String)) ? adv : nil
       @close_button = close_button.nil? ? cfg.close_button : close_button
       @drawer_size = nil
-      @footer_divider = footer_divider.nil? ? cfg.footer_divider : footer_divider
-      @header = header.nil? ? cfg.header : header
-      @header_divider = header_divider.nil? ? cfg.header_divider : header_divider
-      @overlay = overlay.nil? ? cfg.overlay : overlay
-      @padding = padding.nil? ? cfg.padding : padding
     end
+    @footer_divider = footer_divider.nil? ? cfg.footer_divider : footer_divider
+    @header = header.nil? ? cfg.header : header
+    @header_divider = header_divider.nil? ? cfg.header_divider : header_divider
+    @overlay = overlay.nil? ? cfg.overlay : overlay
+    @padding = padding.nil? ? cfg.padding : padding
 
     @allowed_click_outside_selector = allowed_click_outside_selector
     @close_button_data_action = close_button_data_action
@@ -199,7 +194,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   def styles
     return unless self.class.const_defined?(:STYLES)
     css = self.class::STYLES
-    return if css.nil? || css.empty?
+    return if css.blank?
     style { raw_html(css) }
   end
 
@@ -244,16 +239,14 @@ class UltimateTurboModal::Base < Phlex::HTML
     if drawer?
       data_attributes[:drawer] = drawer_position.to_s
       data_attributes[:drawer_size] = (@drawer_size.presence || "md").to_s
-      data_attributes[:overlay] = overlay?.to_s
-    else
-      data_attributes[:overlay] = overlay?.to_s
     end
+    data_attributes[:overlay] = overlay?.to_s
 
     if defined?(Rails) && Rails.env.local?
       data_attributes[:utmr_version] = UltimateTurboModal::VERSION
     end
 
-    dialog_classes = ["utmr", classes_for("DIALOG_CLASSES")].reject(&:blank?).join(" ")
+    dialog_classes = ["utmr", classes_for("DIALOG_CLASSES")].compact_blank.join(" ")
 
     inline_style = nil
     if drawer? && custom_drawer_size?
