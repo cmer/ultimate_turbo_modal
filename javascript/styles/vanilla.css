@@ -169,7 +169,6 @@ dialog.utmr {
     padding: 1rem;
     border-bottom-right-radius: 0.25rem;
     border-bottom-left-radius: 0.25rem;
-    border-top-width: 1px;
   }
 
   .modal-close {
