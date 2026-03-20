@@ -3,12 +3,14 @@
 class UltimateTurboModal::Base < Phlex::HTML
   prepend Phlex::DeferredRenderWithMainContent
 
+  attr_accessor :request, :allowed_click_outside_selector, :content_div_data
+
   # @param advance [Boolean, String] Whether to update the browser history when opening and closing the modal (modal-only, ignored for drawers)
   # @param allowed_click_outside_selector [String] CSS selectors for elements that are allowed to be clicked outside of the modal without dismissing the modal
   # @param close_button [Boolean] Whether to show a close button
   # @param close_button_data_action [String] `data-action` attribute for the close button
   # @param close_button_sr_label [String] Close button label for screen readers
-  # @param _drawer_position [Symbol, false] Internal: drawer position (:right, :left) or false for standard modal. Use the `drawer()` view helper instead.
+  # @param drawer_position [Symbol, false] Internal: drawer position (:right, :left) or false for standard modal. Use the `drawer()` view helper instead.
   # @param footer_divider [Boolean] Whether to show a divider between the main content and the footer
   # @param header [Boolean] Whether to show a modal header
   # @param header_divider [Boolean] Whether to show a divider between the header and the main content
@@ -24,7 +26,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     close_button: nil,
     close_button_data_action: "modal#hideModal",
     close_button_sr_label: "Close modal",
-    _drawer_position: false,
+    drawer_position: false,
     footer_divider: nil,
     header: nil,
     header_divider: nil,
@@ -34,7 +36,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     content_div_data: nil,
     request: nil, title: nil
   )
-    @drawer = _drawer_position
+    @drawer = drawer_position
 
     if drawer?
       cfg = UltimateTurboModal.configuration.drawer_config
@@ -97,8 +99,6 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   private
-
-  attr_accessor :request, :allowed_click_outside_selector, :content_div_data
 
   def padding? = !!@padding
 
@@ -204,7 +204,7 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   VALID_DRAWER_SIZES = %i[xs sm md lg xl 2xl full].freeze
 
-  def self.validate_drawer_size!(value)
+  private_class_method def self.validate_drawer_size!(value)
     return value if VALID_DRAWER_SIZES.include?(value.to_s.to_sym)
     return value if value.is_a?(String) && value.match?(/\A\d+(\.\d+)?\s*(rem|em|px|%|vw|vh|dvw|dvh|svw|svh|lvw|lvh|ch|ex|cm|mm|in|pt|pc)\z/)
 

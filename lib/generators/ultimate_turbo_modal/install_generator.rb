@@ -161,7 +161,7 @@ module UltimateTurboModal
         end
 
         loop do
-          print "\nEnter the number: "
+          print "\nEnter the number: " # standard:disable Rails/Output
           framework_choice = ask("").chomp.strip
           framework_id = framework_choice.to_i - 1
 
