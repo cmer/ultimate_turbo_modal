@@ -59,7 +59,7 @@ const performSmoothRedirect = async (modal, redirectUrl) => {
       window.Turbo.visit(redirectUrl);
       return;
     }
-    if (document.body.getAttribute('data-turbo-modal-history-advanced') === 'true') {
+    if (redirectUrl !== window.location.href) {
       history.replaceState({}, '', redirectUrl);
     }
     await modal.hideModalWithPromise({ skipHistoryBack: true });
