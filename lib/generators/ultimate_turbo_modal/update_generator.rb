@@ -91,13 +91,6 @@ module UltimateTurboModal
 
       private
 
-      # Convert Ruby gem version to npm semver format.
-      # Ruby: "3.0.0.beta.1" → npm: "3.0.0-beta.1"
-      # Ruby: "3.0.0.alpha"  → npm: "3.0.0-alpha.0"
-      def gem_version_to_npm(version)
-        version.sub(/\.([a-z]+)(?:\.(\d+))?$/) { "-#{$1}.#{$2 || "0"}" }
-      end
-
       def detect_flavor
         return options[:flavor] if options[:flavor]
 

@@ -16,7 +16,7 @@ module UltimateTurboModal
       def add_js_dependency
         say "Attempting to set up JavaScript dependencies...", :yellow
 
-        version_spec = "#{package_name}@#{UltimateTurboModal::VERSION}"
+        version_spec = "#{package_name}@#{gem_version_to_npm(UltimateTurboModal::VERSION)}"
 
         if uses_importmaps?
           say "Detected Importmaps. Pinning #{version_spec}...", :green
@@ -59,7 +59,7 @@ module UltimateTurboModal
       # Install all JS dependencies (for update flow)
       def install_all_js_dependencies
         if uses_importmaps?
-          version_spec = "#{package_name}@#{UltimateTurboModal::VERSION}"
+          version_spec = "#{package_name}@#{gem_version_to_npm(UltimateTurboModal::VERSION)}"
           say "Detected Importmaps. Ensuring pin for #{version_spec}...", :green
           run "bin/importmap pin #{version_spec}"
           say "✅ Pinned '#{package_name}' via importmap.", :green
@@ -109,6 +109,14 @@ module UltimateTurboModal
 
       def rails_root_join(*args)
         Pathname.new(destination_root).join(*args)
+      end
+
+      # Convert Ruby gem version to npm semver format.
+      # Ruby: "3.0.0.beta.1" → npm: "3.0.0-beta.1"
+      # Ruby: "3.0.0.alpha"  → npm: "3.0.0-alpha.0"
+      # Ruby: "3.0.0"        → npm: "3.0.0" (no change)
+      def gem_version_to_npm(version)
+        version.to_s.sub(/\.([a-z]+)(?:\.(\d+))?$/) { "-#{$1}.#{$2 || "0"}" }
       end
     end
   end
