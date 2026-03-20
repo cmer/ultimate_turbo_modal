@@ -251,7 +251,8 @@ class UltimateTurboModal::Base < Phlex::HTML
     end
     data_attributes[:overlay] = overlay?.to_s
 
-    if defined?(Rails) && Rails.env.local?
+    # Rails.env.local? requires Rails 7.1+; use explicit check for Rails 7.0 compatibility
+    if defined?(Rails) && (Rails.env.development? || Rails.env.test?) # standard:disable Rails/EnvLocal
       data_attributes[:utmr_version] = UltimateTurboModal::VERSION
     end
 
