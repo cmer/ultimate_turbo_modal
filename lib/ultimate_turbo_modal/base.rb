@@ -204,7 +204,7 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   VALID_DRAWER_SIZES = %i[xs sm md lg xl 2xl full].freeze
 
-  private_class_method def self.validate_drawer_size!(value)
+  def self.validate_drawer_size!(value) # rubocop:disable Lint/IneffectiveAccessModifier
     return value if VALID_DRAWER_SIZES.include?(value.to_s.to_sym)
     return value if value.is_a?(String) && value.match?(/\A\d+(\.\d+)?\s*(rem|em|px|%|vw|vh|dvw|dvh|svw|svh|lvw|lvh|ch|ex|cm|mm|in|pt|pc)\z/)
 

@@ -11,7 +11,7 @@ module UltimateTurboModal::Helpers
       pos = position || cfg.position
       valid = %i[right left]
       raise ArgumentError, "Drawer position must be :right or :left, got #{pos.inspect}" unless valid.include?(pos)
-      modal(_drawer_position: pos, size: size, **options, &block)
+      modal(drawer_position: pos, size: size, **options, &block)
     end
   end
 end
