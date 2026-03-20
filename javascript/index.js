@@ -90,22 +90,22 @@ const handleTurboFrameMissing = (event) => {
   performSmoothRedirect(modal, redirectUrl);
 };
 
-// Intercept frame renders for modal frames.
-// - For redirect responses (flagged by submitEnd), prevent render and do smooth redirect.
-// - For normal modal content updates, use Idiomorph to prevent flicker.
+// Intercept frame renders for modal frames to use Idiomorph for flicker-free updates.
+// When turbo:before-frame-render fires, the response *contains* the modal frame,
+// so it's valid modal content (e.g., a wizard step or in-modal navigation).
+// Redirect responses that *don't* contain the frame are handled by turbo:frame-missing.
 const handleTurboBeforeFrameRender = (event) => {
   if (!isModalFrameTarget(event)) return;
 
+  // If submitEnd flagged a redirect but the response contains the modal frame,
+  // it's a redirect to another modal action (e.g., multi-step wizard). Clear the
+  // flag and let the frame render normally so the next step appears in the modal.
   const modal = window.modal;
   if (modal?._pendingRedirectUrl) {
-    event.preventDefault();
-    const redirectUrl = modal._pendingRedirectUrl;
     modal._pendingRedirectUrl = null;
-    performSmoothRedirect(modal, redirectUrl);
-    return;
   }
 
-  // Normal modal content update: morph innerHTML to prevent flicker
+  // Morph innerHTML to prevent flicker and avoid re-triggering enter transitions
   event.detail.render = (currentElement, newElement) => {
     Idiomorph.morph(currentElement, newElement, {
       morphstyle: 'innerHTML'
