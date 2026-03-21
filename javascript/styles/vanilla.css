@@ -267,6 +267,7 @@ dialog.utmr {
     }
 
     &[data-header-divider="true"] .drawer-header {
+      padding-bottom: 1rem;
       border-bottom-width: 1px;
     }
 
