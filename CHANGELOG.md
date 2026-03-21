@@ -1,3 +1,7 @@
+## [3.0.1] - 2026-03-21
+
+- Fixed missing bottom padding on vanilla flavor drawer header when header divider is enabled.
+
 ## [3.0.0] - 2026-03-21
 
 Upgrading is easy! See [UPGRADING.md](UPGRADING.md)
