@@ -217,7 +217,7 @@ Link to it the same way as a modal:
 
 ## Demo Video
 
-A video demo can be seen here: [https://youtu.be/BVRDXLN1I78](https://youtu.be/BVRDXLN1I78).
+A video demo can be seen here: [https://youtu.be/qXoeyxuyn7w](https://youtu.be/qXoeyxuyn7w).
 
 ### Running the Demo Application
 
