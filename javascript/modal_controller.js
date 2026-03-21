@@ -260,7 +260,7 @@ export default class extends Controller {
   // npm/semver format ("3.0.0-alpha.1") can be compared reliably.
   #normalizeVersion(v) {
     return v
-      .replace(/\.([a-z]+)(?:\.(\d+))?$/, (_, tag, num) => `-${tag}${num ? `.${num}` : ''}`) // "3.0.0.alpha.1" → "3.0.0-alpha.1", "3.0.0.alpha" → "3.0.0-alpha"
+      .replace(/\.([a-z]+)(?:\.(\d+))?$/, (_, tag, num) => `-${tag}.${num || '0'}`) // "3.0.0.alpha.1" → "3.0.0-alpha.1", "3.0.0.alpha" → "3.0.0-alpha.0"
   }
 
   #checkVersions() {
