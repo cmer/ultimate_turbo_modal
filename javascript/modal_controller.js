@@ -13,10 +13,16 @@ export default class extends Controller {
   connect() {
     this.#checkVersions();
     this.#cleanupStaleDialogs();
-    this.hidingModal = false;
-    this.originalUrl = window.location.href;
-    this.showModal();
     this.turboFrame = this.element.closest('turbo-frame');
+    this.hidingModal = this.containerTarget.hasAttribute('data-closing');
+    this.originalUrl = window.location.href;
+
+    // Same-page morphs can briefly disconnect/reconnect the controller while the
+    // dialog is already open. Replaying showModal() there re-triggers the enter
+    // animation and causes a visible reopen during close.
+    if (!this.containerTarget.open) {
+      this.showModal();
+    }
 
     // When the user presses the browser back button, Turbo handles the
     // navigation (restoring the previous page). We just need to clean up
@@ -40,7 +46,9 @@ export default class extends Controller {
 
   disconnect() {
     this.#cancelEnter();
-    clearTimeout(this.closeTimeout);
+    if (!this.containerTarget.hasAttribute('data-closing')) {
+      clearTimeout(this.closeTimeout);
+    }
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
     window.modal = undefined;
