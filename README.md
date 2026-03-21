@@ -2,7 +2,7 @@
 
 There are MANY Turbo/Hotwire/Stimulus modal dialog implementations out there. However, as you may have learned, the majority fall short in different, often subtle ways. They generally cover the basics quite well, but do not check all the boxes for real-world use.
 
-UTMR aims to be the be-all and end-all of Turbo Modals. I believe it is the best (only?) full-featured implementation and checks all the boxes. It is feature-rich, yet extremely easy to use.
+UTMR aims to be the be-all and end-all of Turbo Modals. I believe it is the best (only?) full-featured implementation and checks all the boxes. It is feature-rich, yet extremely easy to use. Its purpose is to make it as easy as possible to have polished Turbo-backed modals and drawers.
 
 Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https://turbo.hotwired.dev/), the native HTML [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) element, and [Idiomorph](https://github.com/bigskysoftware/idiomorph).
 
