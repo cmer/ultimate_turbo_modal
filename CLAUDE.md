@@ -240,7 +240,7 @@ The modal controller instance is available as `window.modal` while a modal is op
 ## Development
 
 ### Prerequisites
-- Ruby >= 3.0 (project uses `.ruby-version`)
+- Ruby >= 3.2 (project uses `.ruby-version`)
 - Node.js + npm
 - Bundler
 

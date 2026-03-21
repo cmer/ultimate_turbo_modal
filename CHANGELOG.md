@@ -4,6 +4,7 @@
 - **BREAKING**: If you customized the look and feel of a flavor, you'll need to reapply your customizations since the underlying markup has changed.
 - **BREAKING**: Removed Tailwind v3 flavor. Use the `tailwind` flavor (Tailwind v4+) or `custom` to define your own classes.
 - **BREAKING**: Configuration options are now split between `config.modal` and `config.drawer` blocks instead of flat on the config object. See UPGRADING.md for migration details.
+- **BREAKING**: Rails 8+ now required.
 - Added support for slide-out drawers with separate default configuration.
 - Smooth redirect behavior: same-page redirects morph content behind modal/drawer before closing; different-page redirects close modal/drawer with animation before navigating.
 - Removed `el-transition` and `focus-trap` npm dependencies.

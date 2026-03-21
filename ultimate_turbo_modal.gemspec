@@ -9,10 +9,10 @@ Gem::Specification.new do |spec|
   spec.email = ["foss@carlmercier.com"]
 
   spec.summary = "UTMR aims to be the be-all and end-all of Turbo Modals."
-  spec.description = "An easy-to-use, flexible, and powerful Turbo Modal solution for Rails 7+ built with Stimulus.js, Tailwind CSS (or vanilla CSS) and Hotwire."
+  spec.description = "An easy-to-use, flexible, and powerful Turbo Modal solution for Rails 8+ built with Stimulus.js, Tailwind CSS (or vanilla CSS) and Hotwire."
   spec.homepage = "https://github.com/cmer/ultimate_turbo_modal"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/cmer/ultimate_turbo_modal"
@@ -30,10 +30,10 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "phlex-rails"
-  spec.add_dependency "actionpack"
-  spec.add_dependency "activesupport"
-  spec.add_dependency "railties"
+  spec.add_dependency "phlex-rails", ">= 2.0"
+  spec.add_dependency "actionpack", ">= 8.0"
+  spec.add_dependency "activesupport", ">= 8.0"
+  spec.add_dependency "railties", ">= 8.0"
   spec.add_dependency "stimulus-rails"
   spec.add_dependency "turbo-rails"
 end

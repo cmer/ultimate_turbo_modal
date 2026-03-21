@@ -3,7 +3,7 @@
   ## Minimum requirements
 
   - Ruby 3.2 and above.
-  - Rails 7 and above.
+  - Rails 8 and above.
   - If the application uses Tailwind CSS, version 4 is now required. Tailwind 3 is deprecated. (breaking change)
   - `ultimate_turbo_modal` should be present in the host application's Gemfile. Otherwise, it hasn't been installed yet. User should follow installation steps instead.
 
