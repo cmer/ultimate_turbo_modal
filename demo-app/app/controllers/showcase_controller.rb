@@ -7,6 +7,10 @@ class ShowcaseController < ApplicationController
   def show
   end
 
+  def save_project
+    redirect_to root_path, notice: "Project saved successfully!"
+  end
+
   def submit
     if params[:email].present?
       if inside_modal?

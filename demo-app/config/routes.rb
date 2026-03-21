@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root to: "showcase#index"
   resources :showcase, only: [:show]
   post "/showcase/submit", to: "showcase#submit", as: :showcase_submit
+  post "/showcase/save_project", to: "showcase#save_project", as: :showcase_save_project
 
   namespace :testing do
     resources :modal

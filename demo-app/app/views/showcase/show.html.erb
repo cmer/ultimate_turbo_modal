@@ -97,6 +97,7 @@
 
 <% when "colored_header_drawer" %>
   <%= drawer(header: false, close_button: false, padding: false, overlay: true, footer_divider: true) do |m| %>
+    <%= form_tag showcase_save_project_path, method: :post, id: "project-form", data: { turbo_frame: "modal" } do %>
     <div class="bg-indigo-700 dark:bg-indigo-800 px-4 py-6 sm:px-6">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold text-white">New project</h2>
@@ -212,10 +213,11 @@
         </div>
       </div>
     </div>
+    <% end %>
     <% m.footer do %>
       <div class="flex shrink-0 justify-end w-full">
         <button type="button" data-action="modal#hideModal" class="rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20">Cancel</button>
-        <button type="submit" class="ml-4 inline-flex justify-center rounded-md bg-indigo-600 dark:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500">Save</button>
+        <button type="submit" form="project-form" class="ml-4 inline-flex justify-center rounded-md bg-indigo-600 dark:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500">Save</button>
       </div>
     <% end %>
   <% end %>
