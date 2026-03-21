@@ -10,12 +10,12 @@ It ships in two flavors: Tailwind (v4+) and vanilla CSS. It is easy to create yo
 
 ## Screenshots & Demo Video
 
-[![Demo Video](/screenshots/light-showcase-play.webp?raw=true "Demo Video")](https://youtu.be/qXoeyxuyn7w)
+[![Demo Video](/screenshots/light-showcase-play.webp "Demo Video")](https://youtu.be/qXoeyxuyn7w)
 
 |  |  |
 |:-------------------------:|:-------------------------:|
-| ![Light Modal Form](/screenshots/light-modal-form.webp?raw=true "Light Modal Form") | ![Light Long Scrollable Modal](/screenshots/light-long-scrollable-modal.webp?raw=true "Light Long Scrollable  Modal") |
-| ![Light Drawer with Footer](/screenshots/light-drawer-with-footer.webp?raw=true "Light Drawer with Footer") | ![Dark Modal Form](/screenshots/dark-modal-form.webp?raw=true "Dark Modal Form") |
+| ![Light Modal Form](/screenshots/light-modal-form.webp "Light Modal Form") | ![Light Long Scrollable Modal](/screenshots/light-long-scrollable-modal.webp "Light Long Scrollable  Modal") |
+| ![Light Drawer with Footer](/screenshots/light-drawer-with-footer.webp "Light Drawer with Footer") | ![Dark Modal Form](/screenshots/dark-modal-form.webp "Dark Modal Form") |
 |  |  |
 
 
