@@ -22,9 +22,9 @@
   5. Run `yarn install` or `npm install` or `bun install` if using a Javascript package manager.
   6. Migrate the configuration block in `config/initializers/ultimate_turbo_modal.rb` (this is the file with the `UltimateTurboModal.configure` block, not the flavor file). If this file does not exist, skip this step — the user was using defaults and no migration is needed. The objective is to replicate the same behavior the user had in v2, using the new v3 syntax. To do this:
 
-    a. Read the user's existing `config/initializers/ultimate_turbo_modal.rb` and note any options that differ from the v3 defaults. The v3 modal defaults are: `advance: true`, `close_button: true`, `header: true`, `header_divider: true`, `footer_divider: true`, `padding: true`, `overlay: true`. If all the user's v2 options match these defaults, overwrite the file with just the template (step b) and skip to step d.
+    a. Retrieve the v3 configuration template by running: `cat $(bundle info ultimate_turbo_modal --path)/lib/generators/ultimate_turbo_modal/templates/ultimate_turbo_modal.rb`. This template contains the new v3 format with all options commented out at their defaults. Note: the template contains a `FLAVOR` placeholder on the `config.flavor` line that will need to be replaced with the flavor symbol from the user's v2 file (e.g. `:tailwind`).
 
-    b. Retrieve the v3 configuration template by running: `cat $(bundle info ultimate_turbo_modal --path)/lib/generators/ultimate_turbo_modal/templates/ultimate_turbo_modal.rb`. This template contains the new v3 format with all options commented out at their defaults. Note: the template contains a `FLAVOR` placeholder on the `config.flavor` line — replace it with the flavor symbol from the user's v2 file (e.g. `:tailwind`).
+    b. Read the user's existing `config/initializers/ultimate_turbo_modal.rb` and note any options that differ from the v3 defaults. If all the user's v2 options match these defaults, you will not need to change any of the configurations in the next step.
 
     c. Use the template as the base for the new file. Uncomment and set only the options that differ from the v3 defaults. The mapping is:
       - `config.flavor` and `config.allowed_click_outside_selector` remain top-level (unchanged).
