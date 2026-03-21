@@ -1,4 +1,4 @@
-## [3.0.0] - Unreleased
+## [3.0.0] - 2026-03-21
 
 Upgrading is easy! See [UPGRADING.md](UPGRADING.md)
 
