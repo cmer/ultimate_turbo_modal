@@ -33,6 +33,6 @@
       - Leave the `config.drawer` block commented out (use defaults) since drawers is a new feature and was never previously configured.
       - Setting old-style flat options directly on `config` (e.g. `config.close_button = false`) will raise a `NoMethodError` in v3.
 
-    d. Overwrite `config/initializers/ultimate_turbo_modal.rb` with the result.
+    d. Overwrite `config/initializers/ultimate_turbo_modal.rb` with the result. In addition to the modified configuration options, the output should include all commented-out configuration options from the template file. This makes it easier for the user to modify options in the future.
 
   7. Instruct the user to restart their Rails application server for the changes to be picked up.
