@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Check npm authentication
+if ! npm whoami &>/dev/null; then
+  echo "Not logged in to npm. Run 'npm login' first."
+  exit 1
+fi
+
 # Check for uncommitted changes
 if ! git diff --quiet; then
   echo "There are uncommitted changes. Aborting."
