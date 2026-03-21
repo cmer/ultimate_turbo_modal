@@ -69,7 +69,7 @@ module UltimateTurboModal
       attr_reader :advance
 
       def initialize
-        @advance = true
+        @advance = false
         @close_button = true
         @header = true
         @header_divider = true

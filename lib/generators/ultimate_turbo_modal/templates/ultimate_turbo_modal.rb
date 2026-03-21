@@ -5,7 +5,7 @@ UltimateTurboModal.configure do |config|
   # config.allowed_click_outside_selector = []
 
   # config.modal do |m|
-  #   m.advance = true
+  #   m.advance = false
   #   m.close_button = true
   #   m.header = true
   #   m.header_divider = true

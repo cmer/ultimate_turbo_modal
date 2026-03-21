@@ -90,7 +90,7 @@ UltimateTurboModal.configure do |config|
   config.allowed_click_outside_selector = []
 
   config.modal do |m|
-    m.advance = true
+    m.advance = false
     m.close_button = true
     m.header = true
     m.header_divider = true
@@ -118,7 +118,7 @@ Per-instance options passed to `modal()` or `drawer()` override the defaults.
 
 | Name | Default | Description |
 |------|---------|-------------|
-| `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
+| `advance` | `false` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
 | `header` | `true` | Whether to display a modal header. |
 | `header_divider` | `true` | Whether to display a divider below the header. |

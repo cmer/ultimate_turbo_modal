@@ -145,7 +145,7 @@ Options can be set at three levels (lowest wins):
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `advance` | Boolean or String | `true` | Push URL to browser history; String for custom URL |
+| `advance` | Boolean or String | `false` | Push URL to browser history; String for custom URL |
 | `close_button` | Boolean | `true` | Show close button |
 | `header` | Boolean | `true` | Show header section |
 | `header_divider` | Boolean | `true` | Show divider below header |
