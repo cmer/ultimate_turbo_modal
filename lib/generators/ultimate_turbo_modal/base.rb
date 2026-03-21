@@ -103,7 +103,7 @@ module UltimateTurboModal
       end
 
       def uses_bun?
-        File.exist?(rails_root_join("bun.lockb"))
+        File.exist?(rails_root_join("bun.lockb")) || File.exist?(rails_root_join("bun.lock"))
       end
 
       def rails_root_join(*args)
