@@ -1,11 +1,11 @@
 PATH
   remote: ..
   specs:
-    ultimate_turbo_modal (3.0.0.beta.1)
-      actionpack
-      activesupport
-      phlex-rails
-      railties
+    ultimate_turbo_modal (3.0.0.beta.2)
+      actionpack (>= 8.0)
+      activesupport (>= 8.0)
+      phlex-rails (>= 2.0)
+      railties (>= 8.0)
       stimulus-rails
       turbo-rails
 
@@ -143,10 +143,13 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.7-arm64-darwin)
       racc (~> 1.4)
-    phlex (1.11.0)
-    phlex-rails (1.2.2)
-      phlex (>= 1.10, < 2)
-      railties (>= 6.1, < 9)
+    phlex (2.4.1)
+      refract (~> 1.0)
+      zeitwerk (~> 2.7)
+    phlex-rails (2.4.0)
+      phlex (~> 2.4.0)
+      railties (>= 7.1, < 9)
+      zeitwerk (~> 2.7)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -202,6 +205,9 @@ GEM
     rake (13.2.1)
     rdoc (6.13.1)
       psych (>= 4.0.0)
+    refract (1.1.0)
+      prism
+      zeitwerk
     reline (0.6.1)
       io-console (~> 0.5)
     securerandom (0.4.1)
