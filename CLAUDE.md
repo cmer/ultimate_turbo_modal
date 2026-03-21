@@ -99,7 +99,7 @@ Drawer: `DRAWER_DIALOG_CLASSES`, `DRAWER_WRAPPER_CLASSES`, `DRAWER_PANEL_CLASSES
 
 ```
 <dialog#modal-container> (data-controller="modal", data-drawer="right|left", data-* config)
-  <style> (inline CSS transitions + --utmr-drawer-width variable)
+  <style> (inline CSS transitions + --utmr-w variable)
   turbo-frame#modal-inner (only when turbo frame request)
     #drawer-wrapper
       #drawer-panel (data-modal-target="content")
@@ -121,7 +121,8 @@ Drawer: `DRAWER_DIALOG_CLASSES`, `DRAWER_WRAPPER_CLASSES`, `DRAWER_PANEL_CLASSES
 Set by the Ruby side, used for conditional styling via CSS selectors:
 - `data-padding`, `data-title`, `data-header`, `data-close-button`, `data-header-divider`, `data-footer-divider`
 - `data-drawer` (position: "right" or "left", only present for drawers)
-- `data-drawer-size`, `data-overlay` (drawer-specific)
+- `data-overlay`
+- `data-drawer-size` (drawer-specific)
 - `data-enter-ready`, `data-entered` (enter animation state for both modals and drawers, managed by JS)
 - `data-closing` (closing animation state for both modals and drawers, managed by JS)
 - `data-utmr-version` (dev/test only, for version mismatch warnings)
@@ -333,7 +334,7 @@ Output: ESM format. `@hotwired/stimulus` is marked as external (not bundled).
 `Base#styles` injects a `<style>` tag inside the dialog with all animation CSS:
 - **Base styles** (both modal and drawer): `html:has(dialog[open])` scroll lock, dialog positioning, `@keyframes` for backdrop fade
 - **Modal styles**: `@keyframes` for dialog enter/leave (slide-up on mobile, scale on desktop)
-- **Drawer styles**: CSS `translate` transitions controlled by `data-enter-ready`/`data-entered`/`data-closing` attributes, `--utmr-drawer-width` CSS variable with responsive sizing
+- **Drawer styles**: CSS `translate` transitions controlled by `data-enter-ready`/`data-entered`/`data-closing` attributes, `--utmr-w` CSS variable with responsive sizing
 
 Drawer width presets: `:xs` (16rem), `:sm` (20rem), `:md` (24rem), `:lg` (28rem), `:xl` (42rem), `:"2xl"` (56rem), `:full` (100vw minus gutter). Custom CSS strings also accepted.
 
