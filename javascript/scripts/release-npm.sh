@@ -35,7 +35,13 @@ echo "Pushing changes..."
 git push
 
 # Publish to npm
-echo "Publishing to npm..."
-npm publish
+if echo "$VERSION" | grep -qE '[-.]*(alpha|beta|rc|pre|next)'; then
+  TAG=$(echo "$VERSION" | sed -E 's/.*[-.]*(alpha|beta|rc|pre|next).*/\1/')
+  echo "Publishing prerelease to npm with tag '$TAG'..."
+  npm publish --tag "$TAG"
+else
+  echo "Publishing to npm..."
+  npm publish
+fi
 
 echo "Release complete!"
