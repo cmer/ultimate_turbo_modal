@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/cmer/ultimate_turbo_modal"
   spec.metadata["changelog_uri"] = "https://github.com/cmer/ultimate_turbo_modal/CHANGELOG.md"
 
-  excluded_dirs = %w[bin/ test/ spec/ features/ .git .circleci appveyor demo-app/ .claude/ javascript/ .conductor/]
-  excluded_files = %w[conductor.json CLAUDE.md]
+  excluded_dirs = %w[.circleci .claude .conductor .git LLM appveyor bin demo-app docs features javascript script spec test]
+  excluded_files = %w[CLAUDE.md conductor.json ]
 
   spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
@@ -35,5 +35,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", ">= 8.0"
   spec.add_dependency "railties", ">= 8.0"
   spec.add_dependency "stimulus-rails"
+  spec.add_dependency "tsort"
   spec.add_dependency "turbo-rails"
 end

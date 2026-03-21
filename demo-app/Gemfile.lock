@@ -7,6 +7,7 @@ PATH
       phlex-rails (>= 2.0)
       railties (>= 8.0)
       stimulus-rails
+      tsort
       turbo-rails
 
 GEM
@@ -219,6 +220,7 @@ GEM
     stringio (3.1.6)
     thor (1.3.2)
     timeout (0.4.3)
+    tsort (0.2.0)
     turbo-rails (2.0.13)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
@@ -238,9 +240,7 @@ GEM
     zeitwerk (2.7.2)
 
 PLATFORMS
-  arm64-darwin-22
   arm64-darwin-23
-  arm64-darwin-24
 
 DEPENDENCIES
   cgi

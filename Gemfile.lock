@@ -7,6 +7,7 @@ PATH
       phlex-rails (>= 2.0)
       railties (>= 8.0)
       stimulus-rails
+      tsort
       turbo-rails
 
 GEM
@@ -166,6 +167,7 @@ GEM
       railties (>= 6.0.0)
     stringio (3.1.7)
     thor (1.4.0)
+    tsort (0.2.0)
     turbo-rails (2.0.16)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
