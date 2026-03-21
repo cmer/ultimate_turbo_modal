@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    ultimate_turbo_modal (3.0.0.beta.1)
-      actionpack
-      activesupport
-      phlex-rails
-      railties
+    ultimate_turbo_modal (3.0.0.beta.2)
+      actionpack (>= 8.0)
+      activesupport (>= 8.0)
+      phlex-rails (>= 2.0)
+      railties (>= 8.0)
       stimulus-rails
       turbo-rails
 

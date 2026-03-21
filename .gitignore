@@ -33,4 +33,5 @@ node_modules/
 
 *.backup*
 *.local.*
+.tool-versions
 
