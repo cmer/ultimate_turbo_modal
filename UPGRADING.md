@@ -18,7 +18,7 @@ v3.0 includes a few breaking changes. See [CHANGELOG.md](CHANGELOG.md) for a com
 
 ### Upgrading like a cavemen
 
-If you're old school and prefer to upgrade manually, without an LLM, it's pretty easy. Just follow the instructions at [LLM/UPGRADE-TO-VERSION-3.md].
+If you're old school and prefer to upgrade manually, without an LLM, it's pretty easy. Just follow the instructions at [LLM/UPGRADE-TO-VERSION-3.md](LLM/UPGRADE-TO-VERSION-3.md).
 
 
 ## Updating between minor versions
