@@ -20,7 +20,9 @@ export default class extends Controller {
     // Same-page morphs can briefly disconnect/reconnect the controller while the
     // dialog is already open. Replaying showModal() there re-triggers the enter
     // animation and causes a visible reopen during close.
-    if (!this.containerTarget.open) {
+    if (this.hidingModal) {
+      this.#resumeClosing();
+    } else if (!this.containerTarget.open) {
       this.showModal();
     }
 
@@ -46,9 +48,8 @@ export default class extends Controller {
 
   disconnect() {
     this.#cancelEnter();
-    if (!this.containerTarget.hasAttribute('data-closing')) {
-      clearTimeout(this.closeTimeout);
-    }
+    this.#cancelResumeClosing();
+    this.#cancelCloseCleanup();
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
     window.modal = undefined;
@@ -157,33 +158,67 @@ export default class extends Controller {
   }
 
   #resetModalElement() {
-    const dialog = this.containerTarget;
-    dialog.setAttribute('data-closing', '');
-    dialog.setAttribute('data-enter-ready', '');
-    dialog.removeAttribute('data-entered');
-    this.#cancelEnter();
+    const historyWasAdvanced = this.#hasHistoryAdvanced();
+    this.containerTarget.dataset.utmrHistoryAdvanced = String(historyWasAdvanced);
+    this.containerTarget.dataset.utmrSkipHistoryBack = String(!!this._skipHistoryBack);
+    this.#applyClosingState();
+    this.#queueCloseCleanup(historyWasAdvanced);
+  }
 
-    // The closing transition runs on #modal-inner (modals) or #drawer-panel (drawers).
-    // We listen on the dialog for the bubbling transitionend, but filter by target
-    // to avoid firing early from other transitions (e.g. backdrop opacity).
+  #resumeClosing() {
+    const historyWasAdvanced = this.containerTarget.dataset.utmrHistoryAdvanced == 'true';
+    this._skipHistoryBack = this.containerTarget.dataset.utmrSkipHistoryBack == 'true';
+
+    // Same-page morphs can reconnect the controller mid-close before the browser
+    // has committed the leave transition. Re-arm the closing state on the
+    // reconnected node so the drawer/modal still animates out smoothly.
+    this.containerTarget.removeAttribute('data-closing');
+    this.containerTarget.setAttribute('data-enter-ready', '');
+    this.containerTarget.setAttribute('data-entered', '');
+    this.#cancelResumeClosing();
+
+    this.closeFrames = [];
+    const outerFrame = requestAnimationFrame(() => {
+      if (!this.containerTarget.isConnected) return;
+
+      const innerFrame = requestAnimationFrame(() => {
+        if (!this.containerTarget.isConnected) return;
+        this.#applyClosingState();
+        this.closeFrames = null;
+        this.#queueCloseCleanup(historyWasAdvanced);
+      });
+      this.closeFrames?.push(innerFrame);
+    });
+    this.closeFrames.push(outerFrame);
+  }
+
+  #applyClosingState() {
+    this.containerTarget.setAttribute('data-closing', '');
+    this.containerTarget.setAttribute('data-enter-ready', '');
+    this.containerTarget.removeAttribute('data-entered');
+    this.#cancelEnter();
+  }
+
+  #queueCloseCleanup(historyWasAdvanced) {
+    const dialog = this.containerTarget;
     const transitionTarget = this.#isDrawer()
       ? dialog.querySelector('#drawer-panel')
       : dialog.querySelector('#modal-inner');
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
-
-    const historyWasAdvanced = this.#hasHistoryAdvanced();
+    this.#cancelCloseCleanup();
 
     let cleaned = false;
     const cleanup = () => {
       if (cleaned) return;
       cleaned = true;
-      clearTimeout(this.closeTimeout);
-      dialog.removeEventListener('transitionend', onTransitionEnd);
+      this.#cancelCloseCleanup();
       window.removeEventListener('popstate', this.popstateHandler);
       const frame = this.turboFrame;
       try { dialog.close(); } catch (_) {}
       try { frame.removeAttribute("src"); } catch (_) {}
       try { dialog.remove(); } catch (_) {}
+      delete dialog.dataset.utmrHistoryAdvanced;
+      delete dialog.dataset.utmrSkipHistoryBack;
       this.#resetHistoryAdvanced();
       try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
 
@@ -196,6 +231,7 @@ export default class extends Controller {
       if (e.target === transitionTarget) cleanup();
     };
 
+    this.closeTransitionHandler = onTransitionEnd;
     dialog.addEventListener('transitionend', onTransitionEnd);
     // Fallback if no transition defined (custom flavor with empty classes)
     this.closeTimeout = setTimeout(cleanup, closeTimeoutMs);
@@ -205,7 +241,8 @@ export default class extends Controller {
   // is pressed and Turbo is already navigating to the previous page.
   #immediateCleanup() {
     this.#cancelEnter();
-    clearTimeout(this.closeTimeout);
+    this.#cancelResumeClosing();
+    this.#cancelCloseCleanup();
     const dialog = this.containerTarget;
     const frame = this.turboFrame;
     try { dialog.close(); } catch (_) {}
@@ -250,6 +287,21 @@ export default class extends Controller {
     if (!this.enterFrames) return;
     this.enterFrames.forEach(id => cancelAnimationFrame(id));
     this.enterFrames = null;
+  }
+
+  #cancelResumeClosing() {
+    if (!this.closeFrames) return;
+    this.closeFrames.forEach(id => cancelAnimationFrame(id));
+    this.closeFrames = null;
+  }
+
+  #cancelCloseCleanup() {
+    clearTimeout(this.closeTimeout);
+    this.closeTimeout = null;
+
+    if (!this.closeTransitionHandler) return;
+    this.containerTarget.removeEventListener('transitionend', this.closeTransitionHandler);
+    this.closeTransitionHandler = null;
   }
 
   #hasHistoryAdvanced() {
