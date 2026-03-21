@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/cmer/ultimate_turbo_modal"
   spec.metadata["changelog_uri"] = "https://github.com/cmer/ultimate_turbo_modal/CHANGELOG.md"
 
-  excluded_dirs = %w[.circleci .claude .conductor .git LLM appveyor bin demo-app docs features javascript script spec test]
+  excluded_dirs = %w[.circleci .claude .conductor .git LLM appveyor bin demo-app docs features javascript screenshots script spec test]
   excluded_files = %w[CLAUDE.md conductor.json ]
 
   spec.files = Dir.chdir(__dir__) do

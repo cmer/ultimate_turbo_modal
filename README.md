@@ -8,6 +8,16 @@ Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https
 
 It ships in two flavors: Tailwind (v4+) and vanilla CSS. It is easy to create your own flavor to suit your needs.
 
+## Screenshots & Demo Video
+
+[![Demo Video](/screenshots/light-showcase-play.webp?raw=true "Demo Video")](https://youtu.be/qXoeyxuyn7w)
+
+|  |  |
+|:-------------------------:|:-------------------------:|
+| ![Light Modal Form](/screenshots/light-modal-form.webp?raw=true "Light Modal Form") | ![Light Long Scrollable Modal](/screenshots/light-long-scrollable-modal.webp?raw=true "Light Long Scrollable  Modal") |
+| ![Light Drawer with Footer](/screenshots/light-drawer-with-footer.webp?raw=true "Light Drawer with Footer") | ![Dark Modal Form](/screenshots/dark-modal-form.webp?raw=true "Dark Modal Form") |
+|  |  |
+
 
 ## Installation
 
@@ -214,10 +224,6 @@ Link to it the same way as a modal:
 - Native focus trapping via the `<dialog>` element for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
 - Smooth redirects: form submissions that redirect back to the same page morph the content behind the modal before closing; redirects to a different page close the modal with animation first, then navigate
 
-
-## Demo Video
-
-A video demo can be seen here: [https://youtu.be/qXoeyxuyn7w](https://youtu.be/qXoeyxuyn7w).
 
 ### Running the Demo Application
 
