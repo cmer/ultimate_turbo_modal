@@ -4,7 +4,7 @@ module Phlex
   module DeferredRenderWithMainContent
     def view_template(&block)
       output = capture(&block)
-      super { raw_html(output) }
+      super { raw(safe(output)) }
     end
   end
 end

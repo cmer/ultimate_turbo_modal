@@ -218,7 +218,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def raw_html(str)
-    respond_to?(:unsafe_raw) ? unsafe_raw(str) : raw(str)
+    raw(safe(str))
   end
 
   def classes_for(suffix)
