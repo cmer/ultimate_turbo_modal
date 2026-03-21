@@ -10,9 +10,12 @@ module UltimateTurboModal
 
       desc "Installs UltimateTurboModal: copies initializer/flavor, sets up JS, registers Stimulus controller, adds Turbo Frame."
 
+      class_option :flavor, type: :string, desc: "CSS framework flavor (e.g. tailwind, vanilla, custom)"
+
       # Step 1: Determine CSS framework flavor
       def determine_framework_flavor
-        @framework = prompt_for_flavor
+        @framework = options[:flavor] || prompt_for_flavor
+        validate_flavor!(@framework)
       end
 
       # Step 2: Setup Javascript Dependencies (Yarn/npm/Bun or Importmap)
@@ -105,7 +108,6 @@ module UltimateTurboModal
         end
       end
 
-
       def copy_initializer_and_flavor
         say "\nCreating initializer for `#{@framework}` flavor...", :green
         copy_file "ultimate_turbo_modal.rb", "config/initializers/ultimate_turbo_modal.rb"
@@ -125,35 +127,48 @@ module UltimateTurboModal
 
       private
 
-      def prompt_for_flavor
-        say "Which CSS framework does your project use?\n", :blue
-        options = []
+      def available_flavors
         flavors_dir = File.expand_path("templates/flavors", __dir__)
+        flavors = Dir.glob(File.join(flavors_dir, "*.rb")).map { |file| File.basename(file, ".rb") }.sort
+        if flavors.include?("custom")
+          flavors.delete("custom")
+          flavors << "custom"
+        end
+        flavors
+      end
 
-        options = Dir.glob(File.join(flavors_dir, "*.rb")).map { |file| File.basename(file, ".rb") }.sort
-        if options.include?("custom")
-          options.delete("custom")
-          options << "custom"
+      def validate_flavor!(flavor)
+        flavors = available_flavors
+        if flavors.empty?
+          raise Thor::Error, "No flavor templates found!"
+        end
+        unless flavors.include?(flavor)
+          raise Thor::Error, "Invalid flavor '#{flavor}'. Available flavors: #{flavors.join(", ")}"
+        end
+      end
+
+      def prompt_for_flavor
+        flavors = available_flavors
+
+        if flavors.empty?
+          raise Thor::Error, "No flavor templates found!"
         end
 
-        if options.empty?
-           raise Thor::Error, "No flavor templates found in #{flavors_dir}!"
-        end
-
+        say "Which CSS framework does your project use?\n", :blue
         say "Options:"
-        options.each_with_index do |option, index|
+        flavors.each_with_index do |option, index|
           say "#{index + 1}. #{option}"
         end
 
         loop do
-          print "\nEnter the number: "
+          print "\nEnter the number: " # standard:disable Rails/Output
           framework_choice = ask("").chomp.strip
           framework_id = framework_choice.to_i - 1
 
-          if framework_id >= 0 && framework_id < options.size
-            return options[framework_id]
+          if framework_id >= 0 && framework_id < flavors.size
+            return flavors[framework_id]
           else
-            say "\nInvalid option '#{framework_choice}'. Please enter a number between 1 and #{options.size}.", :red
+            say "\nInvalid option '#{framework_choice}'. Please enter a number between 1 and #{flavors.size}.", :red
           end
         end
       end

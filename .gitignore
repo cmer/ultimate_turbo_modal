@@ -31,12 +31,7 @@ node_modules/
 # OS specific
 .DS_Store
 
-# Task files
-tasks.json
-tasks/
-.taskmaster/state.json
-docs/
-.serena
 *.backup*
 *.local.*
+.tool-versions
 

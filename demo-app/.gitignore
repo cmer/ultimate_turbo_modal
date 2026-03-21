@@ -32,3 +32,8 @@
 !/app/assets/builds/.keep
 
 /node_modules
+
+# Flavor symlinks created by bin/dev
+/config/initializers/ultimate_turbo_modal_tailwind.rb
+/config/initializers/ultimate_turbo_modal_vanilla.rb
+/config/initializers/ultimate_turbo_modal_custom.rb

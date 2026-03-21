@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "rails/generators"
-require "pathname"
 
 module UltimateTurboModal
   module Generators
@@ -16,7 +15,7 @@ module UltimateTurboModal
       def add_js_dependency
         say "Attempting to set up JavaScript dependencies...", :yellow
 
-        version_spec = "#{package_name}@#{UltimateTurboModal::VERSION}"
+        version_spec = "#{package_name}@#{gem_version_to_npm(UltimateTurboModal::VERSION)}"
 
         if uses_importmaps?
           say "Detected Importmaps. Pinning #{version_spec}...", :green
@@ -37,10 +36,10 @@ module UltimateTurboModal
             run "bun add #{version_spec}"
             say "✅ Added '#{package_name}' using Bun.", :green
           else
-            say "Attempting to add with Yarn. If you use npm or Bun, please add manually.", :yellow
-            run "yarn add #{version_spec}"
-            say "If this failed or you use npm/bun, please run:", :yellow
-            say "npm install --save #{version_spec}", :cyan
+            say "Attempting to add with npm. If you use Yarn or Bun, please add manually.", :yellow
+            run "npm install --save #{version_spec}"
+            say "If this failed or you use yarn/bun, please run:", :yellow
+            say "yarn add #{version_spec}", :cyan
             say "# or", :cyan
             say "bun add #{version_spec}", :cyan
           end
@@ -59,7 +58,7 @@ module UltimateTurboModal
       # Install all JS dependencies (for update flow)
       def install_all_js_dependencies
         if uses_importmaps?
-          version_spec = "#{package_name}@#{UltimateTurboModal::VERSION}"
+          version_spec = "#{package_name}@#{gem_version_to_npm(UltimateTurboModal::VERSION)}"
           say "Detected Importmaps. Ensuring pin for #{version_spec}...", :green
           run "bin/importmap pin #{version_spec}"
           say "✅ Pinned '#{package_name}' via importmap.", :green
@@ -82,8 +81,8 @@ module UltimateTurboModal
           run "bun install"
           say "✅ Installed dependencies with Bun.", :green
         else
-          say "Attempting to install with Yarn. If you use npm or Bun, please run the appropriate command.", :yellow
-          run "yarn install"
+          say "Attempting to install with npm. If you use Yarn or Bun, please run the appropriate command.", :yellow
+          run "npm install"
         end
       end
 
@@ -104,14 +103,20 @@ module UltimateTurboModal
       end
 
       def uses_bun?
-        File.exist?(rails_root_join("bun.lockb"))
+        File.exist?(rails_root_join("bun.lockb")) || File.exist?(rails_root_join("bun.lock"))
       end
 
       def rails_root_join(*args)
         Pathname.new(destination_root).join(*args)
       end
+
+      # Convert Ruby gem version to npm semver format.
+      # Ruby: "3.0.0.beta.1" → npm: "3.0.0-beta.1"
+      # Ruby: "3.0.0.alpha"  → npm: "3.0.0-alpha.0"
+      # Ruby: "3.0.0"        → npm: "3.0.0" (no change)
+      def gem_version_to_npm(version)
+        version.to_s.sub(/\.([a-z]+)(?:\.(\d+))?$/) { "-#{$1}.#{$2 || "0"}" }
+      end
     end
   end
 end
-
-

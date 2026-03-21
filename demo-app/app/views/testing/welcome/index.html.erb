@@ -1,0 +1,158 @@
+<%= render partial: "testing/hide_from_backends/notice" %>
+
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%# ── Toolbar ── %>
+  <div class="flex flex-wrap items-center gap-4 mb-10 pb-6 border-b border-gray-200 dark:border-gray-700" data-controller="dark-mode">
+    <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white mr-auto">UTMR Testing</h1>
+
+    <%# Flavor toggle %>
+    <div class="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 text-sm font-medium">
+      <a href="/testing?flavor=tailwind"
+         class="px-3 py-1.5 <%= UltimateTurboModal.flavor.to_s == 'tailwind' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600' %>">
+        Tailwind
+      </a>
+      <a href="/testing?flavor=vanilla"
+         class="px-3 py-1.5 border-l border-gray-300 dark:border-gray-600 <%= UltimateTurboModal.flavor.to_s == 'vanilla' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600' %>">
+        Vanilla
+      </a>
+    </div>
+
+    <%# Dark mode toggle %>
+    <button data-action="click->dark-mode#toggleTheme"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 dark:hidden">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+      </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 hidden dark:block">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+      </svg>
+      <span class="dark:hidden">Dark</span>
+      <span class="hidden dark:inline">Light</span>
+    </button>
+
+    <a href="/" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">&larr; Showcase</a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <%# ── Modals column ── %>
+    <div class="space-y-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-500">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25z" />
+        </svg>
+        Modals
+      </h2>
+
+      <%# CRUD %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          CRUD
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <% if @post %>
+            <%= render_test_link "Show Post", testing_post_path(@post, close_button: 1) %>
+            <%= render_test_link "Show Post (advance history)", testing_post_path(@post, advance: "1", close_button: 1) %>
+          <% end %>
+          <%= render_test_link "New Post", new_testing_post_path(Post.new, close_button: 1) %>
+        </div>
+      </div>
+
+      <%# Content variants %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Content Variants
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Photo (no header/padding)", testing_modal_path(:photo, padding: 0, advance: 1, close_button: 1) %>
+          <%= render_test_link "Photo (no close button)", testing_modal_path(:photo, padding: 0, advance: 1, close_button: 0) %>
+          <%= render_test_link "Long scrolling content", testing_modal_path(:long, advance: 1, close_button: 1) %>
+          <%= render_test_link "Without overlay", testing_modal_path(:no_overlay, advance: 1, close_button: 1) %>
+        </div>
+      </div>
+
+      <%# Server-side %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Server-side
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Form closing from backend", new_testing_hide_from_backend_path(close_button: 1) %>
+        </div>
+      </div>
+
+      <%# Smooth Redirects %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Smooth Redirects
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Modal smooth redirect", new_testing_smooth_redirect_path(type: "modal") %>
+        </div>
+      </div>
+    </div>
+
+    <%# ── Drawers column ── %>
+    <div class="space-y-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-500">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+        </svg>
+        Drawers
+      </h2>
+
+      <%# Position %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Position
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Right drawer (default)", testing_drawer_path(:basic) %>
+          <%= render_test_link "Left drawer", testing_drawer_path(:left) %>
+        </div>
+      </div>
+
+      <%# Options %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Options
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Without overlay", testing_drawer_path(:overlay) %>
+          <%= render_test_link "Header divider", testing_drawer_path(:header_divider) %>
+          <%= render_test_link "Large drawer", testing_drawer_path(:large) %>
+        </div>
+      </div>
+
+      <%# Content %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Content
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Long content", testing_drawer_path(:long) %>
+          <%= render_test_link "With footer", testing_drawer_path(:footer) %>
+        </div>
+      </div>
+
+      <%# Smooth Redirects %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Smooth Redirects
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Drawer smooth redirect", new_testing_smooth_redirect_path(type: "drawer") %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Focus trap test ── %>
+  <div class="mt-12 pt-6 border-t border-gray-200 dark:border-gray-700 text-center">
+    <p class="text-xs text-gray-400 dark:text-gray-500 mb-2">Focus trap test (input should not be focusable while modal is open)</p>
+    <input type="text" class="rounded border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white placeholder-gray-300 dark:placeholder-gray-500 text-sm" placeholder="Focus trap test" />
+  </div>
+
+  <div class="mt-4 text-center text-xs text-gray-400 dark:text-gray-500">
+    Flavor: <strong><%= UltimateTurboModal.flavor %></strong> &middot; Rendered at <%= Time.now.strftime("%H:%M:%S") %>
+  </div>
+</div>

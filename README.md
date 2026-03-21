@@ -1,12 +1,13 @@
 # The Ultimate Turbo Modal for Rails (UTMR)
 
-There are MANY Turbo/Hotwire/Stimulus modal dialog implementations out there, and it seems like everyone goes about it a different way. However, as you may have learned the hard way, the majority fall short in different, often subtle ways. They generally cover the basics quite well, but do not check all the boxes for real-world use.
+There are MANY Turbo/Hotwire/Stimulus modal dialog implementations out there. However, as you may have learned, the majority fall short in different, often subtle ways. They generally cover the basics quite well, but do not check all the boxes for real-world use.
 
 UTMR aims to be the be-all and end-all of Turbo Modals. I believe it is the best (only?) full-featured implementation and checks all the boxes. It is feature-rich, yet extremely easy to use.
 
-Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https://turbo.hotwired.dev/), [el-transition](https://github.com/mmccall10/el-transition), and [Idiomorph](https://github.com/bigskysoftware/idiomorph).
+Under the hood, it uses [Stimulus](https://stimulus.hotwired.dev), [Turbo](https://turbo.hotwired.dev/), the native HTML [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) element, and [Idiomorph](https://github.com/bigskysoftware/idiomorph).
 
-It currently ships in a three flavors: Tailwind v3, Tailwind v4 and regular, vanilla CSS. It is easy to create your own variant to suit your needs.
+It ships in two flavors: Tailwind (v4+) and vanilla CSS. It is easy to create your own flavor to suit your needs.
+
 
 ## Installation
 
@@ -14,6 +15,7 @@ It currently ships in a three flavors: Tailwind v3, Tailwind v4 and regular, van
 $ bundle add ultimate_turbo_modal
 $ bundle exec rails g ultimate_turbo_modal:install
 ```
+
 
 ## Usage
 
@@ -34,6 +36,8 @@ $ bundle exec rails g ultimate_turbo_modal:install
 Clicking on the link will automatically open the content of the view inside a modal. If you open the link in a new tab, it will render normally outside of the modal. Nothing to do!
 
 This is really all you should need to do for most use cases.
+
+**Please note:** The generator automatically adds `<turbo-frame id="modal"></turbo-frame>` to your application layout. If you need to open modals or drawers in another layout, please add this HTML snippet manually.
 
 ### Setting Title and Footer
 
@@ -76,15 +80,51 @@ If you need to do something a little bit more advanced when the view is shown ou
 &nbsp;
 ## Options
 
-Do not get overwhelmed with all the options. The defaults are sensible.
+Do not get overwhelmed with all the options. The defaults are sensible. You can change the defaults with an initializer:
 
-| name | default value | description |
-|------|---------------|-------------|
-| `advance` | `true` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
+```ruby
+# config/initializers/ultimate_turbo_modal.rb
+
+UltimateTurboModal.configure do |config|
+  config.flavor = :tailwind
+  config.allowed_click_outside_selector = []
+
+  config.modal do |m|
+    m.advance = false
+    m.close_button = true
+    m.header = true
+    m.header_divider = true
+    m.footer_divider = true
+    m.padding = true
+    m.overlay = true
+  end
+
+  config.drawer do |d|
+    d.position = :right
+    d.close_button = true
+    d.header = true
+    d.header_divider = false
+    d.footer_divider = true
+    d.padding = true
+    d.overlay = true
+    d.size = :md
+  end
+end
+```
+
+Per-instance options passed to `modal()` or `drawer()` override the defaults.
+
+### Modal Options
+
+| Name | Default | Description |
+|------|---------|-------------|
+| `advance` | `false` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
 | `header` | `true` | Whether to display a modal header. |
 | `header_divider` | `true` | Whether to display a divider below the header. |
+| `footer_divider` | `true` | Whether to display a divider above the footer. |
 | `padding` | `true` | Adds padding inside the modal. |
+| `overlay` | `true` | Whether to show a backdrop overlay. |
 | `title` | `nil` | Title to display in the modal header. Alternatively, you can set the title with a block. |
 
 ### Example usage with options
@@ -101,9 +141,62 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 <% end %>
 ```
 
+## Drawers
+
+UTMR includes built-in drawer (slide-out panel) support. Drawers share the same `<dialog>` element and Stimulus controller as modals — no additional JavaScript required.
+
+### Basic Usage
+
+Use the `drawer` helper instead of `modal`:
+
+```erb
+<%= drawer do %>
+  Drawer content here!
+<% end %>
+```
+
+Link to it the same way as a modal:
+
+```erb
+<%= link_to "Open Drawer", "/settings", data: { turbo_frame: "modal" } %>
+```
+
+### Drawer Options
+
+| Name | Default | Description |
+|------|---------|-------------|
+| `position` | `:right` | Which edge the drawer slides from. `:right` or `:left`. |
+| `size` | `:md` | Width of the drawer. One of `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or a CSS string (e.g. `"500px"`). |
+| `overlay` | `true` | Whether to show a backdrop overlay behind the drawer. |
+| `close_button` | `true` | Shows or hide a close button (X). |
+| `header` | `true` | Whether to display a header. |
+| `header_divider` | `false` | Whether to display a divider below the header. |
+| `footer_divider` | `true` | Whether to display a divider above the footer. |
+| `padding` | `true` | Adds padding inside the drawer. |
+| `title` | `nil` | Title to display in the drawer header. |
+
+```erb
+<%= drawer(position: :left, size: :lg, overlay: false, title: "Settings") do %>
+  <p>Drawer content</p>
+<% end %>
+```
+
+### Drawer Size Reference
+
+| Size | Max Width |
+|------|-----------|
+| `:sm` | 24rem (384px) |
+| `:md` | 28rem (448px) |
+| `:lg` | 42rem (672px) |
+| `:xl` | 56rem (896px) |
+| `:full` | Full viewport width minus a small gutter |
+| CSS string | Custom value, e.g. `"500px"` or `"50vw"` |
+
+
 ## Features and capabilities
 
 - Extremely easy to use
+- Built-in drawer (slide-out panel) support with left/right positioning and configurable sizes
 - Fully responsive
 - Does not break if a user navigates directly to a page that is usually shown in a modal
 - Opening a modal in a new browser tab (ie: right click) gracefully degrades without having to code a modal and non-modal version of the same page
@@ -112,19 +205,19 @@ Do not get overwhelmed with all the options. The defaults are sensible.
 - Seamless support for multi-page navigation within the modal
 - Seamless support for forms with validations
 - Seamless support for Rails flash messages
-- Enter/leave animation (fade in/out)
 - Support for long, scrollable modals
 - Properly locks the background page when scrolling a long modal
 - Click outside the modal to dismiss
-- Option to whitelist CSS selectors that won't dismiss the modal when clicked outside the modal (ie: datepicker)
+- Option to whitelist CSS selectors that won't dismiss the modal when clicked outside the modal (see [body-appended widgets guide](docs/body-appended-widgets.md) for datepickers and similar popups)
 - Keyboard control; ESC to dismiss
 - Automatic (or not) close button
-- Focus trap for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
+- Native focus trapping via the `<dialog>` element for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
+- Smooth redirects: form submissions that redirect back to the same page morph the content behind the modal before closing; redirects to a different page close the modal with animation first, then navigate
 
 
 ## Demo Video
 
-A video demo can be seen here: [https://youtu.be/BVRDXLN1I78](https://youtu.be/BVRDXLN1I78).
+A video demo can be seen here: [https://youtu.be/qXoeyxuyn7w](https://youtu.be/qXoeyxuyn7w).
 
 ### Running the Demo Application
 
@@ -134,15 +227,6 @@ The repository includes a demo application in the `demo-app` directory that show
 # Navigate to the demo app directory
 cd demo-app
 
-# Install Ruby dependencies
-bundle install
-
-# Create and setup the database
-bin/rails db:create db:migrate db:seed
-
-# Install JavaScript dependencies
-yarn install
-
 # Start the development server
 bin/dev
 
@@ -150,38 +234,11 @@ bin/dev
 open http://localhost:3000
 ```
 
-The demo app provides examples of:
-- Basic modal usage
-- Different modal configurations
-- Custom styling options
-- Various trigger methods
-- Advanced features like scrollable content and custom footers
 
-## Updating between minor versions
+## Upgrading
 
-To upgrade within the same major version (for example 2.1 → 2.2):
+Please see the [Upgrading Guide](UPGRADING.md) for detailed instructions on upgrading between versions.
 
-1. Change the UTMR gem version in your `Gemfile`:
-
-   ```ruby
-   gem "ultimate_turbo_modal", "~> 2.2"
-   ```
-
-2. Install updated dependencies:
-
-   ```sh
-   bundle install
-   ```
-
-3. Run the update generator:
-
-   ```sh
-   bundle exec rails g ultimate_turbo_modal:update
-   ```
-
-## Upgrading from 1.x
-
-Please see the [Upgrading Guide](UPGRADING.md) for detailed instructions on how to upgrade from version 1.x.
 
 ## Thanks
 
