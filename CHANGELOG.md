@@ -1,5 +1,7 @@
 ## [3.0.0] - Unreleased
 
+Upgrading is easy! See [UPGRADING.md](UPGRADING.md)
+
 - **BREAKING**: Replaced div-based modal with native HTML `<dialog>` element. 
 - **BREAKING**: If you customized the look and feel of a flavor, you'll need to reapply your customizations since the underlying markup has changed.
 - **BREAKING**: Removed Tailwind v3 flavor. Use the `tailwind` flavor (Tailwind v4+) or `custom` to define your own classes.
