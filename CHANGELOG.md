@@ -1,3 +1,7 @@
+## [3.0.2] - 2026-03-22
+
+- Fixed npm package not being found on JSPM, which prevented `bin/importmap pin` from working ([#46](https://github.com/cmer/ultimate_turbo_modal/issues/46)).
+
 ## [3.0.1] - 2026-03-21
 
 - Fixed missing bottom padding on vanilla flavor drawer header when header divider is enabled.
