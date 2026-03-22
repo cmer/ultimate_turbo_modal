@@ -259,3 +259,13 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/cmer/u
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=cmer%2Fultimate_turbo_modal&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=cmer/ultimate_turbo_modal&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=cmer/ultimate_turbo_modal&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=cmer/ultimate_turbo_modal&type=date&legend=top-left" />
+ </picture>
+</a>
