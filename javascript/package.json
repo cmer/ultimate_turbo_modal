@@ -1,6 +1,6 @@
 {
   "name": "ultimate_turbo_modal",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "The ultimate Turbo / Stimulus / Hotwire modal window for Rails",
   "type": "module",
   "main": "dist/ultimate_turbo_modal.min.js",
@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "update-version": "node scripts/update-version.js",
+    "update-version": "node scripts/update-version.cjs",
     "build": "npm install && rollup -c",
     "build:watch": "npm install && rollup -c -w",
     "release": "bash scripts/release-npm.sh"
