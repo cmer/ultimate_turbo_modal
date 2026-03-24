@@ -1,9 +1,0 @@
-AllCops:
-  TargetRubyVersion: 3.2
-
-require:
-  - standard
-inherit_gem:
-  standard: config/base.yml
-AllCops:
-  SuggestExtensions: false
