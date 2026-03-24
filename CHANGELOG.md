@@ -1,3 +1,7 @@
+## [3.0.3] - 2026-03-23
+
+- Switched importmap CDN from JSPM to jsdelivr for more reliable package resolution.
+
 ## [3.0.2] - 2026-03-22
 
 - Fixed npm package not being found on JSPM, which prevented `bin/importmap pin` from working ([#46](https://github.com/cmer/ultimate_turbo_modal/issues/46)).

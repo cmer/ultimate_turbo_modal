@@ -19,7 +19,7 @@ module UltimateTurboModal
 
         if uses_importmaps?
           say "Detected Importmaps. Pinning #{version_spec}...", :green
-          run "bin/importmap pin #{version_spec}"
+          run "bin/importmap pin #{version_spec} --from jsdelivr"
           say "✅ Pinned '#{package_name}' via importmap.", :green
           return
         end
@@ -46,7 +46,7 @@ module UltimateTurboModal
         else
           say "Could not automatically detect Importmaps or jsbundling-rails.", :yellow
           say "Please manually add the '#{package_name}' JavaScript package.", :yellow
-          say "If using Importmaps: bin/importmap pin #{version_spec}", :cyan
+          say "If using Importmaps: bin/importmap pin #{version_spec} --from jsdelivr", :cyan
           say "If using Yarn: yarn add #{version_spec}", :cyan
           say "If using npm: npm install --save #{version_spec}", :cyan
           say "If using Bun: bun add #{version_spec}", :cyan
@@ -60,7 +60,7 @@ module UltimateTurboModal
         if uses_importmaps?
           version_spec = "#{package_name}@#{gem_version_to_npm(UltimateTurboModal::VERSION)}"
           say "Detected Importmaps. Ensuring pin for #{version_spec}...", :green
-          run "bin/importmap pin #{version_spec}"
+          run "bin/importmap pin #{version_spec} --from jsdelivr"
           say "✅ Pinned '#{package_name}' via importmap.", :green
           return
         end
