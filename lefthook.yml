@@ -1,5 +1,5 @@
 pre-commit:
   commands:
     standardrb:
-      glob: "*.rb"
+      glob: "**/*.rb"
       run: bundle exec standardrb {staged_files}
