@@ -22,8 +22,6 @@ module UltimateTurboModal::Flavors
 
     MODAL_INNER_CLASSES = [
       "flex min-h-full items-start justify-center pt-[10vh] sm:p-4",
-      # Hidden before animation starts
-      "group-[&:not([data-enter-ready]):not([data-entered])]:invisible",
       # Transition
       "transition duration-300 ease-out",
       "group-data-[closing]:duration-200 group-data-[closing]:ease-in",
