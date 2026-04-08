@@ -1,3 +1,7 @@
+## [3.0.4] - 2026-04-08
+
+- Fixed form fields not being auto-focused inside modals due to an unnecessary `invisible` class on the modal inner container.
+
 ## [3.0.3] - 2026-03-23
 
 - Switched importmap CDN from JSPM to jsdelivr for more reliable package resolution.
