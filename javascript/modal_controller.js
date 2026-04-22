@@ -140,6 +140,17 @@ export default class extends Controller {
     this.hideModal();   // Use our close flow with events + animation
   }
 
+  // Track where a press started so we can avoid dismissing when the press
+  // began inside content but the click resolved on the dialog (e.g. a
+  // body-appended popup opened between mousedown and mouseup, shifting the
+  // mouseup target — the browser then fires `click` on the common ancestor,
+  // which is the dialog itself).
+  // action: "mousedown->modal#dialogMousedown"
+  dialogMousedown(e) {
+    this._mousedownInsideContent =
+      this.hasContentTarget && this.contentTarget.contains(e.target);
+  }
+
   // Handle clicks outside the modal content (backdrop area)
   // action: "click->modal#dialogClicked"
   dialogClicked(e) {
@@ -147,7 +158,10 @@ export default class extends Controller {
     // land on the dialog or its inner wrapper (#modal-inner), not on ::backdrop.
     // Dismiss if the click is outside the content (modal card).
     if (!this.hasContentTarget) return;
+    const pressedInside = this._mousedownInsideContent;
+    this._mousedownInsideContent = false;
     if (this.contentTarget.contains(e.target)) return;
+    if (pressedInside) return;
     if (this.#isAllowedOutsideClick(e.target)) return;
     this.hideModal();
   }

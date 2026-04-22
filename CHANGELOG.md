@@ -1,3 +1,7 @@
+## [3.0.5] - 2026-04-22
+
+- Fixed modal being dismissed when a body-appended widget (e.g. flatpickr, Select2, Tippy) opens over its trigger between mousedown and mouseup. The browser fires `click` on the dialog (common ancestor), which was treated as a backdrop dismissal. The dialog now tracks mousedown origin and skips dismissal when the press started inside content.
+
 ## [3.0.4] - 2026-04-08
 
 - Fixed form fields not being auto-focused inside modals due to an unnecessary `invisible` class on the modal inner container.
