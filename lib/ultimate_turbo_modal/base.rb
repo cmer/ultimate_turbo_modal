@@ -236,7 +236,7 @@ class UltimateTurboModal::Base < Phlex::HTML
       modal_target: "container",
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
-      action: "turbo:submit-end->modal#submitEnd cancel->modal#cancelEvent click->modal#dialogClicked",
+      action: "turbo:submit-end->modal#submitEnd cancel->modal#cancelEvent mousedown->modal#dialogMousedown click->modal#dialogClicked",
       padding: padding?.to_s,
       title: title?.to_s,
       header: header?.to_s,
