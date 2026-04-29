@@ -4,8 +4,9 @@ module UltimateTurboModal::Helpers
   module ControllerHelper
     extend ActiveSupport::Concern
 
-    def inside_modal?
-      request.headers["Turbo-Frame"] == "modal"
+     def inside_modal?
+      turbo_frame = request.headers["Turbo-Frame"]
+      turbo_frame.present? && turbo_frame.start_with?("modal")
     end
 
     included do
