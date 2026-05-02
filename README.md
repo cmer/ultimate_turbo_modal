@@ -203,6 +203,49 @@ Link to it the same way as a modal:
 | CSS string | Custom value, e.g. `"500px"` or `"50vw"` |
 
 
+## Opening a Modal from a Drawer
+
+You can open a regular modal that stacks on top of an open drawer. This is built in — no setup or opt-in required.
+
+Inside any drawer, link to a modal action with `data-turbo-frame="drawer-modal"`:
+
+```erb
+<%= drawer(title: "Notifications") do %>
+  <p>Activity list here…</p>
+  <%= link_to "Edit preferences",
+        edit_preferences_path,
+        data: { turbo_frame: "drawer-modal" } %>
+<% end %>
+```
+
+The destination is rendered with the same `modal()` helper you use elsewhere:
+
+```erb
+<%= modal(title: "Notification preferences") do %>
+  <p>Form here…</p>
+<% end %>
+```
+
+The gem detects the request and renders the modal into a stacked `<dialog>` that sits visually on top of the drawer.
+
+### Behavior
+
+- **ESC** closes the modal first, then the drawer (native top-layer behavior).
+- **Click outside** the modal closes the modal only; the drawer stays open.
+- **`turbo_stream.modal(:close)`** closes the topmost dialog (the modal).
+- **Form submission with same-page redirect** closes the modal smoothly; the drawer stays.
+- **Form submission with a different-page redirect** closes both dialogs, then navigates.
+- **Closing the drawer** (via close button, ESC after the modal closes, etc.) also tears down any modal opened from it.
+
+### Constraints
+
+- Modal-from-drawer only. You cannot open a drawer from inside a modal, and you cannot stack a modal on top of another modal. The `drawer-modal` frame is only rendered inside drawers.
+- Stacked modals always force `advance: false` (history is not pushed). All other modal options (overlay, padding, header, footer, etc.) work normally.
+- Both backdrops are drawn when both dialogs have `overlay: true`. Pass `overlay: false` to the inner modal if you don't want the drawer to look slightly darker while the modal is open.
+
+For a full lifecycle walkthrough and edge-case notes, see [docs/modal-from-drawer.md](docs/modal-from-drawer.md).
+
+
 ## Features and capabilities
 
 - Extremely easy to use

@@ -5,7 +5,7 @@
 # Set STYLES to a CSS string if you need additional inline styles.
 module UltimateTurboModal::Flavors
   class Vanilla < UltimateTurboModal::Base
-    STYLES = "html:has(dialog#modal-container[open]) { overflow: hidden; }"
+    STYLES = "html:has(dialog#modal-container[open]), html:has(dialog#modal-container-stacked[open]) { overflow: hidden; }"
 
     MODAL_DIALOG_CLASSES = "modal-container"
     MODAL_INNER_CLASSES = "modal-inner"

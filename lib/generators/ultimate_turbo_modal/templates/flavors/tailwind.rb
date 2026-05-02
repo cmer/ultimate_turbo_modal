@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
 # Tailwind CSS v4
+#
+# Group selectors are scoped with the named groups `group/utmr-modal` and
+# `group/utmr-drawer` so that when a modal stacks on top of an open drawer,
+# the inner modal's transition styles don't pick up the outer drawer's
+# `data-entered` state (which would prevent the modal from animating out).
 module UltimateTurboModal::Flavors
   class Tailwind < UltimateTurboModal::Base
-    STYLES = "html:has(dialog#modal-container[open]) { overflow: hidden; }"
+    STYLES = "html:has(dialog#modal-container[open]), html:has(dialog#modal-container-stacked[open]) { overflow: hidden; }"
 
     # Modal constants
 
     MODAL_DIALOG_CLASSES = [
-      "group",
+      "group/utmr-modal",
       # Dialog reset
       "fixed inset-0 p-0 m-0 border-none bg-transparent",
       "max-w-[100vw] max-h-dvh w-full h-full overflow-y-auto",
@@ -24,20 +29,20 @@ module UltimateTurboModal::Flavors
       "flex min-h-full items-start justify-center pt-[10vh] sm:p-4",
       # Transition
       "transition duration-300 ease-out",
-      "group-data-[closing]:duration-200 group-data-[closing]:ease-in",
+      "group-data-[closing]/utmr-modal:duration-200 group-data-[closing]/utmr-modal:ease-in",
       # Default state (closed): faded + shifted
       "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
       # Entered state
-      "group-data-[entered]:opacity-100 group-data-[entered]:translate-y-0 group-data-[entered]:scale-100"
+      "group-data-[entered]/utmr-modal:opacity-100 group-data-[entered]/utmr-modal:translate-y-0 group-data-[entered]/utmr-modal:scale-100"
     ].join(" ")
 
     MODAL_CONTENT_CLASSES = "relative transform max-h-screen overflow-hidden rounded-lg bg-white text-left shadow-lg transition-all sm:my-8 sm:max-w-3xl dark:bg-gray-800 dark:text-white"
-    MODAL_MAIN_CLASSES = "group-data-[padding=true]:p-4 group-data-[padding=true]:pt-2 overflow-y-auto max-h-[75vh]"
-    MODAL_HEADER_CLASSES = "flex justify-between items-center w-full py-4 rounded-t dark:border-gray-600 group-data-[header-divider=true]:border-b group-data-[header=false]:absolute"
+    MODAL_MAIN_CLASSES = "group-data-[padding=true]/utmr-modal:p-4 group-data-[padding=true]/utmr-modal:pt-2 overflow-y-auto max-h-[75vh]"
+    MODAL_HEADER_CLASSES = "flex justify-between items-center w-full py-4 rounded-t dark:border-gray-600 group-data-[header-divider=true]/utmr-modal:border-b group-data-[header=false]/utmr-modal:absolute"
     MODAL_TITLE_CLASSES = "pl-4"
-    MODAL_TITLE_H_CLASSES = "group-data-[title=false]:hidden text-lg font-semibold text-gray-900 dark:text-white"
-    MODAL_FOOTER_CLASSES = "flex p-4 rounded-b dark:border-gray-600 group-data-[footer-divider=true]:border-t"
-    MODAL_CLOSE_CLASSES = "mr-4 group-data-[close-button=false]:hidden"
+    MODAL_TITLE_H_CLASSES = "group-data-[title=false]/utmr-modal:hidden text-lg font-semibold text-gray-900 dark:text-white"
+    MODAL_FOOTER_CLASSES = "flex p-4 rounded-b dark:border-gray-600 group-data-[footer-divider=true]/utmr-modal:border-t"
+    MODAL_CLOSE_CLASSES = "mr-4 group-data-[close-button=false]/utmr-modal:hidden"
     MODAL_CLOSE_SR_CLASSES = "sr-only"
     MODAL_CLOSE_BUTTON_CLASSES = "text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
     MODAL_CLOSE_ICON_CLASSES = "w-5 h-5"
@@ -45,7 +50,7 @@ module UltimateTurboModal::Flavors
     # Drawer constants
 
     DRAWER_DIALOG_CLASSES = [
-      "group",
+      "group/utmr-drawer",
       # Dialog reset
       "fixed inset-0 p-0 m-0 border-none bg-transparent",
       "max-w-[100vw] max-h-dvh w-full h-full overflow-y-auto",
@@ -75,30 +80,30 @@ module UltimateTurboModal::Flavors
     DRAWER_PANEL_CLASSES = [
       "absolute inset-y-0",
       # Position based on direction
-      "group-data-[drawer=left]:left-0 group-data-[drawer=right]:right-0",
+      "group-data-[drawer=left]/utmr-drawer:left-0 group-data-[drawer=right]/utmr-drawer:right-0",
       # Width (size variable + gutter)
       "w-[min(var(--utmr-w),calc(100vw_-_var(--utmr-gutter)))]",
       # Default: translated off-screen
       "[translate:var(--utmr-hide)]",
       # Entered: in place
-      "group-data-[entered]:[translate:0]",
+      "group-data-[entered]/utmr-drawer:[translate:0]",
       # Closing: back off-screen
-      "group-data-[closing]:[translate:var(--utmr-hide)]",
+      "group-data-[closing]/utmr-drawer:[translate:var(--utmr-hide)]",
       # Transition
       "transition-[translate] duration-250 ease-in-out sm:duration-400",
       "will-change-[translate]",
       # Hidden before animation ready
-      "group-[&:not([data-enter-ready]):not([data-entered])]:invisible"
+      "group-[&:not([data-enter-ready]):not([data-entered])]/utmr-drawer:invisible"
     ].join(" ")
 
-    DRAWER_CONTENT_CLASSES = "relative flex h-full w-full flex-col bg-white group-data-[padding=true]:pt-6 shadow-xl dark:bg-gray-800 dark:text-white"
+    DRAWER_CONTENT_CLASSES = "relative flex h-full w-full flex-col bg-white group-data-[padding=true]/utmr-drawer:pt-6 shadow-xl dark:bg-gray-800 dark:text-white"
 
-    DRAWER_HEADER_CLASSES = "flex items-start justify-between w-full px-4 sm:px-6 group-data-[header-divider=true]:pb-4 group-data-[header-divider=true]:border-b group-data-[header-divider=true]:border-gray-200 dark:group-data-[header-divider=true]:border-gray-600 group-data-[header=false]:hidden"
+    DRAWER_HEADER_CLASSES = "flex items-start justify-between w-full px-4 sm:px-6 group-data-[header-divider=true]/utmr-drawer:pb-4 group-data-[header-divider=true]/utmr-drawer:border-b group-data-[header-divider=true]/utmr-drawer:border-gray-200 dark:group-data-[header-divider=true]/utmr-drawer:border-gray-600 group-data-[header=false]/utmr-drawer:hidden"
     DRAWER_TITLE_CLASSES = ""
-    DRAWER_TITLE_H_CLASSES = "group-data-[title=false]:hidden text-base font-semibold text-gray-900 dark:text-white"
-    DRAWER_MAIN_CLASSES = "relative group-data-[padding=true]:mt-6 flex-1 overflow-y-auto group-data-[padding=true]:px-4 group-data-[padding=true]:sm:px-6 group-data-[padding=true]:pb-6"
-    DRAWER_FOOTER_CLASSES = "flex shrink-0 px-4 py-4 sm:px-6 group-data-[footer-divider=true]:border-t group-data-[footer-divider=true]:border-gray-200 dark:group-data-[footer-divider=true]:border-gray-600"
-    DRAWER_CLOSE_CLASSES = "ml-3 flex h-7 items-center group-data-[close-button=false]:hidden"
+    DRAWER_TITLE_H_CLASSES = "group-data-[title=false]/utmr-drawer:hidden text-base font-semibold text-gray-900 dark:text-white"
+    DRAWER_MAIN_CLASSES = "relative group-data-[padding=true]/utmr-drawer:mt-6 flex-1 overflow-y-auto group-data-[padding=true]/utmr-drawer:px-4 group-data-[padding=true]/utmr-drawer:sm:px-6 group-data-[padding=true]/utmr-drawer:pb-6"
+    DRAWER_FOOTER_CLASSES = "flex shrink-0 px-4 py-4 sm:px-6 group-data-[footer-divider=true]/utmr-drawer:border-t group-data-[footer-divider=true]/utmr-drawer:border-gray-200 dark:group-data-[footer-divider=true]/utmr-drawer:border-gray-600"
+    DRAWER_CLOSE_CLASSES = "ml-3 flex h-7 items-center group-data-[close-button=false]/utmr-drawer:hidden"
     DRAWER_CLOSE_BUTTON_CLASSES = "relative rounded-md text-gray-400 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
     DRAWER_CLOSE_SR_CLASSES = MODAL_CLOSE_SR_CLASSES
     DRAWER_CLOSE_ICON_CLASSES = "size-6"

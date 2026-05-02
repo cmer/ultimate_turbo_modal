@@ -3,6 +3,12 @@ import { Controller } from '@hotwired/stimulus';
 // This placeholder will be replaced by rollup
 const PACKAGE_VERSION = '__PACKAGE_VERSION__';
 
+// Stack of currently-connected modal/drawer controllers, in open order.
+// The topmost (last) entry is exposed as window.modal so existing
+// `window.modal.hide()` and `Turbo.StreamActions.modal` calls always operate
+// on the dialog the user is most directly interacting with.
+const dialogStack = [];
+
 export default class extends Controller {
   static targets = ["container", "content"]
   static values = {
@@ -16,6 +22,8 @@ export default class extends Controller {
     this.turboFrame = this.element.closest('turbo-frame');
     this.hidingModal = this.containerTarget.hasAttribute('data-closing');
     this.originalUrl = window.location.href;
+
+    if (!dialogStack.includes(this)) dialogStack.push(this);
 
     // Same-page morphs can briefly disconnect/reconnect the controller while the
     // dialog is already open. Replaying showModal() there re-triggers the enter
@@ -43,7 +51,7 @@ export default class extends Controller {
     };
     document.addEventListener('turbo:before-cache', this.beforeCacheHandler);
 
-    window.modal = this;
+    window.modal = dialogStack[dialogStack.length - 1];
   }
 
   disconnect() {
@@ -52,7 +60,10 @@ export default class extends Controller {
     this.#cancelCloseCleanup();
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
-    window.modal = undefined;
+
+    const idx = dialogStack.indexOf(this);
+    if (idx !== -1) dialogStack.splice(idx, 1);
+    window.modal = dialogStack[dialogStack.length - 1];
   }
 
   showModal() {
@@ -215,9 +226,7 @@ export default class extends Controller {
 
   #queueCloseCleanup(historyWasAdvanced) {
     const dialog = this.containerTarget;
-    const transitionTarget = this.#isDrawer()
-      ? dialog.querySelector('#drawer-panel')
-      : dialog.querySelector('#modal-inner');
+    const transitionTarget = this.#transitionTarget();
     const closeTimeoutMs = this.#isDrawer() ? 750 : 300;
     this.#cancelCloseCleanup();
 
@@ -265,9 +274,12 @@ export default class extends Controller {
     try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
   }
 
-  // Remove any stale dialogs left over from a previous failed close
+  // Remove any stale dialogs of the same kind left over from a previous failed
+  // close. Scoped to the current dialog's id so stacked dialogs don't tear
+  // down their ancestor (e.g. a stacked modal opening inside a drawer).
   #cleanupStaleDialogs() {
-    document.querySelectorAll('dialog#modal-container').forEach(d => {
+    const selector = `dialog#${CSS.escape(this.containerTarget.id)}`;
+    document.querySelectorAll(selector).forEach(d => {
       if (d !== this.containerTarget) {
         try { d.close(); } catch (_) {}
         d.remove();
@@ -277,6 +289,24 @@ export default class extends Controller {
 
   #isDrawer() {
     return this.containerTarget.dataset.drawer !== undefined
+  }
+
+  #isStacked() {
+    return this.containerTarget.id === 'modal-container-stacked';
+  }
+
+  // The element that runs the enter/leave CSS transition. The
+  // `#queueCloseCleanup` listener waits for `transitionend` on this element to
+  // know when the leave animation has completed.
+  //
+  // Note: the inner id (`modal-inner` / `modal-inner-stacked`) is shared by a
+  // wrapping `<turbo-frame>` AND the `<div>` that actually carries the
+  // transition classes. We need the DIV — `querySelector('#modal-inner')`
+  // would return the frame instead.
+  #transitionTarget() {
+    if (this.#isDrawer()) return this.containerTarget.querySelector('#drawer-panel');
+    const innerSelector = this.#isStacked() ? 'div#modal-inner-stacked' : 'div#modal-inner';
+    return this.containerTarget.querySelector(innerSelector);
   }
 
   #queueEnter() {
