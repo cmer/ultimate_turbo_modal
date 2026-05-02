@@ -1,0 +1,45 @@
+<% scenario = params[:scenario] %>
+
+<% if scenario == "long" %>
+  <%= modal(title: "Long nested modal") do |m| %>
+    <div class="space-y-4">
+      <% 12.times do %>
+        <p><%= Faker::Lorem.paragraph(sentence_count: 6) %></p>
+      <% end %>
+    </div>
+    <% m.footer do %>
+      <div class="flex justify-end w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Close</button>
+      </div>
+    <% end %>
+  <% end %>
+
+<% elsif scenario == "no_overlay" %>
+  <%= modal(title: "Nested modal (no overlay)", overlay: false) do %>
+    <p>This stacked modal disables its own backdrop, so the drawer behind isn't double-darkened.</p>
+    <p class="mt-4">Click outside this modal to dismiss it.</p>
+  <% end %>
+
+<% else %>
+  <%= modal(title: "Nested modal") do |m| %>
+    <div class="space-y-4">
+      <p>I am a modal opened from inside a drawer. The drawer is still open behind me.</p>
+
+      <%= form_with url: nested_modal_same_page_testing_drawers_path, method: :post do %>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Submit to test same-page redirect (modal closes, drawer stays):</p>
+        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Save (same-page redirect)</button>
+      <% end %>
+
+      <%= form_with url: nested_modal_other_page_testing_drawers_path, method: :post do %>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">Submit to test different-page redirect (both close, navigate):</p>
+        <button type="submit" class="rounded-md bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500">Save (other-page redirect)</button>
+      <% end %>
+    </div>
+
+    <% m.footer do %>
+      <div class="flex justify-end w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">Close</button>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

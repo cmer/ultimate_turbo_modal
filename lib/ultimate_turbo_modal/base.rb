@@ -39,6 +39,9 @@ class UltimateTurboModal::Base < Phlex::HTML
     request: nil, title: nil
   )
     @drawer = drawer_position
+    @request = request
+
+    raise ArgumentError, "Cannot render a drawer into the drawer-modal frame (drawers cannot be opened from inside another drawer or modal)" if drawer? && stacked?
 
     if drawer?
       cfg = UltimateTurboModal.configuration.drawer_config
@@ -60,11 +63,15 @@ class UltimateTurboModal::Base < Phlex::HTML
     @overlay = overlay.nil? ? cfg.overlay : overlay
     @padding = padding.nil? ? cfg.padding : padding
 
+    if stacked?
+      @advance = false
+      @advance_url = nil
+    end
+
     @allowed_click_outside_selector = allowed_click_outside_selector
     @close_button_data_action = close_button_data_action
     @close_button_sr_label = close_button_sr_label
     @content_div_data = content_div_data
-    @request = request
     @title = title
 
     self.class.include_turbo_helpers
@@ -84,12 +91,16 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def view_template(&block)
     if turbo_frame?
-      turbo_frame_tag("modal") do
+      turbo_frame_tag(turbo_frame_name) do
         drawer? ? render_drawer(&block) : render_modal(&block)
       end
     else
       render block
     end
+  end
+
+  def turbo_frame_name
+    stacked? ? "drawer-modal" : "modal"
   end
 
   def title(&block)
@@ -144,6 +155,16 @@ class UltimateTurboModal::Base < Phlex::HTML
   def advance? = !!@advance && !!@advance_url
 
   def drawer? = !!@drawer
+
+  def stacked? = request&.headers&.[]("Turbo-Frame") == "drawer-modal"
+
+  def dialog_id = stacked? ? "modal-container-stacked" : "modal-container"
+
+  def inner_id = stacked? ? "modal-inner-stacked" : "modal-inner"
+
+  # Suffix inner ids so they don't collide with the drawer's ids when the
+  # stacked modal is rendered inside the drawer's DOM.
+  def scoped_id(name) = stacked? ? "#{name}-stacked" : name
 
   def drawer_position = @drawer || :right
 
@@ -262,11 +283,11 @@ class UltimateTurboModal::Base < Phlex::HTML
       inline_style = "--utmr-w: #{@drawer_size}"
     end
 
-    dialog(id: "modal-container",
+    dialog(id: dialog_id,
       class: dialog_classes,
       style: inline_style,
       aria: {
-        labelledby: "modal-title-h"
+        labelledby: scoped_id("modal-title-h")
       },
       data: data_attributes, &block)
   end
@@ -274,14 +295,14 @@ class UltimateTurboModal::Base < Phlex::HTML
   ## Modal-specific elements
 
   def modal_inner(&block)
-    maybe_turbo_frame("modal-inner") do
-      div(id: "modal-inner", class: self.class::MODAL_INNER_CLASSES, &block)
+    maybe_turbo_frame(inner_id) do
+      div(id: inner_id, class: self.class::MODAL_INNER_CLASSES, &block)
     end
   end
 
   def modal_content(&block)
     data = (content_div_data || {}).merge({modal_target: "content"})
-    div(id: "modal-content", class: self.class::MODAL_CONTENT_CLASSES, data: data, &block)
+    div(id: scoped_id("modal-content"), class: self.class::MODAL_CONTENT_CLASSES, data: data, &block)
   end
 
   def modal_main(&block) = render_main(&block)
@@ -294,7 +315,12 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def drawer_wrapper(&block)
     maybe_turbo_frame("modal-inner") do
-      div(id: "drawer-wrapper", class: self.class::DRAWER_WRAPPER_CLASSES, &block)
+      div(id: "drawer-wrapper", class: self.class::DRAWER_WRAPPER_CLASSES) do
+        yield
+        # Empty frame so links inside the drawer can target a stacked modal
+        # via data-turbo-frame="drawer-modal". Always rendered.
+        turbo_frame_tag("drawer-modal")
+      end
     end
   end
 
@@ -320,34 +346,34 @@ class UltimateTurboModal::Base < Phlex::HTML
   ## Shared rendering
 
   def render_main(&block)
-    div(id: "modal-main", class: classes_for("MAIN_CLASSES"), &block)
+    div(id: scoped_id("modal-main"), class: classes_for("MAIN_CLASSES"), &block)
   end
 
   def render_header
-    div(id: "modal-header", class: classes_for("HEADER_CLASSES")) do
+    div(id: scoped_id("modal-header"), class: classes_for("HEADER_CLASSES")) do
       render_title
       drawer? ? drawer_close : modal_close
     end
   end
 
   def render_title
-    div(id: "modal-title", class: classes_for("TITLE_CLASSES")) do
+    div(id: scoped_id("modal-title"), class: classes_for("TITLE_CLASSES")) do
       if @title_block.present?
         render @title_block
       else
-        h3(id: "modal-title-h", class: classes_for("TITLE_H_CLASSES")) { @title }
+        h3(id: scoped_id("modal-title-h"), class: classes_for("TITLE_H_CLASSES")) { @title }
       end
     end
   end
 
   def render_footer
-    div(id: "modal-footer", class: classes_for("FOOTER_CLASSES")) do
+    div(id: scoped_id("modal-footer"), class: classes_for("FOOTER_CLASSES")) do
       render @footer
     end
   end
 
   def render_close
-    div(id: "modal-close", class: classes_for("CLOSE_CLASSES")) do
+    div(id: scoped_id("modal-close"), class: classes_for("CLOSE_CLASSES")) do
       close_button_tag(classes_for("CLOSE_BUTTON_CLASSES")) do
         yield if block_given?
         close_icon_svg(classes_for("CLOSE_ICON_CLASSES"))

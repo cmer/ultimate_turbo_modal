@@ -7,13 +7,21 @@ Turbo.StreamActions.modal = function () {
   if (message == "hide" || message == "close") window.modal?.hide();
 };
 
+// Frame ids managed by UTMR — primary modal/drawer + stacked-modal frames.
+const MODAL_FRAME_IDS = new Set([
+  'modal',
+  'modal-inner',
+  'drawer-modal',
+  'modal-inner-stacked'
+]);
+
 // Check if the event target is one of our modal Turbo Frames
 const isModalFrameTarget = (event) => {
   const target = event?.target;
   return (
     target instanceof Element &&
     target.tagName.toLowerCase() === 'turbo-frame' &&
-    (target.id === 'modal' || target.id === 'modal-inner')
+    MODAL_FRAME_IDS.has(target.id)
   );
 };
 
@@ -32,20 +40,46 @@ const morphPageBehindModal = (html) => {
     ignoreActiveValue: true,
     callbacks: {
       beforeNodeMorphed: (oldNode) => {
-        if (oldNode.id === 'modal-container') return false;
-        if (oldNode.tagName?.toLowerCase() === 'turbo-frame' &&
-            (oldNode.id === 'modal' || oldNode.id === 'modal-inner')) return false;
+        if (oldNode.id === 'modal-container' || oldNode.id === 'modal-container-stacked') return false;
+        if (oldNode.tagName?.toLowerCase() === 'turbo-frame' && MODAL_FRAME_IDS.has(oldNode.id)) return false;
         return true;
       }
     }
   });
 };
 
+// Count of UTMR dialogs currently in the DOM and open
+const openDialogCount = () =>
+  document.querySelectorAll('dialog.utmr[open]').length;
+
+// Close every open UTMR dialog from top to bottom, awaiting each animation.
+// window.modal always points to the topmost dialog and auto-rotates as each
+// one disconnects, so we just loop until the stack is empty.
+const closeAllDialogs = async () => {
+  // Safety guard against a runaway loop if a dialog refuses to close.
+  let safety = 5;
+  while (window.modal && safety-- > 0) {
+    await window.modal.hideModalWithPromise({ skipHistoryBack: true });
+  }
+};
+
 // Perform a smooth redirect: morph same-page content or close-then-navigate
 const performSmoothRedirect = async (modal, redirectUrl) => {
   const originalUrl = modal.originalUrl;
+  // True when this modal is stacked over another open dialog (e.g., a drawer).
+  // In that case we must NOT morph the body — the morph would clobber the
+  // sibling dialog's DOM. Just close this modal and update the URL.
+  const hasSibling = openDialogCount() > 1;
 
   if (isSamePageUrl(originalUrl, redirectUrl)) {
+    if (hasSibling) {
+      if (redirectUrl !== window.location.href) {
+        history.replaceState({}, '', redirectUrl);
+      }
+      await modal.hideModalWithPromise({ skipHistoryBack: true });
+      return;
+    }
+
     // Same-page: fetch fresh HTML, morph body behind modal, then close
     try {
       const freshResponse = await fetch(redirectUrl, {
@@ -64,8 +98,13 @@ const performSmoothRedirect = async (modal, redirectUrl) => {
     }
     await modal.hideModalWithPromise({ skipHistoryBack: true });
   } else {
-    // Different page: close modal first, then navigate
-    await modal.hideModalWithPromise({ skipHistoryBack: true });
+    // Different page: close every open dialog first (so a sibling drawer
+    // doesn't get stranded on the new page), then navigate.
+    if (hasSibling) {
+      await closeAllDialogs();
+    } else {
+      await modal.hideModalWithPromise({ skipHistoryBack: true });
+    }
     window.Turbo.visit(redirectUrl);
   }
 };
@@ -124,7 +163,7 @@ document.addEventListener("turbo:before-frame-render", handleTurboBeforeFrameRen
 // controller has already disconnected or cleanup failed, the dialog can survive
 // into the cache and leave the page in a broken state on restore.
 const handleTurboBeforeCache = () => {
-  document.querySelectorAll('dialog#modal-container, dialog.drawer-container').forEach(d => {
+  document.querySelectorAll('dialog.utmr').forEach(d => {
     try { d.close(); } catch (_) {}
     d.remove();
   });

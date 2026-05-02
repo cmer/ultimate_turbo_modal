@@ -5,10 +5,15 @@ class ShowcaseController < ApplicationController
   end
 
   def show
+    @contact = Contact.new
   end
 
   def save_project
     redirect_to root_path, notice: "Project saved successfully!"
+  end
+
+  def save_preferences
+    redirect_to root_path, notice: "Notification preferences saved!"
   end
 
   def submit
@@ -26,7 +31,24 @@ class ShowcaseController < ApplicationController
     end
   end
 
+  def submit_contact
+    @contact = Contact.new(contact_params)
+
+    if @contact.valid?
+      redirect_to root_path,
+        notice: "Message sent successfully!",
+        status: :see_other
+    else
+      params[:id] = "form_modal"
+      render :show, status: :unprocessable_entity
+    end
+  end
+
   private
+
+  def contact_params
+    params.require(:contact).permit(:name, :email, :message)
+  end
 
   def form_is_valid?
     action_name == "show" || params[:email].present?

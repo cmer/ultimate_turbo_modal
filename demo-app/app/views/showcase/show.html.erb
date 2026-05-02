@@ -10,24 +10,34 @@
 
 <% when "form_modal" %>
   <%= modal(title: "Contact Us") do %>
-    <form class="space-y-4">
+    <%= form_with model: @contact, url: showcase_submit_contact_path, class: "space-y-4 w-96 max-w-full" do |form| %>
+      <% if @contact.errors.any? %>
+        <div class="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-3 py-2 rounded-lg">
+          <h2 class="font-medium"><%= pluralize(@contact.errors.count, "error") %> prohibited this message from being sent:</h2>
+          <ul class="list-disc list-inside text-sm mt-1">
+            <% @contact.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
       <div>
-        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="name">Name</label>
-        <input type="text" id="name" name="name" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Jane Doe">
+        <%= form.label :name, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+        <%= form.text_field :name, placeholder: "Jane Doe", class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" %>
       </div>
       <div>
-        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="email">Email</label>
-        <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="jane@example.com">
+        <%= form.label :email, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+        <%= form.email_field :email, placeholder: "jane@example.com", class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" %>
       </div>
       <div>
-        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300" for="message">Message</label>
-        <textarea id="message" name="message" rows="3" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Your message..."></textarea>
+        <%= form.label :message, class: "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+        <%= form.text_area :message, rows: 3, placeholder: "Your message...", class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" %>
       </div>
       <div class="flex justify-end gap-3 pt-2">
         <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-white dark:ring-slate-600 dark:hover:bg-slate-600">Cancel</button>
-        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Send</button>
+        <%= form.submit "Send", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
       </div>
-    </form>
+    <% end %>
   <% end %>
 
 <% when "long_modal" %>
@@ -218,6 +228,66 @@
       <div class="flex shrink-0 justify-end w-full">
         <button type="button" data-action="modal#hideModal" class="rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20">Cancel</button>
         <button type="submit" form="project-form" class="ml-4 inline-flex justify-center rounded-md bg-indigo-600 dark:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500">Save</button>
+      </div>
+    <% end %>
+  <% end %>
+
+<% when "drawer_with_nested_modal" %>
+  <%= drawer(title: "Notifications") do %>
+    <div class="space-y-4">
+      <p class="text-sm text-slate-600 dark:text-slate-400">
+        Recent activity. Click <em>Edit preferences</em> to open a modal that
+        stacks <strong>on top</strong> of this drawer.
+      </p>
+
+      <% 4.times do |i| %>
+        <div class="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-sm font-medium"><%= (65 + i).chr %></div>
+          <div>
+            <p class="text-sm font-medium text-slate-900 dark:text-white"><%= Faker::Name.name %></p>
+            <p class="text-sm text-slate-500 dark:text-slate-400"><%= Faker::Lorem.sentence(word_count: 6) %></p>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="pt-2">
+        <%= link_to "Edit preferences →",
+              showcase_path(:nested_modal_form),
+              data: { turbo_frame: "drawer-modal" },
+              class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+      </div>
+    </div>
+  <% end %>
+
+<% when "nested_modal_form" %>
+  <%= modal(title: "Notification preferences") do |m| %>
+    <%= form_with url: showcase_save_preferences_path, method: :post, html: { id: "preferences-form" }, class: "space-y-4" do |f| %>
+      <p class="text-sm text-slate-600 dark:text-slate-400">
+        This modal opened from inside the drawer. The drawer stays open behind it.
+      </p>
+
+      <div class="space-y-3">
+        <label class="flex items-start gap-3">
+          <input type="checkbox" name="email" checked class="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+          <div>
+            <div class="text-sm font-medium text-slate-900 dark:text-white">Email notifications</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400">Get a digest once a day.</div>
+          </div>
+        </label>
+        <label class="flex items-start gap-3">
+          <input type="checkbox" name="push" class="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+          <div>
+            <div class="text-sm font-medium text-slate-900 dark:text-white">Push notifications</div>
+            <div class="text-sm text-slate-500 dark:text-slate-400">Real-time alerts on your phone.</div>
+          </div>
+        </label>
+      </div>
+    <% end %>
+
+    <% m.footer do %>
+      <div class="flex justify-end gap-3 w-full">
+        <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-700 dark:text-white dark:ring-slate-600 dark:hover:bg-slate-600">Cancel</button>
+        <button type="submit" form="preferences-form" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Save preferences</button>
       </div>
     <% end %>
   <% end %>

@@ -2,11 +2,19 @@ Rails.application.routes.draw do
   root to: "showcase#index"
   resources :showcase, only: [:show]
   post "/showcase/submit", to: "showcase#submit", as: :showcase_submit
+  post "/showcase/submit_contact", to: "showcase#submit_contact", as: :showcase_submit_contact
   post "/showcase/save_project", to: "showcase#save_project", as: :showcase_save_project
+  post "/showcase/save_preferences", to: "showcase#save_preferences", as: :showcase_save_preferences
 
   namespace :testing do
     resources :modal
-    resources :drawers
+    resources :drawers do
+      collection do
+        get :nested_modal
+        post :nested_modal_same_page
+        post :nested_modal_other_page
+      end
+    end
     resources :posts
     resource :hide_from_backend, only: [:new, :create]
     resources :smooth_redirects, only: [:new, :create]

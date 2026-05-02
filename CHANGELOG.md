@@ -1,3 +1,7 @@
+## [Unreleased]
+
+- Added support for opening a modal from inside a drawer. Any link inside a drawer with `data-turbo-frame="drawer-modal"` will now open a modal stacked on top of the drawer. ESC, click-outside, and form submissions handle the stacked case correctly. See [docs/modal-from-drawer.md](docs/modal-from-drawer.md).
+
 ## [3.0.5] - 2026-04-22
 
 - Fixed modal being dismissed when a body-appended widget (e.g. flatpickr, Select2, Tippy) opens over its trigger between mousedown and mouseup. The browser fires `click` on the dialog (common ancestor), which was treated as a backdrop dismissal. The dialog now tracks mousedown origin and skips dismissal when the press started inside content.
