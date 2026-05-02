@@ -1,7 +1,10 @@
 ## [Unreleased]
 
+## [3.1.0] - 2026-05-01
+
 - Tweaked vertically centering of modals on desktop (≥640px) with a slight optical-center bias, instead of anchoring them near the top.
 - Added support for opening a modal from inside a drawer. See [docs/modal-from-drawer.md](docs/modal-from-drawer.md).
+- Fixed a race in `closeAllDialogs` when a stacked modal redirected off-page, which could leave a dialog open or animations in a bad state.
 
 ## [3.0.5] - 2026-04-22
 
