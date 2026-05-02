@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [3.1.1] - 2026-05-01
+
 - Fixed validation errors and multi-step forms inside a stacked modal closing the modal instead of updating in place.
 
 ## [3.1.0] - 2026-05-01
