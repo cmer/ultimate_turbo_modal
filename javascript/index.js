@@ -53,13 +53,23 @@ const openDialogCount = () =>
   document.querySelectorAll('dialog.utmr[open]').length;
 
 // Close every open UTMR dialog from top to bottom, awaiting each animation.
-// window.modal always points to the topmost dialog and auto-rotates as each
-// one disconnects, so we just loop until the stack is empty.
+// window.modal points to the topmost dialog and auto-rotates as each one
+// disconnects.
+//
+// Subtlety: hideModalWithPromise resolves on `modal:closed`, but window.modal
+// is only rotated inside Stimulus's disconnect (fired by MutationObserver
+// after the dialog is removed from the DOM). We yield once after each close
+// so disconnect has a chance to run before the next iteration reads
+// window.modal — otherwise we'd loop on the same already-hiding controller
+// and burn through the safety counter. We also bail out when window.modal
+// hasn't rotated, which catches `modal:closing` vetoes (preventDefault).
 const closeAllDialogs = async () => {
-  // Safety guard against a runaway loop if a dialog refuses to close.
   let safety = 5;
   while (window.modal && safety-- > 0) {
-    await window.modal.hideModalWithPromise({ skipHistoryBack: true });
+    const ctrl = window.modal;
+    await ctrl.hideModalWithPromise({ skipHistoryBack: true });
+    await new Promise(r => setTimeout(r, 0));
+    if (window.modal === ctrl) break;
   }
 };
 
