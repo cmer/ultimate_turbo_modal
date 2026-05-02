@@ -1,0 +1,18 @@
+<%= modal(title: "Step 2") do |m| %>
+  <div class="space-y-4">
+    <p>You made it to step 2 with name <strong><%= @name %></strong>. This page
+      reached you via redirect from inside the stacked modal — proving the
+      modal-inner-stacked frame was found in the response and rendered in
+      place instead of triggering frame-missing.</p>
+
+    <%= form_with url: testing_drawers_path, method: :get, class: "" do %>
+      <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Finish</button>
+    <% end %>
+  </div>
+
+  <% m.footer do %>
+    <div class="flex justify-end w-full">
+      <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">Close</button>
+    </div>
+  <% end %>
+<% end %>

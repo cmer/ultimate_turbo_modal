@@ -13,6 +13,9 @@ Rails.application.routes.draw do
         get :nested_modal
         post :nested_modal_same_page
         post :nested_modal_other_page
+        get :nested_form
+        post :submit_nested_form
+        get :nested_form_step_two
       end
     end
     resources :posts

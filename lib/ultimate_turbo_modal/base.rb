@@ -156,7 +156,15 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def drawer? = !!@drawer
 
-  def stacked? = request&.headers&.[]("Turbo-Frame") == "drawer-modal"
+  # A request is "stacked" when it targets the stacked-modal frame directly
+  # (`drawer-modal` — initial open from inside a drawer) or when it originates
+  # from inside an already-rendered stacked modal (`modal-inner-stacked` —
+  # validation re-renders, multi-step wizards, in-modal links). Both must
+  # render with the stacked frame ids so Turbo can find the requesting frame.
+  def stacked?
+    frame = request&.headers&.[]("Turbo-Frame")
+    frame == "drawer-modal" || frame == "modal-inner-stacked"
+  end
 
   def dialog_id = stacked? ? "modal-container-stacked" : "modal-container"
 
