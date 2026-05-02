@@ -1,0 +1,43 @@
+<%= modal(title: "Nested form (validation)") do |m| %>
+  <div class="space-y-4">
+    <p>Submit blank or a 1-2 character name to trigger validation errors. The
+      errors must re-render <em>inside this stacked modal</em> — not navigate
+      away or close the modal.</p>
+
+    <% if @errors.any? %>
+      <div id="error_explanation" class="bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 px-3 py-2 font-medium rounded-lg">
+        <h2><%= pluralize(@errors.count, "error") %> prohibited this form from being saved:</h2>
+        <ul class="list-disc ml-6">
+          <% @errors.each do |err| %>
+            <li><%= err %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with url: submit_nested_form_testing_drawers_path, method: :post, class: "space-y-3" do |f| %>
+      <div>
+        <%= f.label :name, class: "dark:text-white" %>
+        <%= f.text_field :name, value: @name, class: "block shadow-sm rounded-md border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white px-3 py-2 mt-2 w-full" %>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Save</button>
+        <button type="submit" name="wizard" value="1" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500">Save and go to step 2</button>
+      </div>
+    <% end %>
+
+    <p class="text-sm text-gray-500 dark:text-gray-400 pt-3 border-t">
+      "Save" → validation errors re-render in the stacked modal, or on success
+      redirects to the drawers index (drawer + modal both close).<br>
+      "Save and go to step 2" → on success redirects to a second stacked-modal
+      step, exercising in-modal navigation from inside the stacked modal.
+    </p>
+  </div>
+
+  <% m.footer do %>
+    <div class="flex justify-end w-full">
+      <button type="button" data-action="modal#hideModal" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">Close</button>
+    </div>
+  <% end %>
+<% end %>

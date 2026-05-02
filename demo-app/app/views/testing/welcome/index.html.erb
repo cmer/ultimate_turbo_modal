@@ -143,6 +143,16 @@
           <%= render_test_link "Drawer smooth redirect", new_testing_smooth_redirect_path(type: "drawer") %>
         </div>
       </div>
+
+      <%# Stacked Modals %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Stacked Modals
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Drawer hosting nested modal (incl. validation form)", testing_drawer_path(:nested_modal_host) %>
+        </div>
+      </div>
     </div>
   </div>
 
