@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Fixed page content shifting right when a modal or drawer opens.
+
 ## [3.1.1] - 2026-05-01
 
 - Fixed validation errors and multi-step forms inside a stacked modal closing the modal instead of updating in place.
