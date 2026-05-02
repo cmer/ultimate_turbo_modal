@@ -70,7 +70,7 @@ dialog.utmr {
   .modal-inner {
     display: flex;
     padding: 0.25rem;
-    padding-top: 5vh;
+    padding-top: 10vh;
     justify-content: center;
     align-items: flex-start;
     min-height: 100%;
@@ -80,7 +80,8 @@ dialog.utmr {
 
     @media (min-width: 640px) {
       padding: 1rem;
-      padding-top: 5vh;
+      padding-bottom: 10vh;
+      align-items: center;
       translate: none;
       scale: 0.95;
     }
@@ -141,8 +142,6 @@ dialog.utmr {
     max-height: 100vh;
 
     @media (min-width: 640px) {
-      margin-top: 2rem;
-      margin-bottom: 2rem;
       max-width: 48rem;
     }
   }

@@ -26,7 +26,7 @@ module UltimateTurboModal::Flavors
     ].join(" ")
 
     MODAL_INNER_CLASSES = [
-      "flex min-h-full items-start justify-center pt-[10vh] sm:p-4",
+      "flex min-h-full items-start justify-center pt-[10vh] sm:items-center sm:pt-0 sm:p-4 sm:pb-[10vh]",
       # Transition
       "transition duration-300 ease-out",
       "group-data-[closing]/utmr-modal:duration-200 group-data-[closing]/utmr-modal:ease-in",
@@ -36,7 +36,7 @@ module UltimateTurboModal::Flavors
       "group-data-[entered]/utmr-modal:opacity-100 group-data-[entered]/utmr-modal:translate-y-0 group-data-[entered]/utmr-modal:scale-100"
     ].join(" ")
 
-    MODAL_CONTENT_CLASSES = "relative transform max-h-screen overflow-hidden rounded-lg bg-white text-left shadow-lg transition-all sm:my-8 sm:max-w-3xl dark:bg-gray-800 dark:text-white"
+    MODAL_CONTENT_CLASSES = "relative transform max-h-screen overflow-hidden rounded-lg bg-white text-left shadow-lg transition-all sm:max-w-3xl dark:bg-gray-800 dark:text-white"
     MODAL_MAIN_CLASSES = "group-data-[padding=true]/utmr-modal:p-4 group-data-[padding=true]/utmr-modal:pt-2 overflow-y-auto max-h-[75vh]"
     MODAL_HEADER_CLASSES = "flex justify-between items-center w-full py-4 rounded-t dark:border-gray-600 group-data-[header-divider=true]/utmr-modal:border-b group-data-[header=false]/utmr-modal:absolute"
     MODAL_TITLE_CLASSES = "pl-4"

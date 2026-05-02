@@ -1,6 +1,7 @@
 ## [Unreleased]
 
-- Added support for opening a modal from inside a drawer. Any link inside a drawer with `data-turbo-frame="drawer-modal"` will now open a modal stacked on top of the drawer. ESC, click-outside, and form submissions handle the stacked case correctly. See [docs/modal-from-drawer.md](docs/modal-from-drawer.md).
+- Tweaked vertically centering of modals on desktop (≥640px) with a slight optical-center bias, instead of anchoring them near the top.
+- Added support for opening a modal from inside a drawer. See [docs/modal-from-drawer.md](docs/modal-from-drawer.md).
 
 ## [3.0.5] - 2026-04-22
 
