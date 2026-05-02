@@ -293,6 +293,8 @@ The `VERSION` file at the repo root is the single source of truth:
 1. Update `VERSION` file with new version
 2. Update `CHANGELOG.md`
 3. Commit changes
+
+**CHANGELOG style**: one short sentence per entry, user-facing only. No implementation details, no mention of internal APIs/files/functions, no rationale paragraphs. Match the tone of existing entries (e.g. "Fixed validation errors inside a stacked modal closing the modal instead of updating in place.").
 4. Run `./script/build_and_release.sh` which:
    - Builds JS package, updates demo app deps, commits lock files
    - Runs `bundle exec rake release` (builds gem, creates git tag, pushes to RubyGems)

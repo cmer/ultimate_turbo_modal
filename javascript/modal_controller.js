@@ -9,6 +9,17 @@ const PACKAGE_VERSION = '__PACKAGE_VERSION__';
 // on the dialog the user is most directly interacting with.
 const dialogStack = [];
 
+// Scrollbar gutter compensation: while a dialog is open the page scrollbar is
+// hidden by `html:has(dialog[open]) { overflow: hidden }`, which would shift
+// the page contents to the right. We reserve that space with `padding-right`
+// on <html>, and shift right-anchored fixed elements (top-right toolbars,
+// floating action buttons, etc.) so they stay visually pinned. The first
+// dialog measures and applies; the last one to close restores everything.
+const scrollLockOwners = new Set();
+let scrollbarPaddingApplied = false;
+let savedPaddingRight = '';
+let compensatedFixedElements = [];
+
 export default class extends Controller {
   static targets = ["container", "content"]
   static values = {
@@ -48,6 +59,7 @@ export default class extends Controller {
     // Remove the dialog from Turbo's page cache to prevent stale state
     this.beforeCacheHandler = () => {
       this.containerTarget.remove();
+      this.#releaseScrollbarCompensation();
     };
     document.addEventListener('turbo:before-cache', this.beforeCacheHandler);
 
@@ -74,6 +86,7 @@ export default class extends Controller {
     if (this.containerTarget.open) this.containerTarget.close();
     const scrollX = window.scrollX;
     const scrollY = window.scrollY;
+    this.#applyScrollbarCompensation();
     this.containerTarget.showModal();
     window.scrollTo(scrollX, scrollY);
     this.#queueEnter();
@@ -242,6 +255,7 @@ export default class extends Controller {
       try { dialog.remove(); } catch (_) {}
       delete dialog.dataset.utmrHistoryAdvanced;
       delete dialog.dataset.utmrSkipHistoryBack;
+      this.#releaseScrollbarCompensation();
       this.#resetHistoryAdvanced();
       try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
 
@@ -271,6 +285,7 @@ export default class extends Controller {
     try { dialog.close(); } catch (_) {}
     try { frame.removeAttribute("src"); } catch (_) {}
     try { dialog.remove(); } catch (_) {}
+    this.#releaseScrollbarCompensation();
     try { frame.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
   }
 
@@ -346,6 +361,48 @@ export default class extends Controller {
     if (!this.closeTransitionHandler) return;
     this.containerTarget.removeEventListener('transitionend', this.closeTransitionHandler);
     this.closeTransitionHandler = null;
+  }
+
+  #applyScrollbarCompensation() {
+    if (this._holdsScrollLock) return;
+    if (scrollLockOwners.size === 0 && !scrollbarPaddingApplied) {
+      const sbw = window.innerWidth - document.documentElement.clientWidth;
+      if (sbw > 0) {
+        savedPaddingRight = document.documentElement.style.paddingRight;
+        document.documentElement.style.paddingRight = `${sbw}px`;
+
+        compensatedFixedElements = [];
+        document.querySelectorAll('*').forEach(el => {
+          if (el.closest('dialog')) return;
+          const cs = getComputedStyle(el);
+          if (cs.position !== 'fixed') return;
+          if (cs.right === 'auto') return;
+          const currentRight = parseFloat(cs.right) || 0;
+          compensatedFixedElements.push({ el, originalRight: el.style.right });
+          el.style.right = `${currentRight + sbw}px`;
+        });
+
+        scrollbarPaddingApplied = true;
+      }
+    }
+    scrollLockOwners.add(this);
+    this._holdsScrollLock = true;
+  }
+
+  #releaseScrollbarCompensation() {
+    if (!this._holdsScrollLock) return;
+    scrollLockOwners.delete(this);
+    this._holdsScrollLock = false;
+    if (scrollLockOwners.size === 0 && scrollbarPaddingApplied) {
+      document.documentElement.style.paddingRight = savedPaddingRight;
+      savedPaddingRight = '';
+      compensatedFixedElements.forEach(({ el, originalRight }) => {
+        if (originalRight) el.style.right = originalRight;
+        else el.style.removeProperty('right');
+      });
+      compensatedFixedElements = [];
+      scrollbarPaddingApplied = false;
+    }
   }
 
   #hasHistoryAdvanced() {
