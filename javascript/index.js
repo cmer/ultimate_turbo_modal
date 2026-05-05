@@ -154,19 +154,99 @@ const handleTurboBeforeFrameRender = (event) => {
     modal._pendingRedirectUrl = null;
   }
 
-  // Morph innerHTML to prevent flicker and avoid re-triggering enter transitions
+  // Empty modal frames are initial loads. Let Turbo do its normal child
+  // replacement so Stimulus sees a plain insertion and owns dialog opening.
+  if (event.target.children.length === 0) return;
+
+  // Morph subsequent in-frame updates to prevent flicker and avoid re-running
+  // enter transitions on an already-open dialog.
   event.detail.render = (currentElement, newElement) => {
-    Idiomorph.morph(currentElement, newElement, {
-      morphstyle: 'innerHTML'
-    })
-  }
+    Idiomorph.morph(currentElement, Array.from(newElement.childNodes), {
+      morphStyle: 'innerHTML'
+    });
+  };
 };
+
+// Auto-route modal-bound clicks/submissions to the drawer's stacked-modal
+// frame when they originate from inside an open drawer. Lets a partial use
+// `data-turbo-frame="modal"` everywhere — outside a drawer it opens a regular
+// modal, inside a drawer it opens stacked. No `data-turbo-frame` still means
+// "navigate inside the drawer".
+//
+// Basic strategy: once drawer content is in the DOM, normalize its
+// modal-targeted links/forms/buttons to target the drawer's local stacked frame.
+// Turbo then handles normal clicks and submissions itself, including sending
+// `Turbo-Frame: drawer-modal`.
+
+const ORIGINAL_TURBO_FRAME_ATTR = 'data-utmr-original-turbo-frame';
+const DRAWER_TARGET_OBSERVER_KEY = '__utmrDrawerTargetObserver';
+
+const drawerDialogsFor = (root = document) => {
+  const dialogs = new Set();
+
+  if (root instanceof Element) {
+    const owningDrawer = root.closest('dialog.utmr[data-drawer]');
+    if (owningDrawer) dialogs.add(owningDrawer);
+    if (root.matches('dialog.utmr[data-drawer]')) dialogs.add(root);
+    root.querySelectorAll('dialog.utmr[data-drawer]').forEach((dialog) => dialogs.add(dialog));
+  } else {
+    document.querySelectorAll('dialog.utmr[data-drawer]').forEach((dialog) => dialogs.add(dialog));
+  }
+
+  return dialogs;
+};
+
+const routeDrawerModalTargets = (root = document) => {
+  drawerDialogsFor(root).forEach((dialog) => {
+    if (!dialog.querySelector('turbo-frame#drawer-modal')) return;
+
+    dialog.querySelectorAll('[data-turbo-frame="modal"]').forEach((target) => {
+      // Do not retarget controls inside a stacked modal rendered within the drawer.
+      if (target.closest('dialog.utmr') !== dialog) return;
+
+      if (!target.hasAttribute(ORIGINAL_TURBO_FRAME_ATTR)) {
+        target.setAttribute(ORIGINAL_TURBO_FRAME_ATTR, 'modal');
+      }
+      target.setAttribute('data-turbo-frame', 'drawer-modal');
+    });
+  });
+};
+
+const handleTurboFrameRender = (event) => {
+  if (!isModalFrameTarget(event)) return;
+  routeDrawerModalTargets(event.target);
+};
+
+window[DRAWER_TARGET_OBSERVER_KEY]?.disconnect?.();
+window[DRAWER_TARGET_OBSERVER_KEY] = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.type === 'attributes') {
+      routeDrawerModalTargets(mutation.target);
+      return;
+    }
+
+    mutation.addedNodes.forEach((node) => {
+      if (node instanceof Element) routeDrawerModalTargets(node);
+    });
+  });
+});
+
+routeDrawerModalTargets();
+window[DRAWER_TARGET_OBSERVER_KEY].observe(document.documentElement, {
+  childList: true,
+  subtree: true,
+  attributes: true,
+  attributeFilter: ['data-turbo-frame']
+});
 
 document.removeEventListener("turbo:frame-missing", handleTurboFrameMissing);
 document.addEventListener("turbo:frame-missing", handleTurboFrameMissing);
 
 document.removeEventListener("turbo:before-frame-render", handleTurboBeforeFrameRender);
 document.addEventListener("turbo:before-frame-render", handleTurboBeforeFrameRender);
+
+document.removeEventListener("turbo:frame-render", handleTurboFrameRender);
+document.addEventListener("turbo:frame-render", handleTurboFrameRender);
 
 // Clean up any modal dialogs before Turbo caches the page.
 // The Stimulus controller has its own turbo:before-cache handler, but if the

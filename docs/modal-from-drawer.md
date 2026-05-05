@@ -4,13 +4,13 @@ Ultimate Turbo Modal supports opening a regular modal that stacks visually on to
 
 ## Quick start
 
-Inside any drawer, link to a modal action with `data-turbo-frame="drawer-modal"`:
+Inside any drawer, link to a modal action with `data-turbo-frame="modal"` — the same attribute you'd use anywhere else:
 
 ```erb
 <%= drawer(title: "Notifications") do %>
   <%= link_to "Edit preferences",
         edit_preferences_path,
-        data: { turbo_frame: "drawer-modal" } %>
+        data: { turbo_frame: "modal" } %>
 <% end %>
 ```
 
@@ -26,9 +26,13 @@ The target action renders with the standard `modal()` helper — no special API.
 
 That's it. No layout change, no opt-in.
 
+The same partial works whether it's rendered inside or outside a drawer: outside, the link opens a regular modal; inside, it opens a stacked one.
+
 ## How it works
 
-Drawers always render an empty `<turbo-frame id="drawer-modal">` inside their DOM, alongside the visible drawer panel. When a link inside the drawer targets that frame, Turbo loads the response into it — and because the response is rendered with `modal()`, it's a `<dialog>` that gets pushed onto the browser's native top layer above the drawer.
+Drawers always render an empty `<turbo-frame id="drawer-modal">` inside their DOM, alongside the visible drawer panel. When drawer content renders, UTMR normalizes modal-targeted links/forms/buttons inside that drawer from `data-turbo-frame="modal"` to `data-turbo-frame="drawer-modal"`. Turbo then handles normal clicks and submissions itself: it sends the request with `Turbo-Frame: drawer-modal`, loads the response into the empty stacked frame, and `modal()` renders a `<dialog>` pushed onto the browser's native top layer above the drawer.
+
+If you'd prefer to be explicit, `data-turbo-frame="drawer-modal"` works directly and skips the automatic routing.
 
 Internally:
 
@@ -43,8 +47,9 @@ Internally:
    ├─ <dialog id="modal-container">
    └─ contains an empty <turbo-frame id="drawer-modal">
 
-2. Link inside drawer with data-turbo-frame="drawer-modal" is clicked
-   ├─ Turbo loads response into the empty frame
+2. Link inside drawer with data-turbo-frame="modal" is clicked
+   ├─ UTMR has already normalized the target to drawer-modal
+   ├─ Turbo fetches with Turbo-Frame: drawer-modal
    └─ Response is rendered by modal() with stacked ids
 
 3. Stacked modal connects
