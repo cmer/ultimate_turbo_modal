@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Fixed scroll-lock not releasing after a same-page morph reconnected the modal controller, which could leave the page padded and right-anchored fixed elements offset until refresh.
+
 ## [3.1.2] - 2026-05-01
 
 - Fixed page content shifting right when a modal or drawer opens.
