@@ -205,20 +205,16 @@ Link to it the same way as a modal:
 
 ## Opening a Modal from a Drawer
 
-You can open a regular modal that stacks on top of an open drawer. This is built in — no setup or opt-in required.
-
-Inside any drawer, link to a modal action with `data-turbo-frame="drawer-modal"`:
+You don't need to do anything special. Use `data-turbo-frame="modal"` like you would anywhere else, and UTMR handles the rest:
 
 ```erb
 <%= drawer(title: "Notifications") do %>
   <p>Activity list here…</p>
   <%= link_to "Edit preferences",
         edit_preferences_path,
-        data: { turbo_frame: "drawer-modal" } %>
+        data: { turbo_frame: "modal" } %>
 <% end %>
 ```
-
-The destination is rendered with the same `modal()` helper you use elsewhere:
 
 ```erb
 <%= modal(title: "Notification preferences") do %>
@@ -226,7 +222,7 @@ The destination is rendered with the same `modal()` helper you use elsewhere:
 <% end %>
 ```
 
-The gem detects the request and renders the modal into a stacked `<dialog>` that sits visually on top of the drawer.
+The same partial works inside a drawer or out — outside, it opens a regular modal; inside, it stacks on top of the drawer.
 
 ### Behavior
 

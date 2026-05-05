@@ -358,7 +358,8 @@ Uses a `data-turbo-modal-history-advanced` attribute on `<body>` to track whethe
 
 ### Turbo Frame Integration (index.js)
 - `turbo:frame-missing` handler: When a response redirects and the target is a modal frame, it escapes the modal and performs a full Turbo visit
-- `turbo:before-frame-render` handler: Uses Idiomorph with `morphstyle: 'innerHTML'` for modal frames, preventing flicker and re-triggering of enter transitions
+- `turbo:before-frame-render` handler: Lets empty modal frames render normally, then uses Idiomorph with `morphStyle: 'innerHTML'` for subsequent modal-frame updates to prevent flicker and re-triggering enter transitions
+- Drawer content normalization retargets links/forms/buttons inside a drawer from `data-turbo-frame="modal"` to `data-turbo-frame="drawer-modal"` once they are in the drawer DOM. Turbo then handles normal clicks/submissions itself and sends `Turbo-Frame: drawer-modal`. This lets a single partial use `data-turbo-frame="modal"` everywhere — outside a drawer it opens a regular modal; inside a drawer it opens a stacked one.
 - Event listeners are added with a preceding `removeEventListener` to prevent duplicates on hot reload
 
 ### Turbo Cache Handling
