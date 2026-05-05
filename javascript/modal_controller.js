@@ -40,9 +40,12 @@ export default class extends Controller {
     // dialog is already open. Replaying showModal() there re-triggers the enter
     // animation and causes a visible reopen during close.
     if (this.hidingModal) {
+      this.#adoptScrollLock();
       this.#resumeClosing();
     } else if (!this.containerTarget.open) {
       this.showModal();
+    } else {
+      this.#adoptScrollLock();
     }
 
     // When the user presses the browser back button, Turbo handles the
@@ -72,6 +75,7 @@ export default class extends Controller {
     this.#cancelCloseCleanup();
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
+    this.#releaseScrollLockSlot();
 
     const idx = dialogStack.indexOf(this);
     if (idx !== -1) dialogStack.splice(idx, 1);
@@ -394,15 +398,44 @@ export default class extends Controller {
     scrollLockOwners.delete(this);
     this._holdsScrollLock = false;
     if (scrollLockOwners.size === 0 && scrollbarPaddingApplied) {
-      document.documentElement.style.paddingRight = savedPaddingRight;
-      savedPaddingRight = '';
-      compensatedFixedElements.forEach(({ el, originalRight }) => {
-        if (originalRight) el.style.right = originalRight;
-        else el.style.removeProperty('right');
-      });
-      compensatedFixedElements = [];
-      scrollbarPaddingApplied = false;
+      this.#restoreScrollbarCompensation();
     }
+  }
+
+  // Take ownership of an existing scroll lock when reconnecting to a dialog
+  // that's already open (e.g. same-page morph). The actual padding/offset
+  // compensation is already applied by the previous controller instance — we
+  // just need to register so the eventual close releases it.
+  #adoptScrollLock() {
+    if (this._holdsScrollLock) return;
+    if (!scrollbarPaddingApplied) return;
+    scrollLockOwners.add(this);
+    this._holdsScrollLock = true;
+  }
+
+  // Release this controller's slot in the scroll-lock set during disconnect.
+  // Compensation restoration is deferred so an immediate Stimulus reconnect
+  // (same-page morph) can adopt the lock before everything is torn down.
+  #releaseScrollLockSlot() {
+    if (!this._holdsScrollLock) return;
+    scrollLockOwners.delete(this);
+    this._holdsScrollLock = false;
+    queueMicrotask(() => {
+      if (scrollLockOwners.size === 0 && scrollbarPaddingApplied) {
+        this.#restoreScrollbarCompensation();
+      }
+    });
+  }
+
+  #restoreScrollbarCompensation() {
+    document.documentElement.style.paddingRight = savedPaddingRight;
+    savedPaddingRight = '';
+    compensatedFixedElements.forEach(({ el, originalRight }) => {
+      if (originalRight) el.style.right = originalRight;
+      else el.style.removeProperty('right');
+    });
+    compensatedFixedElements = [];
+    scrollbarPaddingApplied = false;
   }
 
   #hasHistoryAdvanced() {
