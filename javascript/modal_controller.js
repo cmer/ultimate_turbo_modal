@@ -66,6 +66,20 @@ export default class extends Controller {
     };
     document.addEventListener('turbo:before-cache', this.beforeCacheHandler);
 
+    // Handle Escape before the browser's native dialog cancel/close behavior.
+    // The native `cancel` event remains as a fallback, but routing the key
+    // through the topmost UTMR controller avoids abrupt native closes after a
+    // stacked modal has just been removed from above a drawer.
+    this.keydownHandler = (event) => {
+      if (event.key !== 'Escape') return;
+      if (event.defaultPrevented) return;
+      if (dialogStack[dialogStack.length - 1] !== this) return;
+
+      event.preventDefault();
+      this.hideModal();
+    };
+    document.addEventListener('keydown', this.keydownHandler);
+
     window.modal = dialogStack[dialogStack.length - 1];
   }
 
@@ -75,6 +89,7 @@ export default class extends Controller {
     this.#cancelCloseCleanup();
     window.removeEventListener('popstate', this.popstateHandler);
     document.removeEventListener('turbo:before-cache', this.beforeCacheHandler);
+    document.removeEventListener('keydown', this.keydownHandler);
     this.#releaseScrollLockSlot();
 
     const idx = dialogStack.indexOf(this);

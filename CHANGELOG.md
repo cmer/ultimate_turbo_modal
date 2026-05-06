@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Fixed drawers closing abruptly when pressing Escape after dismissing a modal opened from inside the drawer.
+
 ## [3.2.0] - 2026-05-05
 
 - Links and forms inside a drawer can now use `data-turbo-frame="modal"` to open a stacked modal — the same partial works inside or outside a drawer with no changes.
