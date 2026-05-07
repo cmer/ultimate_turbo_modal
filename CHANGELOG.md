@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 - Fixed drawers closing abruptly when pressing Escape after dismissing a modal opened from inside the drawer.
+- Fixed `inside_modal?` returning false when navigating between pages inside an open modal or drawer.
 
 ## [3.2.0] - 2026-05-05
 
