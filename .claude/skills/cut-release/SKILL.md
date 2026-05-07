@@ -15,8 +15,9 @@ Prep work for a new gem + npm release. Does **not** publish — the user runs `.
    - Renames the `## [Unreleased]` section to `## [X.Y.Z] - YYYY-MM-DD`
    - Adds bullets for any commits since the last tag that aren't already represented in the Unreleased section
    - Adds a fresh empty `## [Unreleased]` section at the top
-4. Commits the two changes with a message like `Bump version to X.Y.Z`
-5. Tells the user to run `./script/build_and_release.sh` themselves
+4. Updates `demo-app/package-lock.json` to point at the new version of the linked `../javascript` package
+5. Commits the three changes with a message like `Bump version to X.Y.Z`
+6. Tells the user to run `./script/build_and_release.sh` themselves
 
 ## Steps
 
@@ -45,10 +46,21 @@ Read `CHANGELOG.md` to see what's already in the `## [Unreleased]` section. For 
 - In `CHANGELOG.md`:
   - Change `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` using today's date.
   - Insert a new empty `## [Unreleased]` section at the very top (before the renamed section), so future changes have a place to go.
+- In `demo-app/package-lock.json`, bump the version of the `ultimate_turbo_modal` package — the entry keyed `"../javascript"` near the top of `"packages"`, identifiable by `"name": "ultimate_turbo_modal"`. Update only its `"version"` field to the new version, e.g.:
+
+  ```json
+  "../javascript": {
+    "name": "ultimate_turbo_modal",
+    "version": "X.Y.Z",
+    ...
+  }
+  ```
+
+  Do not touch any other `"version"` field in the file (transitive dependencies live under `node_modules/*` and have unrelated versions). This keeps the lockfile in sync so the demo app doesn't show a phantom diff after `npm install`.
 
 ### 4. Commit
 
-Stage only `VERSION` and `CHANGELOG.md` (not lockfiles or anything else). Use a commit message in the style of recent release commits — check `git log --oneline -20` for the convention. A short message like `Bump version to X.Y.Z` is fine.
+Stage `VERSION`, `CHANGELOG.md`, and `demo-app/package-lock.json`. Do not stage anything else. Use a commit message in the style of recent release commits — check `git log --oneline -20` for the convention. A short message like `Bump version to X.Y.Z` is fine.
 
 Do NOT push. Do NOT tag (the release script does that via `bundle exec rake release`).
 
@@ -64,4 +76,4 @@ Tell the user clearly:
 - Do not run `gem push`, `npm publish`, or `git tag`
 - Do not push the commit
 - Do not modify `javascript/package.json` version (the release script syncs it from `VERSION`)
-- Do not stage unrelated files (e.g. `demo-app/package-lock.json` modifications)
+- Do not run `npm install` to update the lockfile — edit the `version` field directly to keep the diff minimal
