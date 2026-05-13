@@ -16,6 +16,7 @@ UltimateTurboModal.configure do |config|
 
   # config.drawer do |d|
   #   d.position = :right
+  #   d.advance = false
   #   d.close_button = true
   #   d.header = true
   #   d.header_divider = false

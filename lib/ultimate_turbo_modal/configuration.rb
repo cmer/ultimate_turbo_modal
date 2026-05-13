@@ -82,9 +82,10 @@ module UltimateTurboModal
     end
 
     class DrawerConfig < BaseConfig
-      attr_reader :size, :position
+      attr_reader :size, :position, :advance
 
       def initialize
+        @advance = false
         @close_button = true
         @header = true
         @header_divider = false
@@ -94,6 +95,8 @@ module UltimateTurboModal
         @size = :md
         @position = :right
       end
+
+      boolean_option :advance
 
       def size=(value)
         @size = UltimateTurboModal::Base.validate_drawer_size!(value)
