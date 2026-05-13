@@ -158,6 +158,7 @@ Options can be set at three levels (lowest wins):
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `position` | `:right`, `:left` | `:right` | Which edge the drawer slides from |
+| `advance` | Boolean or String | `false` | Push URL to browser history; String for custom URL |
 | `close_button` | Boolean | `true` | Show close button |
 | `header` | Boolean | `true` | Show header section |
 | `header_divider` | Boolean | `false` | Show divider below header |
@@ -165,8 +166,6 @@ Options can be set at three levels (lowest wins):
 | `padding` | Boolean | `true` | Add padding to drawer content |
 | `overlay` | Boolean | `true` | Show backdrop overlay |
 | `size` | Symbol or String | `:md` | Drawer width: `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or CSS string |
-
-Note: `advance` is always `false` for drawers and cannot be configured.
 
 ### Per-Instance Only Options
 
@@ -351,7 +350,7 @@ Turbo helpers (`Turbo::FramesHelper`, `Turbo::StreamsHelper`, etc.) are included
 `Base` implements these to delegate to included modules. This is needed because Phlex components use a different method resolution order than typical Rails views.
 
 ### History Management
-Uses a `data-turbo-modal-history-advanced` attribute on `<body>` to track whether `history.pushState` was called. The popstate listener resets the modal when the user navigates back. History advance is auto-disabled for drawers.
+Uses a `data-turbo-modal-history-advanced` attribute on `<body>` to track whether `history.pushState` was called. The popstate listener resets the modal when the user navigates back. Stacked modals (modal-on-drawer) always force `advance: false` so the drawer's URL stays in the bar.
 
 ### Outside Click Handling
 `dialogClicked` handles clicks on the dialog element itself (which is full-screen). It dismisses if the click is outside `contentTarget` and not on an element matching `allowedClickOutsideSelectorValue`.

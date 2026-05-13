@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Drawers now support the `advance` option to push their URL to browser history, matching modals. Defaults to `false`.
+
 ## [3.2.1] - 2026-05-07
 
 - Fixed drawers closing abruptly when pressing Escape after dismissing a modal opened from inside the drawer.

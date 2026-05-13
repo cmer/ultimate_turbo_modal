@@ -7,7 +7,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   VALID_DRAWER_SIZES = %i[xs sm md lg xl 2xl full].freeze
   VALID_DRAWER_POSITIONS = %i[right left].freeze
 
-  # @param advance [Boolean, String] Whether to update the browser history when opening and closing the modal (modal-only, ignored for drawers)
+  # @param advance [Boolean, String] Whether to update the browser history when opening and closing the modal or drawer
   # @param allowed_click_outside_selector [String] CSS selectors for elements that are allowed to be clicked outside of the modal without dismissing the modal
   # @param close_button [Boolean] Whether to show a close button
   # @param close_button_data_action [String] `data-action` attribute for the close button
@@ -45,18 +45,15 @@ class UltimateTurboModal::Base < Phlex::HTML
 
     if drawer?
       cfg = UltimateTurboModal.configuration.drawer_config
-      @advance = false
-      @advance_url = nil
-      @close_button = close_button.nil? ? cfg.close_button : close_button
       @drawer_size = self.class.validate_drawer_size!(size || cfg.size)
     else
       cfg = UltimateTurboModal.configuration.modal_config
-      adv = advance.nil? ? cfg.advance : advance
-      @advance = !!adv
-      @advance_url = (adv.present? && adv.is_a?(String)) ? adv : nil
-      @close_button = close_button.nil? ? cfg.close_button : close_button
       @drawer_size = nil
     end
+    adv = advance.nil? ? cfg.advance : advance
+    @advance = !!adv
+    @advance_url = (adv.present? && adv.is_a?(String)) ? adv : nil
+    @close_button = close_button.nil? ? cfg.close_button : close_button
     @footer_divider = footer_divider.nil? ? cfg.footer_divider : footer_divider
     @header = header.nil? ? cfg.header : header
     @header_divider = header_divider.nil? ? cfg.header_divider : header_divider

@@ -41,7 +41,7 @@ module UltimateTurboModal
 
     # Shared base for modal and drawer configuration
     class BaseConfig
-      attr_reader :close_button, :header, :header_divider, :footer_divider, :padding, :overlay
+      attr_reader :advance, :close_button, :header, :header_divider, :footer_divider, :padding, :overlay
 
       def self.boolean_option(name)
         define_method(:"#{name}=") do |value|
@@ -56,6 +56,14 @@ module UltimateTurboModal
       boolean_option :footer_divider
       boolean_option :overlay
 
+      def advance=(value)
+        if [true, false].include?(value) || value.is_a?(String)
+          @advance = value
+        else
+          raise ArgumentError, "Value must be a boolean or a String."
+        end
+      end
+
       def padding=(padding)
         if [true, false].include?(padding) || padding.is_a?(String)
           @padding = padding
@@ -66,8 +74,6 @@ module UltimateTurboModal
     end
 
     class ModalConfig < BaseConfig
-      attr_reader :advance
-
       def initialize
         @advance = false
         @close_button = true
@@ -77,14 +83,13 @@ module UltimateTurboModal
         @padding = true
         @overlay = true
       end
-
-      boolean_option :advance
     end
 
     class DrawerConfig < BaseConfig
       attr_reader :size, :position
 
       def initialize
+        @advance = false
         @close_button = true
         @header = true
         @header_divider = false
