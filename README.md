@@ -131,6 +131,7 @@ Per-instance options passed to `modal()` or `drawer()` override the defaults.
 |------|---------|-------------|
 | `advance` | `false` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
+| `close_on_submit` | `true` | Per-instance only. Whether to close the modal after a successful form submission. |
 | `header` | `true` | Whether to display a modal header. |
 | `header_divider` | `true` | Whether to display a divider below the header. |
 | `footer_divider` | `true` | Whether to display a divider above the footer. |
@@ -181,6 +182,7 @@ Link to it the same way as a modal:
 | `advance` | `false` | When opening the drawer, the URL in the URL bar will change to the URL of the view being shown in the drawer. The Back button dismisses the drawer and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `overlay` | `true` | Whether to show a backdrop overlay behind the drawer. |
 | `close_button` | `true` | Shows or hide a close button (X). |
+| `close_on_submit` | `true` | Per-instance only. Whether to close the drawer after a successful form submission. |
 | `header` | `true` | Whether to display a header. |
 | `header_divider` | `false` | Whether to display a divider below the header. |
 | `footer_divider` | `true` | Whether to display a divider above the footer. |
