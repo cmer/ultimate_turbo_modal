@@ -1,0 +1,29 @@
+<%# Each form demonstrates a different close-on-submit resolution: the first
+    inherits the dialog's `close_on_submit`, the others override it per-form
+    via `data-modal-close-on-submit`. %>
+<% secondary_classes = "w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer" %>
+<div id="chat-form" class="space-y-2">
+  <%= form_with url: chat_messages_url, method: :post, class: "space-y-3" do |f| %>
+    <%= f.text_field :body,
+          placeholder: "Type a message…",
+          autocomplete: "off",
+          class: "w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white text-sm" %>
+    <%= f.submit "Send (inherits close_on_submit: #{@close_on_submit})",
+          class: "w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 cursor-pointer" %>
+  <% end %>
+
+  <%= form_with url: chat_messages_url, method: :post, data: {modal_close_on_submit: true} do |f| %>
+    <%= f.hidden_field :body, value: "Sent from the “close” override form" %>
+    <%= f.submit "Send & close (override: true)", class: secondary_classes %>
+  <% end %>
+
+  <%= form_with url: chat_messages_url, method: :post, data: {modal_close_on_submit: false} do |f| %>
+    <%= f.hidden_field :body, value: "Sent from the “stay open” override form" %>
+    <%= f.submit "Send & stay open (override: false)", class: secondary_classes %>
+  <% end %>
+
+  <%= form_with url: chat_clear_url, method: :post, data: {modal_close_on_submit: false} do |f| %>
+    <%= f.submit "Clear messages",
+          class: "w-full px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:underline cursor-pointer" %>
+  <% end %>
+</div>

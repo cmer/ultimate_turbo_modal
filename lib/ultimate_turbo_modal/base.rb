@@ -12,6 +12,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   # @param close_button [Boolean] Whether to show a close button
   # @param close_button_data_action [String] `data-action` attribute for the close button
   # @param close_button_sr_label [String] Close button label for screen readers
+  # @param close_on_submit [Boolean] Whether to dismiss on a successful, non-redirecting form submission
   # @param drawer_position [Symbol, false] Internal: drawer position (:right, :left) or false for standard modal. Use the `drawer()` view helper instead.
   # @param footer_divider [Boolean] Whether to show a divider between the main content and the footer
   # @param header [Boolean] Whether to show a modal header
@@ -28,6 +29,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     close_button: nil,
     close_button_data_action: "modal#hideModal",
     close_button_sr_label: "Close modal",
+    close_on_submit: nil,
     drawer_position: false,
     footer_divider: nil,
     header: nil,
@@ -54,6 +56,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     @advance = !!adv
     @advance_url = (adv.present? && adv.is_a?(String)) ? adv : nil
     @close_button = close_button.nil? ? cfg.close_button : close_button
+    @close_on_submit = close_on_submit.nil? ? cfg.close_on_submit : close_on_submit
     @footer_divider = footer_divider.nil? ? cfg.footer_divider : footer_divider
     @header = header.nil? ? cfg.header : header
     @header_divider = header_divider.nil? ? cfg.header_divider : header_divider
@@ -130,6 +133,8 @@ class UltimateTurboModal::Base < Phlex::HTML
   def padding? = !!@padding
 
   def close_button? = !!@close_button
+
+  def close_on_submit? = !!@close_on_submit
 
   def title_block? = !!@title_block
 
@@ -262,6 +267,7 @@ class UltimateTurboModal::Base < Phlex::HTML
       modal_target: "container",
       modal_advance_url_value: advance_url,
       modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
+      modal_close_on_submit_value: close_on_submit?.to_s,
       action: "turbo:submit-end->modal#submitEnd cancel->modal#cancelEvent mousedown->modal#dialogMousedown click->modal#dialogClicked",
       padding: padding?.to_s,
       title: title?.to_s,

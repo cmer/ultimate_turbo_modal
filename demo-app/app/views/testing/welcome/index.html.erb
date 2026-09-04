@@ -90,6 +90,17 @@
           <%= render_test_link "Modal smooth redirect", new_testing_smooth_redirect_path(type: "modal") %>
         </div>
       </div>
+
+      <%# Close on submit %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Close on Submit
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Modal with close_on_submit: false", testing_chat_path(type: "modal", close_on_submit: "0") %>
+          <%= render_test_link "Modal with close_on_submit: true (default)", testing_chat_path(type: "modal", close_on_submit: "1") %>
+        </div>
+      </div>
     </div>
 
     <%# ── Drawers column ── %>
@@ -142,6 +153,17 @@
         </div>
         <div class="divide-y divide-gray-100 dark:divide-gray-700">
           <%= render_test_link "Drawer smooth redirect", new_testing_smooth_redirect_path(type: "drawer") %>
+        </div>
+      </div>
+
+      <%# Close on submit %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Close on Submit
+        </div>
+        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+          <%= render_test_link "Chat drawer with close_on_submit: false", testing_chat_path(type: "drawer", close_on_submit: "0") %>
+          <%= render_test_link "Chat drawer with close_on_submit: true (default)", testing_chat_path(type: "drawer", close_on_submit: "1") %>
         </div>
       </div>
 

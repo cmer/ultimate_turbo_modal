@@ -41,7 +41,7 @@ module UltimateTurboModal
 
     # Shared base for modal and drawer configuration
     class BaseConfig
-      attr_reader :advance, :close_button, :header, :header_divider, :footer_divider, :padding, :overlay
+      attr_reader :advance, :close_button, :close_on_submit, :header, :header_divider, :footer_divider, :padding, :overlay
 
       def self.boolean_option(name)
         define_method(:"#{name}=") do |value|
@@ -51,6 +51,7 @@ module UltimateTurboModal
       end
 
       boolean_option :close_button
+      boolean_option :close_on_submit
       boolean_option :header
       boolean_option :header_divider
       boolean_option :footer_divider
@@ -77,6 +78,7 @@ module UltimateTurboModal
       def initialize
         @advance = false
         @close_button = true
+        @close_on_submit = true
         @header = true
         @header_divider = true
         @footer_divider = true
@@ -91,6 +93,7 @@ module UltimateTurboModal
       def initialize
         @advance = false
         @close_button = true
+        @close_on_submit = true
         @header = true
         @header_divider = false
         @footer_divider = true

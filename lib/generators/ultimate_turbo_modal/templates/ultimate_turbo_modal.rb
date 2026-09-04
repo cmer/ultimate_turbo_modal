@@ -7,6 +7,7 @@ UltimateTurboModal.configure do |config|
   # config.modal do |m|
   #   m.advance = false
   #   m.close_button = true
+  #   m.close_on_submit = true
   #   m.header = true
   #   m.header_divider = true
   #   m.footer_divider = true
@@ -18,6 +19,7 @@ UltimateTurboModal.configure do |config|
   #   d.position = :right
   #   d.advance = false
   #   d.close_button = true
+  #   d.close_on_submit = true
   #   d.header = true
   #   d.header_divider = false
   #   d.footer_divider = true

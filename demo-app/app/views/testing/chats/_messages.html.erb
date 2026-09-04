@@ -1,0 +1,12 @@
+<div id="chat-messages" class="space-y-2 min-h-32">
+  <% if messages.empty? %>
+    <p class="text-sm text-gray-400 dark:text-gray-500 italic">No messages yet. Send one below.</p>
+  <% else %>
+    <% messages.each do |message| %>
+      <div class="rounded-lg bg-indigo-50 dark:bg-slate-700 px-3 py-2">
+        <p class="text-sm text-gray-900 dark:text-white"><%= message["body"] %></p>
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5"><%= message["at"] %></p>
+      </div>
+    <% end %>
+  <% end %>
+</div>

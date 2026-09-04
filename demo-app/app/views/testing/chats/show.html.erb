@@ -1,0 +1,14 @@
+<% wrapper = (@type == "drawer") ? method(:drawer) : method(:modal) %>
+
+<%= wrapper.call(title: "Chat", close_on_submit: @close_on_submit) do %>
+  <div class="space-y-4 p-2">
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      This <%= @type %> was opened with
+      <code class="text-xs bg-gray-100 dark:bg-slate-700 px-1 py-0.5 rounded">close_on_submit: <%= @close_on_submit %></code>.
+      Every button below submits a form that responds with a Turbo Stream.
+    </p>
+
+    <%= render "testing/chats/messages" %>
+    <%= render "testing/chats/form" %>
+  </div>
+<% end %>

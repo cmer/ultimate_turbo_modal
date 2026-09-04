@@ -21,6 +21,9 @@ Rails.application.routes.draw do
     resources :posts
     resource :hide_from_backend, only: [:new, :create]
     resources :smooth_redirects, only: [:new, :create]
+    get "chat", to: "chats#show", as: :chat
+    post "chat/messages", to: "chats#create_message", as: :chat_messages
+    post "chat/clear", to: "chats#clear", as: :chat_clear
     root to: "welcome#index"
   end
 

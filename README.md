@@ -102,6 +102,7 @@ UltimateTurboModal.configure do |config|
   config.modal do |m|
     m.advance = false
     m.close_button = true
+    m.close_on_submit = true
     m.header = true
     m.header_divider = true
     m.footer_divider = true
@@ -113,6 +114,7 @@ UltimateTurboModal.configure do |config|
     d.position = :right
     d.advance = false
     d.close_button = true
+    d.close_on_submit = true
     d.header = true
     d.header_divider = false
     d.footer_divider = true
@@ -131,6 +133,7 @@ Per-instance options passed to `modal()` or `drawer()` override the defaults.
 |------|---------|-------------|
 | `advance` | `false` | When opening the modal, the URL in the URL bar will change to the URL of the view being shown in the modal. The Back button dismisses the modal and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `close_button` | `true` | Shows or hide a close button (X) at the top right of the modal. |
+| `close_on_submit` | `true` | Whether a successful form submission dismisses the modal. See [Closing on form submission](#closing-on-form-submission). |
 | `header` | `true` | Whether to display a modal header. |
 | `header_divider` | `true` | Whether to display a divider below the header. |
 | `footer_divider` | `true` | Whether to display a divider above the footer. |
@@ -181,6 +184,7 @@ Link to it the same way as a modal:
 | `advance` | `false` | When opening the drawer, the URL in the URL bar will change to the URL of the view being shown in the drawer. The Back button dismisses the drawer and navigates back. If a URL is specified as a string (e.g. `advance: "/other-path"`), the browser history will advance, and the URL shown in the URL bar will be replaced with the value specified. |
 | `overlay` | `true` | Whether to show a backdrop overlay behind the drawer. |
 | `close_button` | `true` | Shows or hide a close button (X). |
+| `close_on_submit` | `true` | Whether a successful form submission dismisses the drawer. See [Closing on form submission](#closing-on-form-submission). |
 | `header` | `true` | Whether to display a header. |
 | `header_divider` | `false` | Whether to display a divider below the header. |
 | `footer_divider` | `true` | Whether to display a divider above the footer. |
@@ -204,6 +208,61 @@ Link to it the same way as a modal:
 | `:full` | Full viewport width minus a small gutter |
 | CSS string | Custom value, e.g. `"500px"` or `"50vw"` |
 
+
+## Closing on form submission
+
+By default, a form submitted inside a modal or drawer dismisses it once the
+submission succeeds. Set `close_on_submit: false` to keep it open instead —
+useful for chat composers, image uploaders, inline "add another" forms, and
+anything else where the user is expected to submit repeatedly:
+
+```erb
+<%= drawer(title: "Messages", close_on_submit: false) do %>
+  <%= render "messages/list" %>
+  <%= form_with model: Message.new do |f| %>
+    <%= f.text_field :body %>
+    <%= f.submit "Send" %>
+  <% end %>
+<% end %>
+```
+
+Respond with a Turbo Stream to update the contents in place, and send
+`turbo_stream.modal(:close)` from the server on the submissions that *should*
+dismiss it.
+
+Two things are worth calling out:
+
+- **Failed submissions never dismiss.** A 422 rendering validation errors leaves
+  the modal open regardless of this setting, so errors are shown in place.
+- **Redirects still dismiss.** If the server redirects to a page that doesn't
+  contain the modal frame, the browser is navigating away and the modal closes
+  (smoothly) even with `close_on_submit: false`.
+
+### Per-form overrides
+
+`data-modal-close-on-submit` on a form overrides the setting for that form
+alone, so a single modal can mix both behaviors:
+
+```erb
+<%= drawer(title: "Messages", close_on_submit: false) do %>
+  <%# Stays open — inherits close_on_submit: false %>
+  <%= form_with model: Message.new do |f| %>
+    <%= f.text_field :body %>
+    <%= f.submit "Send" %>
+  <% end %>
+
+  <%# Dismisses the drawer, despite close_on_submit: false %>
+  <%= form_with model: @conversation, method: :delete,
+                data: { modal_close_on_submit: true } do |f| %>
+    <%= f.submit "Delete conversation" %>
+  <% end %>
+<% end %>
+```
+
+It works in both directions: `data: { modal_close_on_submit: false }` on a form
+inside a default modal keeps that one form from dismissing it. Placing the
+attribute on a wrapping element applies it to every form inside; the nearest
+one wins.
 
 ## Opening a Modal from a Drawer
 

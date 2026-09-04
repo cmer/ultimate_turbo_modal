@@ -24,7 +24,8 @@ export default class extends Controller {
   static targets = ["container", "content"]
   static values = {
     advanceUrl: String,
-    allowedClickOutsideSelector: String
+    allowedClickOutsideSelector: String,
+    closeOnSubmit: { type: Boolean, default: true }
   }
 
   connect() {
@@ -166,14 +167,30 @@ export default class extends Controller {
   // hide modal on successful form submission
   // action: "turbo:submit-end->modal#submitEnd"
   submitEnd(e) {
-    if (e.detail.success) {
-      const response = e.detail.fetchResponse?.response;
-      if (response?.redirected) {
-        this._pendingRedirectUrl = response.url;
-        return;
-      }
-      this.hideModal();
+    if (!e.detail.success) return;
+
+    const response = e.detail.fetchResponse?.response;
+    if (response?.redirected) {
+      // Record the redirect even when close-on-submit is off. The response
+      // navigates away from this page, so the dialog can't stay open either
+      // way, and turbo:frame-missing needs the final URL to visit.
+      this._pendingRedirectUrl = response.url;
+      return;
     }
+
+    if (!this.#closesOnSubmit(e.target)) return;
+    this.hideModal();
+  }
+
+  // `data-modal-close-on-submit` on the submitted form -- or on any element
+  // between it and this dialog -- overrides the dialog-wide `close_on_submit`
+  // setting. Lets one modal mix forms that dismiss it with forms that don't.
+  #closesOnSubmit(target) {
+    const override = target?.closest?.('[data-modal-close-on-submit]');
+    if (override && this.element.contains(override)) {
+      return override.dataset.modalCloseOnSubmit !== 'false';
+    }
+    return this.closeOnSubmitValue;
   }
 
   // Intercept native dialog cancel event (ESC key)
