@@ -108,12 +108,13 @@ module UltimateTurboModal
           return
         end
 
-        # Insert after the last existing stylesheet_link_tag so app styles load
-        # first and can override the defaults.
-        existing_tag = file_content.scan(/^.*stylesheet_link_tag.*\n/).last
+        # Insert before the first existing stylesheet_link_tag. Where the two
+        # stylesheets collide at equal specificity the later one wins, so the
+        # defaults have to load first for the app's own styles to override them.
+        existing_tag = file_content.scan(/^.*stylesheet_link_tag.*\n/).first
 
         if existing_tag
-          insert_into_file layout_path, "#{indentation_of(existing_tag)}#{link_tag}", after: existing_tag
+          insert_into_file layout_path, "#{indentation_of(existing_tag)}#{link_tag}", before: existing_tag
           say "✅ Added stylesheet tag to the layout.", :green
         elsif file_content.match?(%r{</head>})
           insert_into_file layout_path, "    #{link_tag}", before: %r{^\s*</head>}

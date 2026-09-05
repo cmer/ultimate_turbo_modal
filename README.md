@@ -40,8 +40,9 @@ in your layout's `<head>`:
 ```
 
 The gem puts the stylesheet on the asset pipeline's load path, so this works with
-Propshaft and Sprockets whether you use importmaps or a JavaScript bundler. Keep it after
-your own stylesheets so your styles win where the two overlap.
+Propshaft and Sprockets whether you use importmaps or a JavaScript bundler. Keep it
+*before* your own stylesheets: where the two collide at equal specificity the later one
+wins, so loading the defaults first is what lets your own styles override them.
 
 If you would rather pull the CSS through your bundler, the npm package also ships it:
 
