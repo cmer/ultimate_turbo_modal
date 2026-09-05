@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="importmap">
+      {"imports":{"@hotwired/stimulus":"/stimulus.js"}}
+    </script>
+  </head>
+  <body>
+    <main>Modal lifecycle fixture</main>
+    <turbo-frame id="modal"></turbo-frame>
+    <script type="module">
+      import * as Turbo from '/turbo.js';
+      import { Application } from '/stimulus.js';
+      window.Turbo = Turbo;
+      const { UltimateTurboModalController } = await import('/utm.js');
+      window.application = Application.start();
+      application.register('modal', UltimateTurboModalController);
+
+      window.dialogHTML = (text = 'First', id = 'modal-container') =>
+        `<dialog id="${id}" class="utmr" data-controller="modal" data-modal-target="container"><div id="modal-inner" data-modal-target="content">${text}</div></dialog>`;
+
+      // Separating notification from rendering exercises Turbo's deferred render.
+      window.prepareMorph = (html, id = 'modal') => {
+        const frame = document.getElementById(id);
+        const fresh = document.createElement('turbo-frame');
+        fresh.id = id;
+        fresh.innerHTML = html;
+        const event = new CustomEvent('turbo:before-frame-render', {
+          bubbles: true,
+          cancelable: true,
+          detail: {
+            newFrame: fresh,
+            render: (old, next) => old.replaceChildren(...next.childNodes)
+          }
+        });
+        frame.dispatchEvent(event);
+        return () => event.detail.render(frame, fresh);
+      };
+      window.ready = true;
+    </script>
+  </body>
+</html>

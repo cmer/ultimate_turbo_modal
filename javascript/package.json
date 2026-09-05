@@ -19,6 +19,7 @@
     "update-version": "node scripts/update-version.cjs",
     "build": "npm install && rollup -c",
     "build:watch": "npm install && rollup -c -w",
+    "test": "rollup -c && node --test test/*.test.js",
     "release": "bash scripts/release-npm.sh"
   },
   "repository": {
@@ -50,6 +51,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^6.0.2",
+    "playwright": "1.58.2",
     "rollup": "^2.79.1",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-css-only": "^4.3.0",

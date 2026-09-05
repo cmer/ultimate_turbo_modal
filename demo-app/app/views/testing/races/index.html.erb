@@ -1,0 +1,43 @@
+<div class="max-w-3xl mx-auto py-8 px-4 space-y-8">
+  <div>
+    <h1 class="<%= h1_classes %>">Race repros</h1>
+    <p class="text-sm text-gray-600 dark:text-gray-300">
+      Focused repro pages for modal frame morphs and close cleanup races.
+    </p>
+  </div>
+
+  <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+      In-frame morph
+    </div>
+    <div class="p-4 space-y-3 text-sm text-gray-700 dark:text-gray-300">
+      <ol class="list-decimal ml-5 space-y-1">
+        <li>Open the modal.</li>
+        <li>Click the in-modal morph link.</li>
+        <li>The dialog should stay visible and keep its entered state.</li>
+        <li>Close it; the advanced history entry should still be consumed.</li>
+      </ol>
+      <%= link_to "Open morph repro", morph_preserves_dialog_testing_races_path(step: "one", advance: 1), data: {turbo_frame: "modal"}, class: button_classes %>
+    </div>
+  </div>
+
+  <div class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+      Superseded close
+    </div>
+    <div class="p-4 space-y-3 text-sm text-gray-700 dark:text-gray-300">
+      <ol class="list-decimal ml-5 space-y-1">
+        <li>Open the first modal.</li>
+        <li>Click the button that closes it and immediately loads another modal into the same frame.</li>
+        <li>The first modal should finish closing rather than snapping back open.</li>
+        <li>The second modal should remain open after the first modal's close timeout fires.</li>
+        <li>Back-button handling and close events should keep working for the second modal.</li>
+      </ol>
+      <%= link_to "Open close race repro", supersede_close_testing_races_path(kind: "first"), data: {turbo_frame: "modal"}, class: button_classes %>
+    </div>
+  </div>
+
+  <p class="text-sm">
+    <%= link_to "Back to testing home", testing_root_path, class: "text-indigo-600 dark:text-indigo-400 hover:underline" %>
+  </p>
+</div>

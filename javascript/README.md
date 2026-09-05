@@ -31,6 +31,20 @@ For full documentation, configuration options, and usage examples, see the [GitH
 - Intelligent DOM morphing via Idiomorph (prevents flicker)
 - Turbo Frame and Turbo Stream support
 
+## Development tests
+
+From `javascript/`, install dependencies and Chromium once, then run the browser
+regressions against the built library:
+
+```sh
+npm install
+npx playwright install chromium
+npm test
+```
+
+The tests use real Turbo, Stimulus, and Idiomorph in headless Chromium, with local
+HTML fixtures and intercepted requests. No Rails server is required.
+
 ## License
 
 MIT

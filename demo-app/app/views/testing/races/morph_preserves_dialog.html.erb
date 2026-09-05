@@ -1,0 +1,20 @@
+<%= modal(advance: true, title: "Morph preservation") do %>
+  <div class="space-y-4 text-sm dark:text-white">
+    <p>
+      Step <%= @step %>. This link renders new content into the same modal frame
+      while the dialog node is already open.
+    </p>
+
+    <% if @step == "one" %>
+      <%= link_to "Morph to step two",
+        morph_preserves_dialog_testing_races_path(step: "two", advance: 1),
+        data: {turbo_frame: "modal"},
+        class: button_classes %>
+    <% else %>
+      <p class="rounded-md bg-emerald-50 p-3 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200">
+        The modal stayed open after the frame render. Close it and confirm
+        the browser returns to the previous URL.
+      </p>
+    <% end %>
+  </div>
+<% end %>
