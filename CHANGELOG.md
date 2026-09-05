@@ -2,6 +2,7 @@
 
 - Added `close_on_submit`, which keeps a modal or drawer open after a successful form submission. Individual forms can override it with `data-modal-close-on-submit`.
 - Drawers now support the `advance` option to push their URL to browser history, matching modals. Defaults to `false`.
+- Fixed the vanilla flavor loading no styles on apps without a JavaScript bundler. The stylesheet now ships with the gem and can be included with `stylesheet_link_tag "ultimate_turbo_modal"`.
 
 ## [3.2.1] - 2026-05-07
 

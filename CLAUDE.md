@@ -15,13 +15,17 @@ Ultimate Turbo Modal (UTMR) v3 is a full-featured modal and drawer implementatio
 ├── Gemfile                     # Gem dev dependencies (standard, standard-rails)
 ├── Rakefile                    # Default task: standard (Ruby linter)
 ├── CHANGELOG.md
+├── app/
+│   └── assets/stylesheets/
+│       └── ultimate_turbo_modal.css  # Vanilla flavor styles + animations (single source of
+│                                     # truth; also bundled to javascript/dist/vanilla.css)
 ├── lib/
 │   ├── ultimate_turbo_modal.rb         # Entry point, factory method, flavor loading
 │   ├── ultimate_turbo_modal/
 │   │   ├── version.rb                  # Reads VERSION file
 │   │   ├── configuration.rb            # Config class + UltimateTurboModal.configure
 │   │   ├── base.rb                     # Core Phlex component (HTML rendering)
-│   │   ├── railtie.rb                  # Rails integration (hooks helpers into AC/AV)
+│   │   ├── railtie.rb                  # Rails integration (helpers into AC/AV, asset path)
 │   │   └── helpers/
 │   │       ├── controller_helper.rb    # inside_modal? method
 │   │       ├── view_helper.rb          # modal() and drawer() view helpers
@@ -43,8 +47,6 @@ Ultimate Turbo Modal (UTMR) v3 is a full-featured modal and drawer implementatio
 │   ├── index.js                # Entry: Turbo stream actions, frame handlers, exports
 │   ├── modal_controller.js     # Stimulus controller (modal + drawer behavior)
 │   ├── rollup.config.js        # Build config (ESM output, terser, version replacement)
-│   ├── styles/
-│   │   └── vanilla.css         # Vanilla CSS flavor styles + animations
 │   ├── scripts/
 │   │   ├── release-npm.sh      # npm publish script
 │   │   └── update-version.js   # Syncs VERSION → package.json version
@@ -71,7 +73,7 @@ Ultimate Turbo Modal (UTMR) v3 is a full-featured modal and drawer implementatio
 Flavors are Ruby classes that inherit from `UltimateTurboModal::Base` and define constants for CSS classes. They live in `config/initializers/` in the consuming Rails app (copied there by the install generator). Available flavors:
 
 - **`tailwind`** — Tailwind CSS v4+ (default). Uses utility classes and `group-data-[*]` selectors.
-- **`vanilla`** — Plain CSS with classes defined in `javascript/styles/vanilla.css`.
+- **`vanilla`** — Plain CSS with classes defined in `app/assets/stylesheets/ultimate_turbo_modal.css`.
 - **`custom`** — Empty template for users to define their own classes.
 
 Each flavor defines **modal constants** and **drawer constants**:
@@ -303,7 +305,7 @@ The `VERSION` file at the repo root is the single source of truth:
 
 The JavaScript package uses Rollup with these plugins:
 - `@rollup/plugin-node-resolve` — resolves node_modules
-- `rollup-plugin-css-only` — extracts vanilla.css to `dist/vanilla.css`
+- `rollup-plugin-css-only` — extracts `app/assets/stylesheets/ultimate_turbo_modal.css` to `dist/vanilla.css`
 - `@rollup/plugin-replace` — replaces `__PACKAGE_VERSION__` placeholder with actual version
 - `rollup-plugin-terser` — minifies the `.min.js` output
 

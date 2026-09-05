@@ -11,7 +11,8 @@
 
   - Before starting with the upgrade, run `bundle exec rails runner "puts UltimateTurboModal.flavor"` to detect which flavor the host application is using. `tailwind3` is now deprecated. If the host application is using `tailwind3`, inform the user that it is no longer supported, and that the host application should upgrade to TailwindCSS 4 first.
   - If the flavor is different from the built-in `tailwind` or `vanilla`, they should be informed that they will need to reapply their custom styling changes manually since the HTML markup for UTMR has changed significantly.
-  - If the application is using the `tailwind` or `vanilla`, no manual styling changes are required. The upgrade will be seamless.
+  - If the application is using `tailwind`, no manual styling changes are required. The upgrade will be seamless.
+  - If the application is using `vanilla`, the styles now ship as a stylesheet on the asset pipeline. Make sure `<%= stylesheet_link_tag "ultimate_turbo_modal", "data-turbo-track": "reload" %>` is present in the `<head>` of the application layout, after the application's own stylesheet tags. The update generator adds it automatically. An app that previously pulled the CSS in through a JavaScript bundler with `@import 'ultimate_turbo_modal/dist/vanilla.css'` can keep doing that instead; it still works.
 
   ## Steps to follow
 

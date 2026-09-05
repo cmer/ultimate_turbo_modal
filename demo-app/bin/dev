@@ -20,7 +20,7 @@ ln -sf "$FLAVOR_SOURCE_DIR/custom.rb" "$FLAVOR_DEST_DIR/ultimate_turbo_modal_cus
 
 (cd "$DEMO_APP_DIR" && bundle install && npm install)
 
-# Build the library JS package first so dist/vanilla.css exists for the CSS watcher
+# Build the library JS package first so the demo app picks up local JS changes
 (cd "$DEMO_APP_DIR/../javascript" && npm run build)
 
 echo "--------------------------------------------------------------------"
