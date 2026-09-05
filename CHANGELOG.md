@@ -2,6 +2,8 @@
 
 - Added `close_on_submit`, which keeps a modal or drawer open after a successful form submission. Individual forms can override it with `data-modal-close-on-submit`.
 - Drawers now support the `advance` option to push their URL to browser history, matching modals. Defaults to `false`.
+- Fixed modals disappearing during in-frame updates that morph an already-open dialog.
+- Fixed stale close cleanup interfering with a newer modal opened in the same frame.
 
 ## [3.2.1] - 2026-05-07
 

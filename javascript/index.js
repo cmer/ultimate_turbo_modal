@@ -139,6 +139,43 @@ const handleTurboFrameMissing = (event) => {
   performSmoothRedirect(modal, redirectUrl);
 };
 
+// Dialog state the controller owns at runtime and the server never renders, so
+// a morph must not treat its absence from the response as "remove this".
+//
+// data-closing is intentionally omitted. The close cleanup uses a morph that
+// removes data-closing as the signal that this dialog node was superseded by
+// newer modal content and should not be torn down by the old close.
+const LIVE_DIALOG_ATTRIBUTES = new Set([
+  'open',
+  'data-enter-ready',
+  'data-entered',
+  'data-utmr-close-token',
+  'data-utmr-history-advanced',
+  'data-utmr-skip-history-back'
+]);
+
+// A new request owns the frame before its response connects a controller, so
+// release the frame from the old close now. Without this, that close is still
+// on its timer and would strip the src and consume history out from under the
+// incoming modal.
+//
+// A modal that is already closing stays closing. The user dismissed it, so it
+// finishes its leave animation and is removed on schedule; the replacement
+// opens fresh when it lands, and if the request fails no modal remains --
+// which is what dismissing it asked for.
+const handleTurboBeforeFetchRequest = (event) => {
+  // Hover prefetches carry the same frame header but do not navigate the frame.
+  if (!isModalFrameTarget(event) && !(event.target instanceof HTMLFormElement)) return;
+  const frameId = new Headers(event.detail.fetchOptions.headers).get('Turbo-Frame');
+  if (!MODAL_FRAME_IDS.has(frameId)) return;
+  const frame = document.getElementById(frameId);
+  if (!frame) return;
+  delete frame.dataset.utmrCloseToken;
+};
+
+document.removeEventListener('turbo:before-fetch-request', handleTurboBeforeFetchRequest);
+document.addEventListener('turbo:before-fetch-request', handleTurboBeforeFetchRequest);
+
 // Intercept frame renders for modal frames to use Idiomorph for flicker-free updates.
 // When turbo:before-frame-render fires, the response *contains* the modal frame,
 // so it's valid modal content (e.g., a wizard step or in-modal navigation).
@@ -160,10 +197,27 @@ const handleTurboBeforeFrameRender = (event) => {
 
   // Morph subsequent in-frame updates to prevent flicker and avoid re-running
   // enter transitions on an already-open dialog.
+  //
+  // `open`, `data-enter-ready` and `data-entered` have to survive the morph.
+  // They are live state written by the controller and the server never renders
+  // them, so a plain morph removes all three from a dialog that is currently on
+  // screen. The node is reused, so Stimulus does not reconnect, nothing calls
+  // showModal() again, and the dialog is left in the DOM at `display: none` --
+  // the modal simply disappears, with no error.
   event.detail.render = (currentElement, newElement) => {
+    // Turbo can defer rendering after before-frame-render. Read close state at
+    // the actual morph, since a close may have started in between.
+    const closingDialog = Array.from(currentElement.querySelectorAll('dialog.utmr'))
+      .find(node => node.__ultimateTurboModalController?.hidingModal);
+    const controller = closingDialog?.__ultimateTurboModalController;
     Idiomorph.morph(currentElement, Array.from(newElement.childNodes), {
-      morphStyle: 'innerHTML'
+      morphStyle: 'innerHTML',
+      callbacks: {
+        beforeAttributeUpdated: (attributeName, node) =>
+          !(node.tagName === 'DIALOG' && LIVE_DIALOG_ATTRIBUTES.has(attributeName))
+      }
     });
+    if (controller && currentElement.contains(closingDialog)) controller.reviveAfterFrameMorph();
   };
 };
 

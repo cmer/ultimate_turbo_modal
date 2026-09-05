@@ -1,0 +1,23 @@
+<%= modal(advance: true, title: "Superseded close") do %>
+  <div class="space-y-4 text-sm dark:text-white">
+    <% if @kind == "first" %>
+      <p>
+        This button starts the close animation, then loads another modal into
+        the same frame before the old close cleanup runs.
+      </p>
+      <button type="button"
+        class="<%= button_classes %>"
+        onclick="window.modal.hideModal(); setTimeout(() => window.Turbo.visit('<%= supersede_close_testing_races_path(kind: "second") %>', { frame: 'modal' }), 50)">
+        Close and replace immediately
+      </button>
+    <% else %>
+      <p class="rounded-md bg-emerald-50 p-3 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200">
+        Replacement modal. It should still be open after the previous close
+        cleanup has had time to fire.
+      </p>
+      <button type="button" data-action="modal#hideModal" class="<%= button_classes %>">
+        Close replacement
+      </button>
+    <% end %>
+  </div>
+<% end %>
