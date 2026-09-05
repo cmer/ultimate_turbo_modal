@@ -86,6 +86,50 @@ module UltimateTurboModal
         end
       end
 
+      # The vanilla flavor needs a stylesheet; the other flavors are styled
+      # entirely by the classes defined in their flavor file.
+      def add_vanilla_stylesheet
+        layout_path = rails_root_join("app", "views", "layouts", "application.html.erb")
+        link_tag = "<%= stylesheet_link_tag \"#{package_name}\", \"data-turbo-track\": \"reload\" %>\n"
+
+        say "\nAttempting to add the vanilla stylesheet to #{layout_path}...", :yellow
+
+        unless File.exist?(layout_path)
+          say "❌ Layout file not found at #{layout_path}.", :red
+          say "   Please manually add the following line inside the <head> of your main layout:", :yellow
+          say "   #{link_tag.strip}\n", :cyan
+          return
+        end
+
+        file_content = File.read(layout_path)
+
+        if file_content.match?(/stylesheet_link_tag\s+["']#{Regexp.escape(package_name)}["']/)
+          say "⏩ Stylesheet tag already exists.", :blue
+          return
+        end
+
+        # Insert before the first existing stylesheet_link_tag. Where the two
+        # stylesheets collide at equal specificity the later one wins, so the
+        # defaults have to load first for the app's own styles to override them.
+        existing_tag = file_content.scan(/^.*stylesheet_link_tag.*\n/).first
+
+        if existing_tag
+          insert_into_file layout_path, "#{indentation_of(existing_tag)}#{link_tag}", before: existing_tag
+          say "✅ Added stylesheet tag to the layout.", :green
+        elsif file_content.match?(%r{</head>})
+          insert_into_file layout_path, "    #{link_tag}", before: %r{^\s*</head>}
+          say "✅ Added stylesheet tag before </head>.", :green
+        else
+          say "❌ Could not find a <head> section in #{layout_path}.", :red
+          say "   Please manually add the following line inside the <head> of your main layout:", :yellow
+          say "   #{link_tag.strip}\n", :cyan
+        end
+      end
+
+      def indentation_of(line)
+        line[/\A[ \t]*/]
+      end
+
       def uses_importmaps?
         File.exist?(rails_root_join("config", "importmap.rb"))
       end

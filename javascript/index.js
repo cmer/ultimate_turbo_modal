@@ -1,6 +1,6 @@
 import UltimateTurboModalController from './modal_controller.js';
 import { Idiomorph } from 'idiomorph';
-import './styles/vanilla.css';
+import '../app/assets/stylesheets/ultimate_turbo_modal.css';
 
 Turbo.StreamActions.modal = function () {
   const message = this.getAttribute("message");

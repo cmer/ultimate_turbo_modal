@@ -76,6 +76,8 @@ module UltimateTurboModal
           return
         end
 
+        add_vanilla_stylesheet if flavor == "vanilla"
+
         template_rel = "flavors/#{flavor}.rb"
         template_abs = File.join(self.class.source_root, template_rel)
 

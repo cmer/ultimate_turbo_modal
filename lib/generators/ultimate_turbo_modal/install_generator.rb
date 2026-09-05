@@ -108,6 +108,11 @@ module UltimateTurboModal
         end
       end
 
+      # Step 5: Add the stylesheet to the layout (vanilla flavor only)
+      def setup_stylesheet
+        add_vanilla_stylesheet if @framework == "vanilla"
+      end
+
       def copy_initializer_and_flavor
         say "\nCreating initializer for `#{@framework}` flavor...", :green
         copy_file "ultimate_turbo_modal.rb", "config/initializers/ultimate_turbo_modal.rb"

@@ -26,6 +26,30 @@ $ bundle add ultimate_turbo_modal
 $ bundle exec rails g ultimate_turbo_modal:install
 ```
 
+### Stylesheet
+
+The `tailwind` and `custom` flavors are styled entirely by the classes in their flavor
+file, so they need no stylesheet.
+
+The `vanilla` flavor ships its styles as a CSS file. The install generator adds it to
+`app/views/layouts/application.html.erb` for you; if you need to add it by hand, put this
+in your layout's `<head>`:
+
+```erb
+<%= stylesheet_link_tag "ultimate_turbo_modal", "data-turbo-track": "reload" %>
+```
+
+The gem puts the stylesheet on the asset pipeline's load path, so this works with
+Propshaft and Sprockets whether you use importmaps or a JavaScript bundler. Keep it
+*before* your own stylesheets: where the two collide at equal specificity the later one
+wins, so loading the defaults first is what lets your own styles override them.
+
+If you would rather pull the CSS through your bundler, the npm package also ships it:
+
+```css
+@import 'ultimate_turbo_modal/dist/vanilla.css';
+```
+
 
 ## Usage
 
