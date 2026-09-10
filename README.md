@@ -146,6 +146,14 @@ UltimateTurboModal.configure do |config|
     d.overlay = true
     d.size = :md
   end
+
+  # Only used when Turbo Confirm support is enabled.
+  # See https://github.com/cmer/ultimate_turbo_modal#turbo-confirm
+  config.confirm do |c|
+    c.title = "Are you sure?"
+    c.accept_label = "OK"
+    c.cancel_label = "Cancel"
+  end
 end
 ```
 
@@ -288,6 +296,160 @@ inside a default modal keeps that one form from dismissing it. Placing the
 attribute on a wrapping element applies it to every form inside; the nearest
 one wins.
 
+## Turbo Confirm
+
+Optional, opt-in. Once enabled, Turbo's `data-turbo-confirm` prompts render as
+UTMR dialogs in your app's flavor instead of the browser's `window.confirm`.
+
+Enabling it is one line in your layout:
+
+```erb
+<%= modal_confirm_template %>
+```
+
+That's the whole opt-in — no JavaScript changes. The helper renders an inert
+`<template>`, and its presence on the page is the switch: with it, UTMR handles
+confirmations; without it, Turbo falls back to `window.confirm` exactly as
+before. Remove the line to turn the feature off.
+
+You can also flip it from the initializer, which is handy for toggling per
+environment without touching the layout:
+
+```ruby
+UltimateTurboModal.configure do |config|
+  config.confirm do |c|
+    c.enabled = false
+  end
+end
+```
+
+### Basic usage
+
+Nothing changes about how you write confirmations:
+
+```erb
+<%= button_to "Delete", post_path(post), method: :delete,
+      form: { data: { turbo_confirm: "This can't be undone." } } %>
+```
+
+The message becomes the dialog body; the title and button labels come from your
+configured defaults.
+
+> [!NOTE]
+> Turbo only runs confirmations for form submissions. A plain `<a>` needs
+> `data-turbo-method` (or `data-turbo-stream`) for `data-turbo-confirm` to fire
+> at all — that is Turbo's behavior, not UTMR's.
+
+### Customizing a single confirmation
+
+For anything beyond the message, use the `modal_confirm` helper. It builds the
+`data` attributes for you:
+
+```erb
+<%= link_to "Delete", post_path(post), data: modal_confirm(
+      "This can't be undone.",
+      title: "Delete post?",
+      accept: "Delete",
+      variant: :danger,
+      turbo_method: :delete) %>
+```
+
+| Option | Description |
+|--------|-------------|
+| `body` | First positional argument. The message. |
+| `title` | Dialog heading. |
+| `accept` | Label for the confirming button. |
+| `cancel` | Label for the dismissing button. |
+| `variant` | `:danger` styles the accept button destructively and moves the initial focus to Cancel. |
+| `native` | `true` uses the browser's own `window.confirm` for this one prompt. |
+
+Any option you leave out keeps its configured default.
+
+You can also write the attributes by hand, which is convenient on forms:
+
+```erb
+<%= button_to "Delete", post_path(post), method: :delete, form: { data: {
+      turbo_confirm: "This can't be undone.",
+      turbo_confirm_title: "Delete post?",
+      turbo_confirm_accept: "Delete",
+      turbo_confirm_variant: "danger" } } %>
+```
+
+`data-turbo-confirm` itself has to be on the form or on the submit button:
+Turbo looks nowhere else, and a prompt written on a wrapping element is simply
+never triggered. The `data-turbo-confirm-*` options are read once the prompt has
+fired, so those may also sit on a wrapping element. The submitter wins when both
+it and the form carry the same option.
+
+> [!IMPORTANT]
+> On a **link**, use `modal_confirm`. Sibling `data-turbo-confirm-*` attributes
+> do not survive: Turbo rewrites a link carrying `data-turbo-method` into a
+> hidden form and copies only a fixed set of attributes across, so they are gone
+> before UTMR is called. The helper's JSON payload rides inside
+> `data-turbo-confirm` itself, which always survives. On forms, either style
+> works.
+
+### Defaults
+
+```ruby
+UltimateTurboModal.configure do |config|
+  config.confirm do |c|
+    c.enabled = true
+    c.title = "Are you sure?"
+    c.accept_label = "OK"
+    c.cancel_label = "Cancel"
+    c.close_button = false   # a confirm has its own Cancel button
+    c.header_divider = false # dividers chop up one or two lines of text
+    c.footer_divider = false
+    c.header = true
+    c.padding = true
+    c.overlay = true
+  end
+end
+```
+
+The confirm dialog is deliberately plainer than a modal: no close button and no
+dividers by default, and a set width (floor `20rem`, cap `28rem`) so a one-word
+prompt and a three-line one come out the same size. Adjust it by overriding
+`CONFIRM_CONTENT_CLASSES` in your flavor file.
+
+### Behavior
+
+- The dialog is appended to `<body>`, so it layers above an open modal or drawer without any extra setup.
+- **ESC** and the Cancel button both cancel — the action does not run.
+- Clicking the backdrop does nothing. A confirm has to be answered, so a stray click never decides it.
+- The confirming button is focused on open, so Enter accepts. `variant: :danger` focuses Cancel instead.
+- Accepting waits for the close animation to finish before the request is sent.
+- `window.modal` keeps pointing at the modal underneath, so `turbo_stream.modal(:close)` still addresses the right dialog.
+- `data-turbo-confirm-native` on a form or submitter opts that one confirmation back out to `window.confirm`. On a link, pass `native: true` to `modal_confirm` instead, for the same reason the other options have to travel in the payload.
+- If something else in your app assigns `Turbo.config.forms.confirm` after UTMR loads, it wins. Import `enableModalConfirm` from the package and call it afterwards to take the hook back.
+
+### Styling
+
+The dialog is cloned from the template, so it shares your flavor's dialog,
+backdrop and transition classes. Every slot falls back to its `MODAL_*` class
+unless the flavor defines a `CONFIRM_*` override, so you only need to define
+what should differ:
+
+| Constant | Falls back to |
+|----------|---------------|
+| `CONFIRM_INNER_CLASSES` | `MODAL_INNER_CLASSES` |
+| `CONFIRM_CONTENT_CLASSES` | `MODAL_CONTENT_CLASSES` |
+| `CONFIRM_HEADER_CLASSES` | `MODAL_HEADER_CLASSES` |
+| `CONFIRM_TITLE_CLASSES` | `MODAL_TITLE_CLASSES` |
+| `CONFIRM_TITLE_H_CLASSES` | `MODAL_TITLE_H_CLASSES` |
+| `CONFIRM_MAIN_CLASSES` | `MODAL_MAIN_CLASSES` |
+| `CONFIRM_FOOTER_CLASSES` | `MODAL_FOOTER_CLASSES` |
+| `CONFIRM_BODY_CLASSES` | — (confirm only) |
+| `CONFIRM_ACTIONS_CLASSES` | — (confirm only) |
+| `CONFIRM_ACCEPT_CLASSES` | — (confirm only) |
+| `CONFIRM_CANCEL_CLASSES` | — (confirm only) |
+
+Upgrading from an earlier version? Run
+`rails generate ultimate_turbo_modal:update` to refresh your flavor file — until
+you do, the confirm dialog falls back to the modal's classes and the four
+confirm-only slots render unstyled rather than raising.
+
 ## Opening a Modal from a Drawer
 
 You don't need to do anything special. Use `data-turbo-frame="modal"` like you would anywhere else, and UTMR handles the rest:
@@ -347,6 +509,7 @@ For a full lifecycle walkthrough and edge-case notes, see [docs/modal-from-drawe
 - Automatic (or not) close button
 - Native focus trapping via the `<dialog>` element for improved accessibility (Tab and Shift+Tab cycle through focusable elements within the modal only)
 - Smooth redirects: form submissions that redirect back to the same page morph the content behind the modal before closing; redirects to a different page close the modal with animation first, then navigate
+- Optional Turbo Confirm support: `data-turbo-confirm` prompts render as a styled dialog instead of the browser's `window.confirm`
 
 
 ### Running the Demo Application

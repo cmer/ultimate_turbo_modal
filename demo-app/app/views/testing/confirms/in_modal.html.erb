@@ -1,0 +1,13 @@
+<%= modal(title: "Modal hosting a confirm", padding: @padding, close_button: @close_button) do %>
+  <div class="space-y-4">
+    <p class="text-sm text-gray-600 dark:text-gray-300">
+      The confirm dialog stacks on top of this modal. Escape should dismiss the
+      confirm and leave the modal open.
+    </p>
+    <%= link_to "Delete something", act_testing_confirms_path(label: "from-modal"),
+          class: button_classes,
+          data: modal_confirm("The modal underneath stays put until you accept.",
+            title: "Delete from a modal?", accept: "Delete", variant: :danger,
+            turbo_method: :delete) %>
+  </div>
+<% end %>

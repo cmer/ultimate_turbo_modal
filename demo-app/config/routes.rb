@@ -21,6 +21,14 @@ Rails.application.routes.draw do
     resources :posts
     resource :hide_from_backend, only: [:new, :create]
     resources :smooth_redirects, only: [:new, :create]
+    resources :confirms, only: [:index] do
+      collection do
+        post :act
+        delete :act
+        get :in_modal
+        get :in_drawer
+      end
+    end
     resources :races, only: [:index] do
       collection do
         get :morph_preserves_dialog

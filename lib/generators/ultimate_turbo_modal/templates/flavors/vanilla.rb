@@ -5,7 +5,7 @@
 # Set STYLES to a CSS string if you need additional inline styles.
 module UltimateTurboModal::Flavors
   class Vanilla < UltimateTurboModal::Base
-    STYLES = "html:has(dialog#modal-container[open]), html:has(dialog#modal-container-stacked[open]) { overflow: hidden; }"
+    STYLES = "html:has(dialog.utmr[open]) { overflow: hidden; }"
 
     MODAL_DIALOG_CLASSES = "modal-container"
     MODAL_INNER_CLASSES = "modal-inner"
@@ -19,6 +19,19 @@ module UltimateTurboModal::Flavors
     MODAL_CLOSE_BUTTON_CLASSES = "modal-close-button"
     MODAL_CLOSE_SR_CLASSES = "sr-only"
     MODAL_CLOSE_ICON_CLASSES = "modal-close-icon"
+
+    # Confirm dialog constants
+    # Slots without a CONFIRM_* constant (dialog, inner) fall back to MODAL_*.
+    CONFIRM_CONTENT_CLASSES = "confirm-content"
+    CONFIRM_HEADER_CLASSES = "confirm-header"
+    CONFIRM_TITLE_CLASSES = "confirm-title"
+    CONFIRM_TITLE_H_CLASSES = "confirm-title-h"
+    CONFIRM_MAIN_CLASSES = "confirm-main"
+    CONFIRM_BODY_CLASSES = "confirm-body"
+    CONFIRM_FOOTER_CLASSES = "confirm-footer"
+    CONFIRM_ACTIONS_CLASSES = "confirm-actions"
+    CONFIRM_CANCEL_CLASSES = "confirm-cancel"
+    CONFIRM_ACCEPT_CLASSES = "confirm-accept"
 
     # Drawer constants
     DRAWER_DIALOG_CLASSES = "drawer-container"

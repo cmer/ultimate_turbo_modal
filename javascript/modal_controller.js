@@ -21,6 +21,20 @@ let savedPaddingRight = '';
 let compensatedFixedElements = [];
 let closeTokenSequence = 0;
 
+// A confirm dialog is a transient prompt layered over whatever the user was
+// already doing, so it stays out of `window.modal` -- `window.modal.hide()` and
+// `turbo_stream.modal(:close)` should still address the modal underneath. It
+// does join dialogStack, which is what orders Escape handling.
+const publishWindowModal = () => {
+  for (let i = dialogStack.length - 1; i >= 0; i--) {
+    if (dialogStack[i].element?.dataset.utmrConfirm === undefined) {
+      window.modal = dialogStack[i];
+      return;
+    }
+  }
+  window.modal = undefined;
+};
+
 export default class extends Controller {
   // Resolvers for in-flight hideModalWithPromise() calls. A close can end
   // without the dialog ever closing -- a morph can supersede it, or the
@@ -29,7 +43,7 @@ export default class extends Controller {
   // keeps meaning "this dialog is closed and gone".
   #closeWaiters = new Set()
 
-  static targets = ["container", "content"]
+  static targets = ["container", "content", "transition"]
   static values = {
     advanceUrl: String,
     allowedClickOutsideSelector: String,
@@ -91,7 +105,7 @@ export default class extends Controller {
     };
     document.addEventListener('keydown', this.keydownHandler);
 
-    window.modal = dialogStack[dialogStack.length - 1];
+    publishWindowModal();
   }
 
   disconnect() {
@@ -110,7 +124,7 @@ export default class extends Controller {
 
     const idx = dialogStack.indexOf(this);
     if (idx !== -1) dialogStack.splice(idx, 1);
-    window.modal = dialogStack[dialogStack.length - 1];
+    publishWindowModal();
   }
 
   showModal() {
@@ -142,7 +156,7 @@ export default class extends Controller {
     this.hidingModal = true;
 
     let event = new Event('modal:closing', { cancelable: true });
-    this.turboFrame.dispatchEvent(event);
+    this.#eventTarget().dispatchEvent(event);
     if (event.defaultPrevented) {
       this.hidingModal = false;
       return false
@@ -154,19 +168,19 @@ export default class extends Controller {
 
   hideModalWithPromise(options = {}) {
     return new Promise((resolve) => {
-      const frame = this.turboFrame;
+      const eventTarget = this.#eventTarget();
       let timeout = null;
       let settled = false;
       const settle = () => {
         if (settled) return;
         settled = true;
-        frame?.removeEventListener('modal:closed', settle);
+        eventTarget?.removeEventListener('modal:closed', settle);
         this.#closeWaiters.delete(settle);
         clearTimeout(timeout);
         resolve();
       };
       this.#closeWaiters.add(settle);
-      frame?.addEventListener('modal:closed', settle);
+      eventTarget?.addEventListener('modal:closed', settle);
       // Last resort. Every path that ends a close settles its waiters, but a
       // caller awaiting this promise must never hang on a missed one.
       timeout = setTimeout(settle, this.#closeTimeoutMs() + 100);
@@ -412,7 +426,7 @@ export default class extends Controller {
       }
 
       if (dialogStillOurs) {
-        try { frame?.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
+        try { this.#eventTarget()?.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
       }
       this.#settleCloseWaiters();
 
@@ -463,7 +477,7 @@ export default class extends Controller {
     }
 
     if (dialogStillOurs) {
-      try { frame?.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
+      try { this.#eventTarget()?.dispatchEvent(new Event('modal:closed', { cancelable: false })); } catch (_) {}
     }
     this.#settleCloseWaiters();
   }
@@ -485,22 +499,23 @@ export default class extends Controller {
     return this.containerTarget.dataset.drawer !== undefined
   }
 
-  #isStacked() {
-    return this.containerTarget.id === 'modal-container-stacked';
+  // Confirm dialogs are appended straight to <body> and have no turbo-frame
+  // ancestor, so `modal:closing` / `modal:closed` are dispatched on the dialog
+  // itself. Frame-bound modals keep dispatching on the frame, which is where
+  // existing listeners are attached.
+  #eventTarget() {
+    return this.turboFrame || this.containerTarget;
   }
 
-  // The element that runs the enter/leave CSS transition. The
-  // `#queueCloseCleanup` listener waits for `transitionend` on this element to
-  // know when the leave animation has completed.
-  //
-  // Note: the inner id (`modal-inner` / `modal-inner-stacked`) is shared by a
-  // wrapping `<turbo-frame>` AND the `<div>` that actually carries the
-  // transition classes. We need the DIV — `querySelector('#modal-inner')`
-  // would return the frame instead.
+  // The element that runs the enter/leave CSS transition. `#queueCloseCleanup`
+  // waits for `transitionend` on it to know the leave animation has finished.
+  // Every dialog marks it with `data-modal-target="transition"`; the id lookup
+  // is only for markup rendered by a gem older than that target, and has to say
+  // `div` because a modal's turbo-frame shares the inner id with the div in it.
   #transitionTarget() {
+    if (this.hasTransitionTarget) return this.transitionTarget;
     if (this.#isDrawer()) return this.containerTarget.querySelector('#drawer-panel');
-    const innerSelector = this.#isStacked() ? 'div#modal-inner-stacked' : 'div#modal-inner';
-    return this.containerTarget.querySelector(innerSelector);
+    return this.containerTarget.querySelector('div#modal-inner, div#modal-inner-stacked');
   }
 
   #queueEnter() {

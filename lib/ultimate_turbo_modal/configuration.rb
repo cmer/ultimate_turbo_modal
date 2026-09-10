@@ -14,7 +14,7 @@ module UltimateTurboModal
     :allowed_click_outside_selector, :allowed_click_outside_selector=, to: :configuration
 
   class Configuration
-    attr_reader :flavor, :modal_config, :drawer_config
+    attr_reader :flavor, :modal_config, :drawer_config, :confirm_config
     attr_accessor :allowed_click_outside_selector
 
     def initialize
@@ -22,6 +22,7 @@ module UltimateTurboModal
       @allowed_click_outside_selector = []
       @modal_config = ModalConfig.new
       @drawer_config = DrawerConfig.new
+      @confirm_config = ConfirmConfig.new
     end
 
     def modal
@@ -32,6 +33,11 @@ module UltimateTurboModal
     def drawer
       yield(@drawer_config) if block_given?
       @drawer_config
+    end
+
+    def confirm
+      yield(@confirm_config) if block_given?
+      @confirm_config
     end
 
     def flavor=(flavor)
@@ -84,6 +90,32 @@ module UltimateTurboModal
         @footer_divider = true
         @padding = true
         @overlay = true
+      end
+    end
+
+    # Defaults for the Turbo Confirm dialog. Every value here is a fallback:
+    # anything supplied per-element through `data-turbo-confirm` wins.
+    class ConfirmConfig < BaseConfig
+      attr_accessor :title, :accept_label, :cancel_label
+      attr_reader :enabled
+
+      boolean_option :enabled
+
+      # `advance` and `close_on_submit` are left unset: a confirm never pushes a
+      # URL and holds no form, and the dialog binds neither behavior.
+      def initialize
+        @enabled = true
+        # A confirm has its own Cancel button, and dividers chop up what is
+        # only ever a line or two of text.
+        @close_button = false
+        @header = true
+        @header_divider = false
+        @footer_divider = false
+        @padding = true
+        @overlay = true
+        @title = "Are you sure?"
+        @accept_label = "OK"
+        @cancel_label = "Cancel"
       end
     end
 

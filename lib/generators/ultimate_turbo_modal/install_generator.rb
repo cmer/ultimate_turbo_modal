@@ -127,6 +127,9 @@ module UltimateTurboModal
       def show_readme
         say "\nUltimateTurboModal installation complete!\n", :magenta
         say "Please review the initializer files, ensure JS is set up, and check your layout file.", :magenta
+        say "\nOptional: to render `data-turbo-confirm` prompts as modals instead of", :magenta
+        say "the browser's confirm dialog, add this to your layout:", :magenta
+        say "  <%= modal_confirm_template %>", :cyan
         say "Don't forget to restart your Rails server!", :yellow
       end
 
