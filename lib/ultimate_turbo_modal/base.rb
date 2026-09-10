@@ -119,12 +119,16 @@ class UltimateTurboModal::Base < Phlex::HTML
     stacked? ? "drawer-modal" : "modal"
   end
 
+  # Both return nil so `<%= m.title do %>` writes nothing to the ERB buffer.
+  # The assignment's own value is a Proc, and ERB would print it.
   def title(&block)
     @title_block = block
+    nil
   end
 
   def footer(&block)
     @footer = block
+    nil
   end
 
   class << self

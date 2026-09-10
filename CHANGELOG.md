@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 - Added optional Turbo Confirm support: `data-turbo-confirm` prompts can now render as a UTMR dialog instead of the browser's `window.confirm`.
+- Fixed `<%= m.title do %>` and `<%= m.footer do %>` printing a `Proc` into the modal body. Both forms now work, with or without the `=`.
 
 ## [3.3.0] - 2026-09-05
 
