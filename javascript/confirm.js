@@ -62,8 +62,12 @@ const readOptions = (message, sources) => {
   return options;
 };
 
-const nativeConfirm = (options, message) =>
-  window.confirm(options.body || options.title || message || '');
+// What a plain-text confirm should say. The raw `data-turbo-confirm` value can
+// be the `modal_confirm` helper's JSON payload, which is not something to put
+// in front of a user, so the parsed message wins over it.
+const confirmText = (options, message) => options.body || options.title || message || '';
+
+const nativeConfirm = (options, message) => window.confirm(confirmText(options, message));
 
 // Present only when the layout rendered `modal_confirm_template` -- this is the
 // feature's on switch, looked up per confirmation so a Turbo Drive navigation
@@ -215,8 +219,9 @@ const handler = (message, formElement, submitter) => {
     sources.some((source) => source.closest('[data-turbo-confirm-native]'));
 
   if (optedOut) {
+    // Whatever handles this instead still gets readable text, never the payload.
     return previousConfirm
-      ? previousConfirm(message, formElement, submitter)
+      ? previousConfirm(confirmText(options, message), formElement, submitter)
       : Promise.resolve(nativeConfirm(options, message));
   }
 

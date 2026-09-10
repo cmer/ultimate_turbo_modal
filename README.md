@@ -375,8 +375,11 @@ You can also write the attributes by hand, which is convenient on forms:
       turbo_confirm_variant: "danger" } } %>
 ```
 
-They can go on the form, on a wrapping element, or on the submit button — the
-submitter wins when both carry the same option.
+`data-turbo-confirm` itself has to be on the form or on the submit button:
+Turbo looks nowhere else, and a prompt written on a wrapping element is simply
+never triggered. The `data-turbo-confirm-*` options are read once the prompt has
+fired, so those may also sit on a wrapping element. The submitter wins when both
+it and the form carry the same option.
 
 > [!IMPORTANT]
 > On a **link**, use `modal_confirm`. Sibling `data-turbo-confirm-*` attributes
