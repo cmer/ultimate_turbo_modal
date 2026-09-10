@@ -28,7 +28,7 @@ Ultimate Turbo Modal (UTMR) v3 is a full-featured modal and drawer implementatio
 │   │   ├── railtie.rb                  # Rails integration (helpers into AC/AV, asset path)
 │   │   └── helpers/
 │   │       ├── controller_helper.rb    # inside_modal? method
-│   │       ├── view_helper.rb          # modal() and drawer() view helpers
+│   │       ├── view_helper.rb          # modal(), drawer(), modal_confirm_template(), modal_confirm()
 │   │       └── stream_helper.rb        # turbo_stream.modal(:close) helper
 │   ├── phlex/
 │   │   └── deferred_render_with_main_content.rb  # Phlex mixin for deferred rendering
@@ -46,6 +46,7 @@ Ultimate Turbo Modal (UTMR) v3 is a full-featured modal and drawer implementatio
 │   ├── package.json            # npm: "ultimate_turbo_modal"
 │   ├── index.js                # Entry: Turbo stream actions, frame handlers, exports
 │   ├── modal_controller.js     # Stimulus controller (modal + drawer behavior)
+│   ├── confirm.js              # Opt-in Turbo Confirm support (enableModalConfirm)
 │   ├── rollup.config.js        # Build config (ESM output, terser, version replacement)
 │   ├── scripts/
 │   │   ├── release-npm.sh      # npm publish script
@@ -79,6 +80,8 @@ Flavors are Ruby classes that inherit from `UltimateTurboModal::Base` and define
 Each flavor defines **modal constants** and **drawer constants**:
 
 Modal: `MODAL_DIALOG_CLASSES`, `MODAL_INNER_CLASSES`, `MODAL_CONTENT_CLASSES`, `MODAL_MAIN_CLASSES`, `MODAL_HEADER_CLASSES`, `MODAL_TITLE_CLASSES`, `MODAL_TITLE_H_CLASSES`, `MODAL_FOOTER_CLASSES`, `MODAL_CLOSE_CLASSES`, `MODAL_CLOSE_BUTTON_CLASSES`, `MODAL_CLOSE_SR_CLASSES`, `MODAL_CLOSE_ICON_CLASSES`
+
+Confirm (all optional): `CONFIRM_INNER_CLASSES`, `CONFIRM_CONTENT_CLASSES`, `CONFIRM_HEADER_CLASSES`, `CONFIRM_TITLE_CLASSES`, `CONFIRM_TITLE_H_CLASSES`, `CONFIRM_MAIN_CLASSES`, `CONFIRM_FOOTER_CLASSES`, plus the confirm-only `CONFIRM_BODY_CLASSES`, `CONFIRM_ACTIONS_CLASSES`, `CONFIRM_ACCEPT_CLASSES`, `CONFIRM_CANCEL_CLASSES`. `Base#classes_for` falls back to the matching `MODAL_*` constant when a `CONFIRM_*` one is undefined, so a flavor only defines what should differ.
 
 Drawer: `DRAWER_DIALOG_CLASSES`, `DRAWER_WRAPPER_CLASSES`, `DRAWER_PANEL_CLASSES`, `DRAWER_CONTENT_CLASSES`, `DRAWER_HEADER_CLASSES`, `DRAWER_TITLE_CLASSES`, `DRAWER_TITLE_H_CLASSES`, `DRAWER_MAIN_CLASSES`, `DRAWER_FOOTER_CLASSES`, `DRAWER_CLOSE_CLASSES`, `DRAWER_CLOSE_BUTTON_CLASSES`, `DRAWER_CLOSE_SR_CLASSES`, `DRAWER_CLOSE_ICON_CLASSES`
 
@@ -115,8 +118,8 @@ Drawer: `DRAWER_DIALOG_CLASSES`, `DRAWER_WRAPPER_CLASSES`, `DRAWER_PANEL_CLASSES
 
 ### Stimulus Controller Targets and Values
 
-- **Targets**: `container`, `content`
-- **Values**: `advanceUrl` (String), `allowedClickOutsideSelector` (String)
+- **Targets**: `container`, `content`, `transition` (the element that runs the enter/leave animation; every dialog marks it, and the id-based `#modal-inner` / `#drawer-panel` lookup remains only for markup from an older gem)
+- **Values**: `advanceUrl` (String), `allowedClickOutsideSelector` (String), `closeOnSubmit` (Boolean)
 
 ### Data Attributes on `<dialog#modal-container>`
 
@@ -127,6 +130,8 @@ Set by the Ruby side, used for conditional styling via CSS selectors:
 - `data-drawer-size` (drawer-specific)
 - `data-enter-ready`, `data-entered` (enter animation state for both modals and drawers, managed by JS)
 - `data-closing` (closing animation state for both modals and drawers, managed by JS)
+- `data-utmr-confirm` (present only on confirm dialogs)
+- `data-utmr-confirm-variant` (`"danger"`, set by JS from the per-element `variant` option)
 - `data-utmr-version` (dev/test only, for version mismatch warnings)
 
 ## Configuration Options
@@ -168,6 +173,24 @@ Options can be set at three levels (lowest wins):
 | `padding` | Boolean | `true` | Add padding to drawer content |
 | `overlay` | Boolean | `true` | Show backdrop overlay |
 | `size` | Symbol or String | `:md` | Drawer width: `:xs`, `:sm`, `:md`, `:lg`, `:xl`, `:"2xl"`, `:full`, or CSS string |
+
+### Confirm Options (`config.confirm`)
+
+Defaults for the Turbo Confirm dialog. The feature is enabled by rendering
+`modal_confirm_template` in the layout; no JavaScript call is required.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | Boolean | `true` | When false, `modal_confirm_template` renders nothing, disabling the feature |
+| `title` | String | `"Are you sure?"` | Default dialog heading |
+| `accept_label` | String | `"OK"` | Default confirming button label |
+| `cancel_label` | String | `"Cancel"` | Default dismissing button label |
+| `close_button` | Boolean | `false` | Show close button (off: a confirm has its own Cancel) |
+| `header` | Boolean | `true` | Show header section |
+| `header_divider` | Boolean | `false` | Show divider below header |
+| `footer_divider` | Boolean | `false` | Show divider above footer |
+| `padding` | Boolean | `true` | Add padding to content |
+| `overlay` | Boolean | `true` | Show backdrop overlay |
 
 ### Per-Instance Only Options
 
@@ -363,6 +386,68 @@ Uses a `data-turbo-modal-history-advanced` attribute on `<body>` to track whethe
 - Drawer content normalization retargets links/forms/buttons inside a drawer from `data-turbo-frame="modal"` to `data-turbo-frame="drawer-modal"` once they are in the drawer DOM. Turbo then handles normal clicks/submissions itself and sends `Turbo-Frame: drawer-modal`. This lets a single partial use `data-turbo-frame="modal"` everywhere — outside a drawer it opens a regular modal; inside a drawer it opens a stacked one.
 - Event listeners are added with a preceding `removeEventListener` to prevent duplicates on hot reload
 
+### Turbo Confirm (opt-in)
+
+`Base` renders the confirm dialog in `confirm` mode: same flavor classes and
+same `modal` Stimulus controller as a real modal, but wrapped in an inert
+`<template id="utmr-confirm-template">` and with all ids suffixed `-confirm`
+(via `Base#id_suffix`, which also drives the `-stacked` suffix). Its `<style>`
+tag goes *inside* the dialog, unlike modals and drawers, so the single node the
+JS clones is self-contained.
+
+`index.js` calls `enableModalConfirm()` at import time, which installs a handler
+on `Turbo.config.forms.confirm` (falling back to the deprecated
+`Turbo.setConfirmMethod`). The handler is inert until the page carries
+`#utmr-confirm-template`: without it, it delegates to whatever confirm method
+was installed before, or `window.confirm`. So the template -- and therefore the
+`modal_confirm_template` helper and `config.confirm.enabled` -- is the entire
+opt-in, with no JS call required from the app. The template is looked up per
+confirmation, so navigating between layouts that do and don't render it takes
+effect immediately.
+
+When it is active the handler clones the template, fills the slots, appends it
+to `<body>` and resolves the promise Turbo awaits. Native `<dialog>` top-layer
+stacking puts it above an open modal or drawer with no frame handling.
+
+Key constraints this design works around:
+
+- Turbo only invokes the confirm hook from `FormSubmission.start()`. A plain
+  `<a data-turbo-confirm>` never confirms; it needs `data-turbo-method` or
+  `data-turbo-stream`.
+- Turbo rewrites such a link into a hidden form on `<body>` and copies only a
+  fixed set of attributes, dropping sibling `data-turbo-confirm-*`. The
+  `modal_confirm` helper's JSON payload inside `data-turbo-confirm` is the
+  supported answer, since it always survives; options are read from the
+  submitter and the form only, never from the originating link. That includes
+  the native opt-out: `data-turbo-confirm-native` works on a form or submitter,
+  while a link passes `native: true` through the payload.
+- A body-appended dialog has no `turbo-frame` ancestor, so the controller
+  dispatches `modal:closing`/`modal:closed` on `#eventTarget()`
+  (`this.turboFrame || this.containerTarget`).
+- A confirm gets only `cancel->modal#cancelEvent` from `Base#dialog_actions`;
+  the mousedown/click actions are left off so a backdrop click cannot answer
+  the prompt. Escape and Cancel still dismiss.
+- Confirm dialogs join `dialogStack` (so Escape closes the topmost first) but
+  are skipped by `publishWindowModal()`, so `window.modal` and
+  `turbo_stream.modal(:close)` keep addressing the modal underneath. They are
+  likewise excluded from `openDialogCount()` in `index.js`.
+
+`Base#classes_for` checks `CONFIRM_*` first in confirm mode and falls back to
+`MODAL_*`, so flavors override only the slots that should differ (the card is
+narrowed to a fixed `sm:max-w-md` and the spacing retuned for a short prompt).
+`Base#confirm_classes_for` returns `nil` for an undefined constant, so flavor
+files predating the feature keep working.
+
+The close button is omitted from the markup entirely rather than hidden with
+CSS when `close_button` is false (the confirm default), which keeps it out of
+the tab order and the accessibility tree.
+
+`focusInitialButton` in `confirm.js` waits for `data-entered` before focusing
+the accept button (or Cancel for `variant: "danger"`). Flavors that keep dialog
+contents `visibility: hidden` until the enter transition is armed -- the vanilla
+one does -- have nothing focusable at `showModal()` time, so both the template's
+`autofocus` and an early `.focus()` are silently dropped.
+
 ### Turbo Cache Handling
 The `turbo:before-cache` event listener removes the dialog from Turbo's page cache to prevent stale state when navigating back.
 
@@ -370,4 +455,4 @@ The `turbo:before-cache` event listener removes the dialog from Turbo's page cac
 
 - **No automated test suite** — Ruby has no test files; JavaScript has no test framework
 - **Manual testing** via the demo app at `./demo-app`
-- The demo app exercises: modals, drawers (left/right), photo modals (no header/padding), long scrolling content, form submission with server-side close, advance history, focus trapping
+- The demo app exercises: modals, drawers (left/right), photo modals (no header/padding), long scrolling content, form submission with server-side close, advance history, focus trapping, Turbo Confirm (`/testing/confirms`)

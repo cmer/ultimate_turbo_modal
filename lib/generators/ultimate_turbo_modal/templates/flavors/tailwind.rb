@@ -8,7 +8,7 @@
 # `data-entered` state (which would prevent the modal from animating out).
 module UltimateTurboModal::Flavors
   class Tailwind < UltimateTurboModal::Base
-    STYLES = "html:has(dialog#modal-container[open]), html:has(dialog#modal-container-stacked[open]) { overflow: hidden; }"
+    STYLES = "html:has(dialog.utmr[open]) { overflow: hidden; }"
 
     # Modal constants
 
@@ -25,15 +25,22 @@ module UltimateTurboModal::Flavors
       "data-[closing]:backdrop:duration-200 data-[closing]:backdrop:ease-in"
     ].join(" ")
 
-    MODAL_INNER_CLASSES = [
-      "flex min-h-full items-start justify-center pt-[10vh] sm:items-center sm:pt-0 sm:p-4 sm:pb-[10vh]",
-      # Transition
+    # The enter/leave animation, shared by the modal and the confirm dialog.
+    # Tailwind resolves conflicts by CSS source order rather than by the order
+    # classes appear in the string, so the two cannot share a layout line -- but
+    # they must not drift apart on the animation.
+    MODAL_TRANSITION_CLASSES = [
       "transition duration-300 ease-out",
       "group-data-[closing]/utmr-modal:duration-200 group-data-[closing]/utmr-modal:ease-in",
       # Default state (closed): faded + shifted
       "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
       # Entered state
       "group-data-[entered]/utmr-modal:opacity-100 group-data-[entered]/utmr-modal:translate-y-0 group-data-[entered]/utmr-modal:scale-100"
+    ].join(" ")
+
+    MODAL_INNER_CLASSES = [
+      "flex min-h-full items-start justify-center pt-[10vh] sm:items-center sm:pt-0 sm:p-4 sm:pb-[10vh]",
+      MODAL_TRANSITION_CLASSES
     ].join(" ")
 
     MODAL_CONTENT_CLASSES = "relative transform max-h-screen overflow-hidden rounded-lg bg-white text-left shadow-lg transition-all sm:max-w-3xl dark:bg-gray-800 dark:text-white"
@@ -46,6 +53,73 @@ module UltimateTurboModal::Flavors
     MODAL_CLOSE_SR_CLASSES = "sr-only"
     MODAL_CLOSE_BUTTON_CLASSES = "text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
     MODAL_CLOSE_ICON_CLASSES = "w-5 h-5"
+
+    # Confirm dialog constants
+    #
+    # The confirm dialog renders through the modal's markup, so it inherits the
+    # dialog, backdrop and transition classes above. These constants only
+    # narrow the card and retune the spacing for what is a short prompt rather
+    # than a page of content. Any slot left undefined falls back to MODAL_*.
+
+    # Same transition as a modal, with a real gutter so the full-width card
+    # never touches the screen edge on mobile.
+    CONFIRM_INNER_CLASSES = [
+      "flex min-h-full items-start justify-center p-4 pt-[10vh] sm:items-center sm:pt-4 sm:pb-[10vh]",
+      MODAL_TRANSITION_CLASSES
+    ].join(" ")
+
+    # Sized rather than shrink-to-fit, so a one-word prompt and a three-line one
+    # come out the same. The floor is written as `min(20rem, 100%)` so it can
+    # never push the card wider than the space it has on a narrow screen.
+    CONFIRM_CONTENT_CLASSES = [
+      "relative w-full transform overflow-hidden rounded-lg text-left shadow-xl transition-all",
+      "min-w-[min(20rem,100%)] sm:max-w-md",
+      "bg-white dark:bg-gray-800 dark:text-white"
+    ].join(" ")
+
+    CONFIRM_HEADER_CLASSES = [
+      "flex items-start justify-between gap-4 w-full px-6 pt-6",
+      "dark:border-gray-600",
+      "group-data-[header-divider=true]/utmr-modal:border-b group-data-[header-divider=true]/utmr-modal:pb-4",
+      "group-data-[header=false]/utmr-modal:hidden"
+    ].join(" ")
+
+    CONFIRM_TITLE_CLASSES = "min-w-0"
+    CONFIRM_TITLE_H_CLASSES = "group-data-[title=false]/utmr-modal:hidden text-base font-semibold text-gray-900 dark:text-white"
+
+    CONFIRM_MAIN_CLASSES = "group-data-[padding=true]/utmr-modal:px-6 group-data-[padding=true]/utmr-modal:pt-2"
+    CONFIRM_BODY_CLASSES = "text-sm/6 text-gray-500 dark:text-gray-400"
+
+    CONFIRM_FOOTER_CLASSES = [
+      "px-6 pt-6 pb-6",
+      "dark:border-gray-600 group-data-[footer-divider=true]/utmr-modal:border-t"
+    ].join(" ")
+
+    # Stacked and full-width on mobile (thumb-friendly), inline and right
+    # aligned from `sm` up. Reversed so the primary action sits on top.
+    CONFIRM_ACTIONS_CLASSES = "flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3"
+
+    CONFIRM_BUTTON_CLASSES = [
+      "inline-flex w-full sm:w-auto justify-center items-center rounded-md",
+      "px-4 py-2.5 sm:py-2 text-sm font-semibold transition-colors",
+      "focus-visible:outline-2 focus-visible:outline-offset-2"
+    ].join(" ")
+
+    CONFIRM_CANCEL_CLASSES = [
+      CONFIRM_BUTTON_CLASSES,
+      "bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
+      "dark:bg-gray-700 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-600",
+      "focus-visible:outline-gray-400"
+    ].join(" ")
+
+    CONFIRM_ACCEPT_CLASSES = [
+      CONFIRM_BUTTON_CLASSES,
+      "text-white shadow-sm bg-indigo-600 hover:bg-indigo-500 focus-visible:outline-indigo-600",
+      # Destructive variant, set from `variant: :danger`
+      "group-data-[utmr-confirm-variant=danger]/utmr-modal:bg-red-600",
+      "group-data-[utmr-confirm-variant=danger]/utmr-modal:hover:bg-red-500",
+      "group-data-[utmr-confirm-variant=danger]/utmr-modal:focus-visible:outline-red-600"
+    ].join(" ")
 
     # Drawer constants
 

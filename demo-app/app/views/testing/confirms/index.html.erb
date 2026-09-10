@@ -1,0 +1,124 @@
+<% row = "flex items-center justify-between gap-4 px-4 py-3" %>
+<% note = "text-xs text-gray-500 dark:text-gray-400" %>
+<% card = "rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden" %>
+<% card_head = "px-4 py-2 bg-gray-50 dark:bg-slate-700/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400" %>
+<% rows = "divide-y divide-gray-100 dark:divide-gray-700" %>
+
+<div class="max-w-3xl mx-auto py-8 px-4 space-y-8">
+  <div class="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+    <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Turbo Confirm</h1>
+    <a href="/testing" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">&larr; Testing</a>
+  </div>
+
+  <p class="text-sm text-gray-600 dark:text-gray-300">
+    Actions performed this session:
+    <strong class="tabular-nums" id="confirm-counter"><%= @performed %></strong>.
+    Cancelling must never increment it.
+  </p>
+
+  <%# ── Where the options come from ── %>
+  <div class="<%= card %>">
+    <div class="<%= card_head %>">Option sources</div>
+    <div class="<%= rows %>">
+      <div class="<%= row %>">
+        <div>
+          <%= link_to "Plain string", act_testing_confirms_path(label: "plain"),
+                class: button_classes,
+                data: {turbo_method: :post, turbo_confirm: "The message becomes the body; title and buttons keep their configured defaults."} %>
+        </div>
+        <span class="<%= note %>">link + <code>data-turbo-confirm</code></span>
+      </div>
+
+      <div class="<%= row %>">
+        <div>
+          <%= link_to "modal_confirm helper (danger)", act_testing_confirms_path(label: "helper"),
+                class: button_classes,
+                data: modal_confirm("This can't be undone.",
+                  title: "Delete post?", accept: "Delete", variant: :danger,
+                  turbo_method: :delete) %>
+        </div>
+        <span class="<%= note %>">JSON payload, survives the link&rarr;form rewrite</span>
+      </div>
+
+      <div class="<%= row %>">
+        <div>
+          <%= link_to "Sibling attributes on a link", act_testing_confirms_path(label: "link-attrs"),
+                class: button_classes,
+                data: {turbo_method: :post,
+                       turbo_confirm: "Only this message survives; Turbo drops the rest.",
+                       turbo_confirm_title: "Never shown",
+                       turbo_confirm_accept: "Never shown"} %>
+        </div>
+        <span class="<%= note %>">expected: default title and OK, not the siblings</span>
+      </div>
+
+      <div class="<%= row %>">
+        <%= button_to "Sibling attributes on a form", act_testing_confirms_path(label: "form-attrs"),
+              class: button_classes,
+              form: {data: {turbo_confirm: "Attributes on the form element itself.",
+                            turbo_confirm_title: "Attributes on a form",
+                            turbo_confirm_cancel: "Never mind"}} %>
+        <span class="<%= note %>"><code>button_to</code></span>
+      </div>
+
+      <div class="<%= row %>">
+        <%= form_with url: act_testing_confirms_path(label: "submitter"), method: :post do |f| %>
+          <%= f.submit "Attributes on the submitter", class: button_classes,
+                data: {turbo_confirm: "Two submitters, one form, different prompts.",
+                       turbo_confirm_title: "Submitter wins", turbo_confirm_variant: "danger"} %>
+        <% end %>
+        <span class="<%= note %>">submitter beats form</span>
+      </div>
+
+      <div class="<%= row %>">
+        <%= link_to "Title only", act_testing_confirms_path(label: "title-only"),
+              class: button_classes,
+              data: modal_confirm(title: "Just a title, no body?", accept: "Yes", turbo_method: :post) %>
+        <span class="<%= note %>">empty body node is dropped</span>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Stacking ── %>
+  <div class="<%= card %>">
+    <div class="<%= card_head %>">Layered over an open dialog</div>
+    <div class="<%= rows %>">
+      <div class="<%= row %>">
+        <%= link_to "Confirm inside a modal", in_modal_testing_confirms_path,
+              data: {turbo_frame: "modal"}, class: button_classes %>
+        <span class="<%= note %>">Escape must close the confirm, not the modal</span>
+      </div>
+      <div class="<%= row %>">
+        <%= link_to "Confirm inside a drawer", in_drawer_testing_confirms_path,
+              data: {turbo_frame: "modal"}, class: button_classes %>
+        <span class="<%= note %>">confirm sits above the drawer</span>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Escape hatch ── %>
+  <div class="<%= card %>">
+    <div class="<%= card_head %>">Escape hatch</div>
+    <div class="<%= rows %>">
+      <div class="<%= row %>">
+        <%= link_to "Native window.confirm", act_testing_confirms_path(label: "native"),
+              class: button_classes,
+              data: modal_confirm("This one uses the browser dialog.",
+                                  native: true, turbo_method: :post) %>
+        <span class="<%= note %>">on a link: <code>modal_confirm(native: true)</code></span>
+      </div>
+
+      <div class="<%= row %>">
+        <%= button_to "Native from a form", act_testing_confirms_path(label: "native-form"),
+              class: button_classes,
+              form: {data: {turbo_confirm: "The attribute works where it survives.",
+                            turbo_confirm_native: true}} %>
+        <span class="<%= note %>">on a form: <code>data-turbo-confirm-native</code></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center text-xs text-gray-400 dark:text-gray-500">
+    Flavor: <strong><%= UltimateTurboModal.flavor %></strong> &middot; Rendered at <%= Time.now.strftime("%H:%M:%S") %>
+  </div>
+</div>

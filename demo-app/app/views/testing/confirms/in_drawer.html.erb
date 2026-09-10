@@ -1,0 +1,13 @@
+<%= drawer(title: "Drawer hosting a confirm", padding: @padding, close_button: @close_button) do %>
+  <div class="space-y-4">
+    <p class="text-sm text-gray-600 dark:text-gray-300">
+      Confirm dialogs are appended to the body, so the native top layer puts
+      them above the drawer without any stacked-frame handling.
+    </p>
+    <%= link_to "Delete something", act_testing_confirms_path(label: "from-drawer"),
+          class: button_classes,
+          data: modal_confirm("The drawer underneath stays put until you accept.",
+            title: "Delete from a drawer?", accept: "Delete", variant: :danger,
+            turbo_method: :delete) %>
+  </div>
+<% end %>

@@ -1,4 +1,5 @@
 import UltimateTurboModalController from './modal_controller.js';
+import { enableModalConfirm } from './confirm.js';
 import { Idiomorph } from 'idiomorph';
 import '../app/assets/stylesheets/ultimate_turbo_modal.css';
 
@@ -7,12 +8,24 @@ Turbo.StreamActions.modal = function () {
   if (message == "hide" || message == "close") window.modal?.hide();
 };
 
+// Installs the Turbo Confirm hook. It stays dormant unless the page renders the
+// confirm <template>, so importing this package never changes how an app's
+// existing `data-turbo-confirm` prompts behave.
+enableModalConfirm();
+
 // Frame ids managed by UTMR — primary modal/drawer + stacked-modal frames.
 const MODAL_FRAME_IDS = new Set([
   'modal',
   'modal-inner',
   'drawer-modal',
   'modal-inner-stacked'
+]);
+
+// Dialog ids owned by UTMR. A body morph must leave these alone.
+const UTMR_DIALOG_IDS = new Set([
+  'modal-container',
+  'modal-container-stacked',
+  'modal-container-confirm'
 ]);
 
 // Check if the event target is one of our modal Turbo Frames
@@ -40,7 +53,7 @@ const morphPageBehindModal = (html) => {
     ignoreActiveValue: true,
     callbacks: {
       beforeNodeMorphed: (oldNode) => {
-        if (oldNode.id === 'modal-container' || oldNode.id === 'modal-container-stacked') return false;
+        if (UTMR_DIALOG_IDS.has(oldNode.id)) return false;
         if (oldNode.tagName?.toLowerCase() === 'turbo-frame' && MODAL_FRAME_IDS.has(oldNode.id)) return false;
         return true;
       }
@@ -48,9 +61,11 @@ const morphPageBehindModal = (html) => {
   });
 };
 
-// Count of UTMR dialogs currently in the DOM and open
+// Count of UTMR dialogs currently in the DOM and open. Confirm dialogs are
+// excluded: they are transient prompts layered over the real modal stack, and
+// counting one would make a lone modal look like it had a sibling to preserve.
 const openDialogCount = () =>
-  document.querySelectorAll('dialog.utmr[open]').length;
+  document.querySelectorAll('dialog.utmr[open]:not([data-utmr-confirm])').length;
 
 // Close every open UTMR dialog from top to bottom, awaiting each animation.
 // window.modal points to the topmost dialog and auto-rotates as each one
@@ -317,4 +332,4 @@ const handleTurboBeforeCache = () => {
 document.removeEventListener("turbo:before-cache", handleTurboBeforeCache);
 document.addEventListener("turbo:before-cache", handleTurboBeforeCache);
 
-export { UltimateTurboModalController };
+export { UltimateTurboModalController, enableModalConfirm };

@@ -27,4 +27,19 @@ UltimateTurboModal.configure do |config|
   #   d.overlay = true
   #   d.size = :md
   # end
+
+  # Turbo Confirm support. Enable it by adding `<%= modal_confirm_template %>`
+  # to your layout; these are the dialog's defaults.
+  # config.confirm do |c|
+  #   c.enabled = true
+  #   c.title = "Are you sure?"
+  #   c.accept_label = "OK"
+  #   c.cancel_label = "Cancel"
+  #   c.close_button = false
+  #   c.header = true
+  #   c.header_divider = false
+  #   c.footer_divider = false
+  #   c.padding = true
+  #   c.overlay = true
+  # end
 end

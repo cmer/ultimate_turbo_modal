@@ -16,6 +16,10 @@ module UltimateTurboModal
     modal_class.new(**)
   end
 
+  def confirm(**)
+    modal_class.new(confirm: true, **)
+  end
+
   def modal_class
     "UltimateTurboModal::Flavors::#{flavor.to_s.classify}".constantize
   rescue NameError

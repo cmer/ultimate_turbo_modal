@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+- Added optional Turbo Confirm support: `data-turbo-confirm` prompts can now render as a UTMR dialog instead of the browser's `window.confirm`.
+
 ## [3.3.0] - 2026-09-05
 
 - Added `close_on_submit`, which keeps a modal or drawer open after a successful form submission. Individual forms can override it with `data-modal-close-on-submit`.

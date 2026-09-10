@@ -4,6 +4,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   prepend Phlex::DeferredRenderWithMainContent
 
   attr_accessor :request, :allowed_click_outside_selector, :content_div_data
+  CONFIRM_TEMPLATE_ID = "utmr-confirm-template"
   VALID_DRAWER_SIZES = %i[xs sm md lg xl 2xl full].freeze
   VALID_DRAWER_POSITIONS = %i[right left].freeze
 
@@ -13,6 +14,7 @@ class UltimateTurboModal::Base < Phlex::HTML
   # @param close_button_data_action [String] `data-action` attribute for the close button
   # @param close_button_sr_label [String] Close button label for screen readers
   # @param close_on_submit [Boolean] Whether to dismiss on a successful, non-redirecting form submission
+  # @param confirm [Boolean] Internal: render the Turbo Confirm dialog template. Use the `modal_confirm_template` view helper instead.
   # @param drawer_position [Symbol, false] Internal: drawer position (:right, :left) or false for standard modal. Use the `drawer()` view helper instead.
   # @param footer_divider [Boolean] Whether to show a divider between the main content and the footer
   # @param header [Boolean] Whether to show a modal header
@@ -30,6 +32,7 @@ class UltimateTurboModal::Base < Phlex::HTML
     close_button_data_action: "modal#hideModal",
     close_button_sr_label: "Close modal",
     close_on_submit: nil,
+    confirm: false,
     drawer_position: false,
     footer_divider: nil,
     header: nil,
@@ -38,14 +41,23 @@ class UltimateTurboModal::Base < Phlex::HTML
     padding: nil,
     size: nil,
     content_div_data: nil,
+    accept_label: nil,
+    cancel_label: nil,
     request: nil, title: nil
   )
     @drawer = drawer_position
+    @confirm = confirm
     @request = request
 
     raise ArgumentError, "Cannot render a drawer into the drawer-modal frame (drawers cannot be opened from inside another drawer or modal)" if drawer? && stacked?
 
-    if drawer?
+    if confirm?
+      cfg = UltimateTurboModal.configuration.confirm_config
+      @drawer_size = nil
+      @accept_label = accept_label || cfg.accept_label
+      @cancel_label = cancel_label || cfg.cancel_label
+      title ||= cfg.title
+    elsif drawer?
       cfg = UltimateTurboModal.configuration.drawer_config
       @drawer_size = self.class.validate_drawer_size!(size || cfg.size)
     else
@@ -90,7 +102,11 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def view_template(&block)
-    if turbo_frame?
+    if confirm?
+      # Inert until the JS clones it, so it can live in the layout on every
+      # page without a dialog (or its <style> tag) ever being active.
+      template(id: CONFIRM_TEMPLATE_ID) { render_confirm }
+    elsif turbo_frame?
       turbo_frame_tag(turbo_frame_name) do
         drawer? ? render_drawer(&block) : render_modal(&block)
       end
@@ -136,13 +152,16 @@ class UltimateTurboModal::Base < Phlex::HTML
 
   def close_on_submit? = !!@close_on_submit
 
+  def confirm? = !!@confirm
+
   def title_block? = !!@title_block
 
   def title? = !!@title
 
   def header? = !!@header
 
-  def footer? = @footer.present?
+  # A confirm's footer holds its own buttons rather than a user block.
+  def footer? = @footer.present? || confirm?
 
   def header_divider? = !!@header_divider && (@title_block.present? || title?)
 
@@ -168,13 +187,22 @@ class UltimateTurboModal::Base < Phlex::HTML
     frame == "drawer-modal" || frame == "modal-inner-stacked"
   end
 
-  def dialog_id = stacked? ? "modal-container-stacked" : "modal-container"
+  def dialog_id = scoped_id("modal-container")
 
-  def inner_id = stacked? ? "modal-inner-stacked" : "modal-inner"
+  def inner_id = scoped_id("modal-inner")
 
   # Suffix inner ids so they don't collide with the drawer's ids when the
-  # stacked modal is rendered inside the drawer's DOM.
-  def scoped_id(name) = stacked? ? "#{name}-stacked" : name
+  # stacked modal is rendered inside the drawer's DOM, or with an open
+  # modal's ids when the confirm dialog is layered over it.
+  def scoped_id(name) = "#{name}#{id_suffix}"
+
+  def id_suffix
+    return "-confirm" if confirm?
+    # A layout renders for Turbo Frame requests too, so this has to be checked
+    # after confirm? -- otherwise a confirm template rendered during a stacked
+    # request would claim the stacked modal's ids.
+    stacked? ? "-stacked" : ""
+  end
 
   def drawer_position = @drawer || :right
 
@@ -252,9 +280,40 @@ class UltimateTurboModal::Base < Phlex::HTML
     raw(safe(str))
   end
 
+  # Confirm dialogs render through the modal's markup, so every slot falls back
+  # to its MODAL_* class unless the flavor defines a CONFIRM_* override.
   def classes_for(suffix)
+    if confirm?
+      override = confirm_classes_for(suffix)
+      return override unless override.nil?
+    end
+
     prefix = drawer? ? "DRAWER" : "MODAL"
     self.class.const_get("#{prefix}_#{suffix}")
+  end
+
+  # CONFIRM_* constants are optional. A flavor file written before confirm
+  # support returns nil here, which means shared slots fall back to MODAL_* and
+  # the confirm-only slots (body, actions, buttons) render unstyled rather than
+  # raising. `warn_missing_confirm_classes` is what tells the developer why.
+  def confirm_classes_for(suffix)
+    const = :"CONFIRM_#{suffix}"
+    self.class.const_defined?(const) ? self.class.const_get(const) : nil
+  end
+
+  # An unstyled confirm dialog looks like a bug in the gem rather than a stale
+  # flavor file, so say which it is. Once per flavor class, in development only.
+  def warn_missing_confirm_classes
+    return unless defined?(Rails) && Rails.env.local?
+    return if self.class.const_defined?(:CONFIRM_ACTIONS_CLASSES)
+    return if self.class.instance_variable_get(:@utmr_confirm_classes_warned)
+
+    self.class.instance_variable_set(:@utmr_confirm_classes_warned, true)
+    Rails.logger&.warn(
+      "[UltimateTurboModal] #{self.class.name} defines no CONFIRM_* classes, so the " \
+      "confirm dialog will render unstyled. Run `rails g ultimate_turbo_modal:update` " \
+      "to refresh your flavor file."
+    )
   end
 
   def custom_drawer_size?
@@ -265,23 +324,35 @@ class UltimateTurboModal::Base < Phlex::HTML
     data_attributes = {
       controller: "modal",
       modal_target: "container",
-      modal_advance_url_value: advance_url,
-      modal_allowed_click_outside_selector_value: allowed_click_outside_selector,
-      modal_close_on_submit_value: close_on_submit?.to_s,
-      action: "turbo:submit-end->modal#submitEnd cancel->modal#cancelEvent mousedown->modal#dialogMousedown click->modal#dialogClicked",
+      action: dialog_actions,
       padding: padding?.to_s,
       title: title?.to_s,
       header: header?.to_s,
       close_button: close_button?.to_s,
       header_divider: header_divider?.to_s,
-      footer_divider: footer_divider?.to_s
+      footer_divider: footer_divider?.to_s,
+      overlay: overlay?.to_s
     }
+
+    role = nil
+    aria_attributes = {labelledby: scoped_id("modal-title-h")}
+
+    if confirm?
+      # Everything the controller reads from those three values is driven by an
+      # action a confirm doesn't bind, so they would only ever mislead a reader.
+      data_attributes[:utmr_confirm] = ""
+      role = "alertdialog"
+      aria_attributes[:describedby] = scoped_id("modal-body")
+    else
+      data_attributes[:modal_advance_url_value] = advance_url
+      data_attributes[:modal_allowed_click_outside_selector_value] = allowed_click_outside_selector
+      data_attributes[:modal_close_on_submit_value] = close_on_submit?.to_s
+    end
 
     if drawer?
       data_attributes[:drawer] = drawer_position.to_s
       data_attributes[:drawer_size] = (@drawer_size.presence || "md").to_s
     end
-    data_attributes[:overlay] = overlay?.to_s
 
     if defined?(Rails) && Rails.env.local?
       data_attributes[:utmr_version] = UltimateTurboModal::VERSION
@@ -297,17 +368,29 @@ class UltimateTurboModal::Base < Phlex::HTML
     dialog(id: dialog_id,
       class: dialog_classes,
       style: inline_style,
-      aria: {
-        labelledby: scoped_id("modal-title-h")
-      },
+      role: role,
+      aria: aria_attributes,
       data: data_attributes, &block)
+  end
+
+  # A confirm is a decision, so a stray click on the backdrop must not answer it
+  # for the user. Leaving the outside-click actions off is the whole of it --
+  # Escape and the Cancel button still dismiss.
+  def dialog_actions
+    return "cancel->modal#cancelEvent" if confirm?
+
+    ["turbo:submit-end->modal#submitEnd",
+      "cancel->modal#cancelEvent",
+      "mousedown->modal#dialogMousedown",
+      "click->modal#dialogClicked"].join(" ")
   end
 
   ## Modal-specific elements
 
   def modal_inner(&block)
     maybe_turbo_frame(inner_id) do
-      div(id: inner_id, class: self.class::MODAL_INNER_CLASSES, &block)
+      div(id: inner_id, class: self.class::MODAL_INNER_CLASSES,
+        data: {modal_target: "transition"}, &block)
     end
   end
 
@@ -336,7 +419,8 @@ class UltimateTurboModal::Base < Phlex::HTML
   end
 
   def drawer_panel(&block)
-    div(id: "drawer-panel", class: self.class::DRAWER_PANEL_CLASSES, data: {modal_target: "content"}, &block)
+    div(id: "drawer-panel", class: self.class::DRAWER_PANEL_CLASSES,
+      data: {modal_target: "content transition"}, &block)
   end
 
   def drawer_content(&block)
@@ -354,6 +438,51 @@ class UltimateTurboModal::Base < Phlex::HTML
     end
   end
 
+  ## Confirm-specific elements
+
+  def render_confirm
+    warn_missing_confirm_classes
+    # Unlike the modal and drawer templates, the styles go *inside* the dialog:
+    # the JS clones this one node out of the <template>, and the scroll-lock
+    # rule has to come along with it and leave with it.
+    dialog_element do
+      styles
+      confirm_inner do
+        confirm_content do
+          render_header
+          confirm_main
+          confirm_footer
+        end
+      end
+    end
+  end
+
+  def confirm_inner(&block)
+    div(id: inner_id, class: classes_for("INNER_CLASSES"), data: {modal_target: "transition"}, &block)
+  end
+
+  def confirm_content(&block)
+    div(id: scoped_id("modal-content"), class: classes_for("CONTENT_CLASSES"), data: {modal_target: "content"}, &block)
+  end
+
+  # Left empty: the JavaScript fills it from `data-turbo-confirm`.
+  def confirm_main
+    render_main do
+      div(id: scoped_id("modal-body"), class: confirm_classes_for("BODY_CLASSES"))
+    end
+  end
+
+  def confirm_footer
+    div(id: scoped_id("modal-footer"), class: classes_for("FOOTER_CLASSES")) do
+      div(class: confirm_classes_for("ACTIONS_CLASSES")) do
+        button(type: "button", class: confirm_classes_for("CANCEL_CLASSES"),
+          data: {utmr_confirm_action: "cancel"}) { @cancel_label }
+        button(type: "button", class: confirm_classes_for("ACCEPT_CLASSES"),
+          data: {utmr_confirm_action: "accept"}) { @accept_label }
+      end
+    end
+  end
+
   ## Shared rendering
 
   def render_main(&block)
@@ -363,8 +492,18 @@ class UltimateTurboModal::Base < Phlex::HTML
   def render_header
     div(id: scoped_id("modal-header"), class: classes_for("HEADER_CLASSES")) do
       render_title
-      drawer? ? drawer_close : modal_close
+      render_header_close
     end
+  end
+
+  # Modals and drawers always render the close button and let the flavor hide it
+  # through `data-close-button`. A confirm leaves it out of the markup entirely
+  # instead, which keeps it out of the tab order and the accessibility tree --
+  # it has its own Cancel button, so it is off by default.
+  def render_header_close
+    return if confirm? && !close_button?
+
+    drawer? ? drawer_close : modal_close
   end
 
   def render_title

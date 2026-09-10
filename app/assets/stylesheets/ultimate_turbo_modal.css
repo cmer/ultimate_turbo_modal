@@ -191,6 +191,160 @@ dialog.utmr {
   }
 
   /* ========================================
+     Confirm dialog styles
+     Scoped to [data-utmr-confirm] so it can reuse the modal container,
+     backdrop and enter/leave transitions while overriding the layout.
+     ======================================== */
+
+  &[data-utmr-confirm] {
+    /* Real gutter on mobile: the card below is full width. */
+    .modal-inner {
+      padding: 1rem;
+      padding-top: 10vh;
+
+      @media (min-width: 640px) {
+        padding: 1rem;
+        padding-bottom: 10vh;
+      }
+    }
+
+    /* Sized rather than shrink-to-fit, so a one-word prompt and a three-line
+       one come out the same. The floor is written as min(20rem, 100%) so it can
+       never push the card wider than the space it has on a narrow screen. */
+    .confirm-content {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      min-width: min(20rem, 100%);
+      background-color: #ffffff;
+      text-align: left;
+      border-radius: 0.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+      @media (min-width: 640px) {
+        max-width: 28rem;
+      }
+    }
+
+    .confirm-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      width: 100%;
+      padding: 1.5rem 1.5rem 0;
+    }
+
+    .confirm-title-h {
+      font-size: 1rem;
+      line-height: 1.5rem;
+      font-weight: 600;
+    }
+
+    .confirm-main {
+      padding: 0;
+    }
+
+    .confirm-body {
+      font-size: 0.875rem;
+      line-height: 1.5rem;
+    }
+
+    .confirm-footer {
+      padding: 1.5rem;
+    }
+
+    /* Stacked and full width on mobile, inline and right aligned from 640px.
+       Reversed so the primary action sits on top. */
+    .confirm-actions {
+      display: flex;
+      width: 100%;
+      flex-direction: column-reverse;
+      gap: 0.5rem;
+
+      @media (min-width: 640px) {
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 0.75rem;
+      }
+    }
+
+    .confirm-cancel,
+    .confirm-accept {
+      display: inline-flex;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      font-weight: 600;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background-color 150ms ease-in-out;
+
+      @media (min-width: 640px) {
+        width: auto;
+        padding: 0.5rem 1rem;
+      }
+    }
+
+    .confirm-cancel {
+      background-color: #ffffff;
+      color: #111827;
+      border: 1px solid #D1D5DB;
+
+      &:hover {
+        background-color: #F9FAFB;
+      }
+    }
+
+    .confirm-accept {
+      background-color: #4F46E5;
+      color: #ffffff;
+      border: 1px solid transparent;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        background-color: #6366F1;
+      }
+    }
+
+    /* Destructive variant, set from `variant: :danger` */
+    &[data-utmr-confirm-variant="danger"] .confirm-accept {
+      background-color: #DC2626;
+
+      &:hover {
+        background-color: #EF4444;
+      }
+    }
+
+    /* Options, matching the modal's data-attribute switches */
+    &[data-header="false"] .confirm-header {
+      display: none;
+    }
+
+    &[data-title="false"] .confirm-title-h {
+      display: none;
+    }
+
+    &[data-padding="true"] .confirm-main {
+      padding: 0.5rem 1.5rem 0;
+    }
+
+    &[data-header-divider="true"] .confirm-header {
+      padding-bottom: 1rem;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+    }
+
+    &[data-footer-divider="true"] .confirm-footer {
+      border-top-width: 1px;
+      border-top-style: solid;
+    }
+  }
+
+  /* ========================================
      Drawer styles
      ======================================== */
 
@@ -399,6 +553,30 @@ dialog.utmr {
     color: #ffffff;
   }
 
+  .confirm-content {
+    background-color: #1F2937;
+    color: #ffffff;
+  }
+
+  .confirm-body {
+    color: #9CA3AF;
+  }
+
+  .confirm-header,
+  .confirm-footer {
+    border-color: #4B5563;
+  }
+
+  .confirm-cancel {
+    background-color: #374151;
+    color: #F3F4F6;
+    border-color: #4B5563;
+
+    &:hover {
+      background-color: #4B5563;
+    }
+  }
+
   .modal-close-button:hover,
   .modal-close-icon:hover,
   .drawer-close-button:hover,
@@ -409,6 +587,15 @@ dialog.utmr {
 }
 
 :not(.dark) dialog.utmr {
+  .confirm-body {
+    color: #6B7280;
+  }
+
+  .confirm-header,
+  .confirm-footer {
+    border-color: #E5E7EB;
+  }
+
   .modal-close-button,
   .modal-close-icon,
   .drawer-close-button,
