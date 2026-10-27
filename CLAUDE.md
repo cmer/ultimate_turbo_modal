@@ -456,3 +456,5 @@ The `turbo:before-cache` event listener removes the dialog from Turbo's page cac
 - **No automated test suite** — Ruby has no test files; JavaScript has no test framework
 - **Manual testing** via the demo app at `./demo-app`
 - The demo app exercises: modals, drawers (left/right), photo modals (no header/padding), long scrolling content, form submission with server-side close, advance history, focus trapping, Turbo Confirm (`/testing/confirms`)
+
+End any turn that reports on long-running or delegated work with a short status: **Goal**, **Done**, **Next**, **Needs you** (or "nothing").
